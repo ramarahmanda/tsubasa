@@ -20,7 +20,12 @@ act only after the user says yes (that's onboard/sync territory).
    (event ids, ADR ids, PR numbers, file paths).
 2. If the match is thin, check `.tsubasa/memory/index.md` for the entity's
    canonical id and query again with that id.
-3. Answer from the returned context ONLY.
+3. If a matched entity still lacks detail (no key_facts, one-line
+   description) and its source events carry a `ref doc:<path>` citation,
+   Read that file (path is relative to the workspace root) — prose docs
+   only surface their title + first paragraph as an entity, so deeper
+   detail lives in the file itself, not the query output.
+4. Answer from the returned context, plus anything read in step 3, ONLY.
 
 ## One query surface — never choose between graphs
 
