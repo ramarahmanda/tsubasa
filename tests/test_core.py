@@ -137,14 +137,20 @@ def test_git_adapter_adr_commits(repo):
     sub = repo / "svc"
     sub.mkdir()
     subprocess.run(["git", "init", "-q", "-b", "main"], cwd=sub, check=True)
+    (sub / "db.py").write_text("engine = 'postgres'\n")
+    subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "add", "db.py"], cwd=sub, check=True)
     subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit",
-                    "--allow-empty", "-q", "-m", "feat: adr-use-postgres migration"], cwd=sub, check=True)
+                    "-q", "-m", "feat: adr-use-postgres migration"], cwd=sub, check=True)
     cfg_path = repo / ".tsubasa/captain.toml"
     cfg_path.write_text(cfg_path.read_text() + '\n[[sources]]\nadapter = "git"\npath = "svc"\n')
     run(["task", "new", "--title", "Postgres migration", "--adr", "adr-use-postgres"])
     assert run(["ingest", "git"]) == 0
     store = Store(repo)
     assert store.load_tasks()["task-postgres-migration"].state == "in_progress"
+    ev = next(e for e in store.load_events() if e.type == "pr_merged")
+    # the commit's changed files are cited on the event as file refs, so the
+    # graph knows what actually changed, not just which ADR the commit names
+    assert any(r.kind == "file" and r.id == "db.py" for r in ev.refs)
 
 
 def test_doctor_flags_secrets(repo, capsys):

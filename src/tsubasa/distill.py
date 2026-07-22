@@ -4,23 +4,25 @@ These are what turn a thin graph into the 25-year veteran — the cookbook
 pipeline (extract → resolve → summarize) run headlessly over the full
 history via `claude -p`, in chunks, at extraction-model cost.
 
-    study    git history chunks -> distilled events (source: study)
+    study    git history + doc prose -> distilled events (source: study)
     resolve  duplicate entities -> alias map (applied at assembly, log untouched)
     profile  hub entities -> summary + key facts overlay
 """
 
 from __future__ import annotations
 
+import hashlib
 import subprocess
 from pathlib import Path
 
 from . import llm
-from .config import CaptainConfig
-from .models import Event, Ref, slugify
+from .config import CaptainConfig, SourceConfig
+from .models import Event, Ref, now_iso, slugify
 from .storage import Store
 
 STUDY_MODEL = "haiku"      # extraction scale; resolve/profile use the default model
 CHUNK_COMMITS = 250
+DOC_CHARS_CAP = 8000       # per-file cap so a huge doc doesn't blow the extraction budget
 
 STUDY_PROMPT = """\
 You are distilling git history into an engineering knowledge graph for the
@@ -44,6 +46,27 @@ Return ONLY a JSON array (no prose):
   "commits": ["sha", ...],
   "entities": [{{"id": "svc-x|feat-x|ext-x", "type": "service|feature|module|external", "name": "...", "description": "..."}}],
   "relations": [{{"source": "id", "predicate": "verb_phrase", "target": "id"}}]}}]
+"""
+
+STUDY_DOC_PROMPT = """\
+You are distilling a curated knowledge doc into an engineering knowledge
+graph. The doc below may discuss services, external integrations, database
+tables, or other things already tracked as entities — reuse their ids when
+the doc clearly refers to the same thing, and propose new entities (e.g.
+ext-<slug> for a third-party integration) for anything genuinely new.
+
+<doc kind="{kind}" path="{path}">
+{text}
+</doc>
+
+Known domains (use these when applicable): {domains}
+Existing entity ids to REUSE when the doc touches them: {entity_ids}
+
+Return ONLY a JSON object (no prose), or {{}} if nothing extractable:
+{{"title": "...", "summary": "1-2 sentences, factual",
+  "domains": ["..."],
+  "entities": [{{"id": "svc-x|ext-x|feat-x|module-x", "type": "service|external|feature|module", "name": "...", "description": "..."}}],
+  "relations": [{{"source": "id", "predicate": "verb_phrase", "target": "id"}}]}}
 """
 
 RESOLVE_PROMPT = """\
@@ -86,7 +109,8 @@ Return ONLY a JSON object (no prose):
 def study(store: Store, cfg: CaptainConfig, root: Path, claude_cmd: str = "claude",
           chunk: int = CHUNK_COMMITS, max_chunks: int = 0, model: str = STUDY_MODEL,
           log=print) -> list[Event]:
-    """Distill full git history of every git source into events."""
+    """Distill full git history of every git source, and the prose in every
+    doc source, into events."""
     existing_ids = sorted(store.load_entities())
     new_events: list[Event] = []
     repos = [s for s in cfg.sources if s.adapter == "git"]
@@ -117,12 +141,15 @@ def study(store: Store, cfg: CaptainConfig, root: Path, claude_cmd: str = "claud
                 continue
             made = 0
             for item in items if isinstance(items, list) else []:
-                ev = _study_event(item, repo.name)
+                ev = _study_event(item, repo.name, repo)
                 if ev is not None and not store.has_event(ev.id):
                     store.append_event(ev)
                     new_events.append(ev)
                     made += 1
             log(f"[study] {repo.name} chunk {n}/{len(chunks)}: {made} event(s)")
+    doc_sources = [s for s in cfg.sources if s.adapter == "doc"]
+    for src in doc_sources:
+        new_events.extend(_study_docs(store, src, root, cfg, existing_ids, claude_cmd, model, log))
     return new_events
 
 
@@ -134,12 +161,79 @@ def _git_log(repo: Path) -> list[str]:
     return [l for l in out.stdout.splitlines() if l.strip()]
 
 
-def _study_event(item: dict, repo_name: str) -> Event | None:
+def _study_docs(store: Store, src: SourceConfig, root: Path, cfg: CaptainConfig,
+                existing_ids: list[str], claude_cmd: str, model: str, log) -> list[Event]:
+    """Distill the prose of one doc source, file by file. `.toon` files are
+    skipped — DocAdapter already turns them into structured entities
+    deterministically (see adapters/docs.py); this pass is for free text
+    a heading/table parser can't pull entities out of."""
+    base = (root / src.path).resolve()
+    if not base.is_dir():
+        return []
+    pattern = src.glob or "**/*.md"
+    kind = slugify(str(src.options.get("kind", "doc"))) or "doc"
+    paths = [p for p in sorted(base.glob(pattern)) if p.is_file() and p.suffix != ".toon"]
+    if not paths:
+        return []
+    log(f"[study] {src.path}: distilling {len(paths)} doc(s)...")
+    new_events: list[Event] = []
+    for path in paths:
+        rel = str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
+        text = path.read_text(errors="replace")
+        digest = hashlib.sha1(text.encode()).hexdigest()[:12]
+        try:
+            raw = llm.run_claude(
+                STUDY_DOC_PROMPT.format(
+                    kind=kind, path=rel, text=text[:DOC_CHARS_CAP],
+                    domains=", ".join(cfg.domains) or "any",
+                    entity_ids=", ".join(existing_ids[:60]) or "none yet",
+                ),
+                model=model, claude_cmd=claude_cmd,
+            )
+            item = llm.extract_json(raw)
+        except llm.LLMError as e:
+            log(f"[study] {rel}: SKIPPED ({e})")
+            continue
+        ev = _study_doc_event(item, kind, rel, digest) if isinstance(item, dict) else None
+        if ev is not None and not store.has_event(ev.id):
+            store.append_event(ev)
+            new_events.append(ev)
+    log(f"[study] {src.path}: {len(new_events)} event(s)")
+    return new_events
+
+
+def _study_doc_event(item: dict, kind: str, rel: str, digest: str) -> Event | None:
+    title = str(item.get("title", "")).strip()
+    if not title:
+        return None
+    return Event(
+        id=f"evt-study-{kind}-{slugify(title)}-{digest[:8]}",
+        type="note", ts=now_iso()[:10],
+        title=f"{kind}: {title}",
+        summary=str(item.get("summary", ""))[:600],
+        impact="low",
+        domains=[str(d) for d in item.get("domains", [])][:4],
+        trust="low",  # doc-derived, verify in code — same hierarchy as adr.py's non-ADR docs
+        refs=[Ref(kind="doc", id=rel)],
+        source="study",
+        derived_entities=[e for e in item.get("entities", []) if isinstance(e, dict) and e.get("id")][:8],
+        derived_relations=[r for r in item.get("relations", [])
+                           if isinstance(r, dict) and r.get("source") and r.get("target")][:10],
+    )
+
+
+def _study_event(item: dict, repo_name: str, repo: Path) -> Event | None:
     title = str(item.get("title", "")).strip()
     date = str(item.get("date", ""))[:10]
     if not title or len(date) != 10:
         return None
     etype = item.get("type", "note")
+    commit_shas = [str(c)[:12] for c in item.get("commits", [])[:8]]
+    files: list[str] = []
+    for sha in commit_shas:
+        for f in _changed_files(repo, sha):
+            if f not in files:
+                files.append(f)
     return Event(
         id=f"evt-{date.replace('-', '')}-{slugify(repo_name)}-{slugify(title)}",
         type=etype if etype in ("note", "decision", "incident") else "note",
@@ -147,12 +241,23 @@ def _study_event(item: dict, repo_name: str) -> Event | None:
         summary=str(item.get("summary", ""))[:600],
         impact=item.get("impact", "low") if item.get("impact") in ("high", "medium", "low") else "low",
         domains=[str(d) for d in item.get("domains", [])][:4],
-        refs=[Ref(kind="commit", id=str(c)[:12]) for c in item.get("commits", [])[:8]],
+        refs=[Ref(kind="commit", id=c) for c in commit_shas]
+            + [Ref(kind="file", id=f) for f in files[:10]],
         source="study",
         derived_entities=[e for e in item.get("entities", []) if isinstance(e, dict) and e.get("id")][:6],
         derived_relations=[r for r in item.get("relations", [])
                            if isinstance(r, dict) and r.get("source") and r.get("target")][:8],
     )
+
+
+def _changed_files(repo: Path, sha: str, limit: int = 10) -> list[str]:
+    out = subprocess.run(
+        ["git", "-C", str(repo), "show", "--name-only", "--format=", sha],
+        capture_output=True, text=True, timeout=30,
+    )
+    if out.returncode != 0:
+        return []
+    return [f for f in out.stdout.splitlines() if f.strip()][:limit]
 
 
 # ------------------------------------------------------------------ index (graphify)

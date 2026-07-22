@@ -47,6 +47,59 @@ def test_study_writes_events(repo, tmp_path, capsys):
     assert len([e for e in Store(repo).load_events() if e.source == "study"]) == 1
 
 
+def test_study_attaches_file_refs(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    cli.main(["init", "cap", "--domains", "auth"])
+    svc = tmp_path / "svc"
+    svc.mkdir()
+    subprocess.run(["git", "init", "-q", "-b", "main"], cwd=svc, check=True)
+    (svc / "pool.go").write_text("var poolSize = 10\n")
+    subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "add", "pool.go"], cwd=svc, check=True)
+    subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit",
+                    "-q", "-m", "fix: connection pool exhaustion"], cwd=svc, check=True)
+    sha = subprocess.run(["git", "-C", str(svc), "log", "--format=%h"],
+                         capture_output=True, text=True, check=True).stdout.strip()
+    cli.main(["source", "add", "git", "svc"])
+    study_json = (
+        '[{"title": "Connection pool exhaustion fixed", '
+        '"summary": "Pool ran out under load; size increased.", '
+        '"type": "incident", "impact": "high", "domains": ["auth"], "date": "2026-01-05", '
+        f'"commits": ["{sha}"], '
+        '"entities": [{"id": "svc-svc", "type": "service", "name": "svc", "description": "Auth service"}], '
+        '"relations": []}]'
+    )
+    stub = make_stub(tmp_path, study_json)
+    assert cli.main(["study", "--claude-cmd", stub]) == 0
+    ev = next(e for e in Store(tmp_path).load_events() if e.source == "study")
+    assert any(r.kind == "file" and r.id == "pool.go" for r in ev.refs)
+
+
+STUDY_DOC_JSON = """{"title": "Third-party integrations", "summary": "The app sends events to a metrics vendor.", "domains": ["auth"], "entities": [{"id": "ext-metrics-vendor", "type": "external", "name": "Metrics Vendor", "description": "Event pipeline used for product analytics."}], "relations": [{"source": "svc-svc", "predicate": "sends_events_to", "target": "ext-metrics-vendor"}]}"""
+
+
+def test_study_extracts_entities_from_doc_prose(repo, tmp_path):
+    (repo / "docs").mkdir()
+    (repo / "docs/integrations.md").write_text(
+        "# Third-party integrations\n\nThe app sends events to a metrics vendor.\n")
+    (repo / "docs/schema.toon").write_text("table: orders\ncolumns[0]:\n")
+    cli.main(["source", "add", "doc", "docs"])
+    stub = make_stub(tmp_path, STUDY_DOC_JSON)
+    assert cli.main(["study", "--claude-cmd", stub]) == 0
+    store = Store(repo)
+    doc_events = [e for e in store.load_events() if e.source == "study" and e.trust == "low"]
+    # only the .md file is sent through study; the .toon file is left to
+    # DocAdapter's deterministic structured parse (see adapters/docs.py)
+    assert len(doc_events) == 1
+    assert doc_events[0].refs[0].kind == "doc"
+    assert doc_events[0].refs[0].id == "docs/integrations.md"
+    ent = store.load_entities()["ext-metrics-vendor"]
+    assert ent.type == "external"
+    assert ent.name == "Metrics Vendor"
+    # idempotent: rerunning study doesn't duplicate the event
+    cli.main(["study", "--claude-cmd", stub])
+    assert len([e for e in Store(repo).load_events() if e.source == "study" and e.trust == "low"]) == 1
+
+
 def test_resolve_merges_duplicates(repo, tmp_path):
     cli.main(["event", "add", "--type", "note", "--title", "a", "--ts", "2026-01-01",
               "--entity", "svc-gateway:service:gateway:The API gateway"])
