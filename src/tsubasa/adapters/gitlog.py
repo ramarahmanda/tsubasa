@@ -114,7 +114,8 @@ class GitAdapter(Adapter):
                 type="pr_merged", ts=date,
                 title=f"{repo_name}: {subject[:120]}",
                 impact="low", source=self.name,
-                refs=[Ref(kind="commit", id=sha[:12])] + [Ref(kind="adr", id=a) for a in sorted(adr_ids)],
+                refs=[Ref(kind="commit", id=sha[:12])] + [Ref(kind="adr", id=a) for a in sorted(adr_ids)]
+                    + [Ref(kind="file", id=f) for f in _changed_files(repo, sha)],
                 derived_entities=[_svc_entity(svc_id, repo_name, self.source.path)],
                 derived_relations=[
                     {"source": svc_id, "predicate": "changed_by", "target": sha[:12]}
@@ -153,6 +154,14 @@ def _rev_exists(repo: Path, rev: str) -> bool:
         return True
     except RuntimeError:
         return False
+
+
+def _changed_files(repo: Path, sha: str, limit: int = 10) -> list[str]:
+    try:
+        raw = _git(repo, "show", "--name-only", "--format=", sha)
+    except RuntimeError:
+        return []
+    return [f for f in raw.splitlines() if f.strip()][:limit]
 
 
 def _svc_entity(svc_id: str, repo_name: str, path: str) -> dict:

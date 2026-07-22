@@ -666,7 +666,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.set_defaults(func=cmd_query)
 
     for name, fn, extra in (
-        ("study", cmd_study, "distill full git history into events (headless claude, chunked)"),
+        ("study", cmd_study, "distill git history + doc sources into events (headless claude, chunked)"),
         ("resolve", cmd_resolve, "merge duplicate entities via alias map"),
         ("profile", cmd_profile, "generate profiles for hub entities"),
     ):
