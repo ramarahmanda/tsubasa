@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ramarahmanda/tsubasa/schema/task.schema.json",
+  "title": "Task",
+  "description": "Stateful, ADR-linked unit of work. The ADR id in branch/PR names drives automatic state transitions.",
+  "type": "object",
+  "required": ["id", "title", "state"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^task-[a-z0-9][a-z0-9-]*$" },
+    "title": { "type": "string" },
+    "state": { "enum": ["draft", "todo", "in_progress", "in_review", "done", "abandoned"] },
+    "adr": { "type": "string", "description": "the linking thread: adr-<slug>" },
+    "branch": { "type": "string" },
+    "prs": { "type": "array", "items": { "type": "string" } },
+    "domains": { "type": "array", "items": { "type": "string" } },
+    "created": { "type": "string" },
+    "updated": { "type": "string" },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ts", "state", "by"],
+        "properties": {
+          "ts": { "type": "string" },
+          "state": { "type": "string" },
+          "by": { "type": "string", "description": "user | captain | adapter:<name>" },
+          "evidence": { "type": "string", "description": "why this transition happened (PR, event id, quote)" }
+        }
+      }
+    }
+  }
+}

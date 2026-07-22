@@ -1,0 +1,7 @@
+{
+  "name": "tsubasa",
+  "description": "Captain persona: repo-resident domain expert with a git-stored knowledge graph, ambient knowledge capture, and ADR-threaded task tracking.",
+  "version": "0.1.16",
+  "author": { "name": "Rama Rahmanda" },
+  "homepage": "https://github.com/ramarahmanda/tsubasa"
+}

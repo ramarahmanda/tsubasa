@@ -1,0 +1,16 @@
+{
+  "name": "tsubasa",
+  "owner": { "name": "Rama Rahmanda" },
+  "metadata": {
+    "description": "Captains: repo-resident domain-expert AI personas with a git-stored knowledge graph",
+    "version": "0.1.16"
+  },
+  "plugins": [
+    {
+      "name": "tsubasa",
+      "source": "./plugin",
+      "description": "Captain persona: ambient knowledge capture, cited recall, ADR-threaded task tracking. Activates only in repos initialized with `tsubasa init`.",
+      "author": { "name": "Rama Rahmanda" }
+    }
+  ]
+}

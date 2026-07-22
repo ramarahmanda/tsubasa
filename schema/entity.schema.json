@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ramarahmanda/tsubasa/schema/entity.schema.json",
+  "title": "Entity",
+  "description": "A durable thing the Captain knows about. Derived from events; rebuildable.",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "name"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "type": {
+      "enum": [
+        "service",
+        "module",
+        "adr",
+        "incident",
+        "feature",
+        "task",
+        "env",
+        "team",
+        "secret-ref",
+        "external",
+        "person",
+        "goal",
+        "doc"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "domains": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "active",
+        "superseded",
+        "achieved",
+        "dropped"
+      ],
+      "default": "active"
+    },
+    "superseded_by": {
+      "type": "string"
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "key_facts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "source_events": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "provenance: every event that touched this entity"
+    },
+    "last_touched": {
+      "type": "string",
+      "description": "ts of most recent referencing event; drives re-heating"
+    },
+    "impact": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    }
+  }
+}

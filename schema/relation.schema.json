@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ramarahmanda/tsubasa/schema/relation.schema.json",
+  "title": "Relation",
+  "description": "A typed, directed edge between graph nodes, with provenance.",
+  "type": "object",
+  "required": ["source", "predicate", "target"],
+  "properties": {
+    "source": { "type": "string" },
+    "predicate": { "type": "string", "description": "short verb phrase: implements, caused_by, decided_in, deployed_to, depends_on, supersedes, documented_in, ..." },
+    "target": { "type": "string" },
+    "ts": { "type": "string" },
+    "provenance": { "type": "string", "description": "event id this relation came from" }
+  }
+}

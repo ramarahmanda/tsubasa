@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ramarahmanda/tsubasa/schema/event.schema.json",
+  "title": "Event",
+  "description": "The atomic unit of subjective knowledge: something that happened. Immutable, append-only.",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "ts",
+    "title"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^evt-[a-z0-9][a-z0-9-]*$"
+    },
+    "type": {
+      "enum": [
+        "incident",
+        "adr",
+        "pr_merged",
+        "deploy",
+        "config_change",
+        "note",
+        "release",
+        "decision",
+        "task_update",
+        "plan"
+      ]
+    },
+    "ts": {
+      "type": "string",
+      "description": "ISO date or datetime (UTC)"
+    },
+    "title": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "criticality": {
+      "type": "object",
+      "properties": {
+        "impact": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "trust": {
+      "enum": [
+        "high",
+        "normal",
+        "low"
+      ],
+      "default": "normal"
+    },
+    "refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "id"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "pr",
+              "adr",
+              "file",
+              "url",
+              "commit",
+              "event",
+              "entity",
+              "doc"
+            ]
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "entity ids this event replaces"
+    },
+    "body": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "description": "adapter name or 'manual'"
+    },
+    "disputed": {
+      "type": "boolean"
+    },
+    "derived": {
+      "type": "object",
+      "description": "graph objects this event asserts, replayed on rebuild",
+      "properties": {
+        "entities": {
+          "type": "array",
+          "items": {
+            "$ref": "entity.schema.json"
+          }
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "$ref": "relation.schema.json"
+          }
+        }
+      }
+    }
+  }
+}
