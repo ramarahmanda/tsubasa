@@ -1,0 +1,24 @@
+{
+  "qid": "H5",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly states that after a clean switchover there is no lease-duration wait, hand-over is bounded by retryPeriodSeconds (default 2), and correctly contrasts this with the abrupt-loss case requiring the full leaseDurationSeconds (15) wait, matching the quoted failover.md:168-171 text exactly and avoiding all forbidden claims. It never mentions releasedLeaseDurationSeconds or the 1-second TTL, so required fact 2 is missing, but omission of a required fact is not itself a contradiction.",
+  "required_missing": [
+    "The lease TTL written on a clean release is releasedLeaseDurationSeconds, default 1 second"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "The lease TTL written on a clean release is releasedLeaseDurationSeconds, default 1 second"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0679227,
+  "blind": true,
+  "task_sha256": "ae24a594b3c107badd21e1419d54dcae082d6b526d2348eac7ec13aa366ea2a7",
+  "stub": false,
+  "arm": "B"
+}

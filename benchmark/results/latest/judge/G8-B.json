@@ -1,0 +1,20 @@
+{
+  "qid": "G8",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states both required facts: it names b0eaa4c51b (Feb 2019) and 7db0cde6b5 (May 2019) as the implement/revert pair, and correctly frames the revert as an objection to the process-local map mechanism (versus a needed per-relation relcache map with invalidation) rather than a rejection of the skip-FSM idea itself. All six cited SHAs and the path resolved against the fixture, and the extra detail (thresholds, the earlier Jan 2019 attempt, pg_upgrade commit as collateral not cause) hangs off resolved-but-unquoted citations, which per the rules is not provably contradicted and thus not fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.09909169999999999,
+  "blind": true,
+  "task_sha256": "b7a4d2c4a8db946f435674751e3aac8b9b1bc83970c0bbd8fd8f682ba51525f6",
+  "stub": false,
+  "arm": "B"
+}

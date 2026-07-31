@@ -2,7 +2,7 @@
 
 > *"The ball is your friend."* — Captain Tsubasa
 >
-> **Tsubasa** is an open-source framework for creating **Captains**: persistent, domain-expert AI personas for a codebase or organization. A Captain is the teammate who's "been at the company for 25 years" — they know why the auth service is shaped the way it is, which incident caused the retry policy, what ADR decided the queue technology, where secrets are deployed, and which task is blocked on which PR.
+> **Tsubasa** is an open-source framework for creating **Captains**: persistent, domain-expert AI personas for a codebase or organization. A Captain is the teammate who's "been at the company for 25 years" — they know why the auth service is shaped the way it is, which incident caused the retry policy, what ADR decided the queue technology, where secrets are deployed, and which PR carried which decision.
 
 ---
 
@@ -13,7 +13,7 @@ LLM coding assistants are brilliant amnesiacs. Every session they can *read* the
 - **Why** — historical decisions, rejected alternatives, tribal knowledge
 - **What happened** — incidents, outages, migrations, feature launches
 - **What's around the code** — where it's built, deployed, configured; which secrets live where
-- **What's in flight** — tasks, their state, and which PR/branch carries them
+- **What's in flight** — which decisions are being implemented, and on which branch/PR
 
 Code-structure tools (like [Graphify](https://graphify.com/)) solve the *objective* layer: "what calls what, where is X defined." Tsubasa adds the **subjective layer**: event-based organizational knowledge, connected to the objective layer through a shared entity vocabulary — and it all lives **in the repo, in git**, so knowledge travels with the code and is reviewable like code.
 
@@ -23,10 +23,9 @@ Code-structure tools (like [Graphify](https://graphify.com/)) solve the *objecti
 |---|---|
 | **Captain** | A named, configured instance of tsubasa in a repo (e.g. `captain-tsubasa`). Has a persona (role, e.g. "Engineering Director"), domains, and a knowledge graph. |
 | **Event** | The atomic unit of subjective knowledge. Something that *happened*: incident, ADR accepted, PR merged, deploy, config change, manual note. Immutable, timestamped, TOON-encoded. |
-| **Entity** | A durable *thing* the Captain knows about: service, module, ADR, incident, feature, task, environment, team, secret-ref, external system. |
+| **Entity** | A durable *thing* the Captain knows about: service, module, ADR, incident, feature, environment, team, secret-ref, external system. |
 | **Relation** | A typed, directed edge between entities: `implements`, `caused_by`, `decided_in`, `deployed_to`, `depends_on`, `supersedes`, `tracked_by`, `references`. |
 | **Temperature** | Every piece of knowledge is **hot / warm / cold**, computed from recency × criticality (impact, domain weight) × access. Determines what's always-in-context vs. loaded on demand vs. retrieved by query. |
-| **Task** | A first-class entity with state, linked to an ADR ID, tracked to completion via branch/PR naming conventions. |
 
 ## 3. Architecture
 
@@ -40,7 +39,7 @@ flowchart TB
     end
 
     subgraph L2["2 · Data structure layer (the contract)"]
-        EV[Event · TOON] ; EN[Entity] ; REL[Relation] ; TK[Task]
+        EV[Event · TOON] ; EN[Entity] ; REL[Relation]
     end
 
     subgraph L3["3 · Graph layer"]
@@ -69,7 +68,7 @@ Every adapter answers one question: *"turn this source into Events + Entities + 
 | Adapter | Source | Emits |
 |---|---|---|
 | `git` | commit history, tags | Events (releases, large refactors), Entities (modules) |
-| `github` | PRs, issues via `gh` CLI | Events (pr_merged), Relations (task ↔ PR ↔ files) |
+| `github` | PRs, issues via `gh` CLI | Events (pr_merged), Relations (ADR ↔ PR ↔ files) |
 | `adr` | `docs/adr/*.md` (MADR or custom) | Entities (decisions), Events (accepted/superseded), Relations |
 | `incident` | markdown postmortems (later: PagerDuty/Opsgenie export) | Events (incidents), Relations (`caused_by`, `mitigated_by`) |
 | `deploy` | CI/CD config, IaC, k8s manifests | Entities (environments, secret-refs), Relations (`deployed_to`, `built_by`) |
@@ -108,7 +107,7 @@ event:
 ```toon
 entity:
   id: svc-payment
-  type: service             # service | module | adr | incident | feature | task | env | team | secret-ref | external
+  type: service             # service | module | adr | incident | feature | env | team | secret-ref | external
   name: payment-svc
   description: Handles all payment gateway integration and retries.
   aliases[2]: payments,payment-service
@@ -131,30 +130,18 @@ relation:
   provenance: evt-2026-07-03-payment-timeout
 ```
 
-**Task** — stateful, ADR-linked:
-
-```toon
-task:
-  id: task-auth-xyz
-  title: Migrate auth to OIDC
-  state: in_review           # draft | todo | in_progress | in_review | done | abandoned
-  adr: adr-auth-xyz          # the linking key (§5.3)
-  branch: feat/adr-auth-xyz-oidc
-  prs[1]: "PR-1902"
-  domains[1]: auth
-  created: 2026-07-10
-  updated: 2026-07-14
-  history[2]:
-    - {ts: 2026-07-10, state: todo, by: user}
-    - {ts: 2026-07-14, state: in_review, by: captain, evidence: "PR-1902 opened, branch matches adr-auth-xyz"}
-```
+**Retired shapes.** A `task` entity type and a `task_update` event type existed
+through schema 1 and were removed in schema 2: the event log already records
+what happened, with better provenance and no state to keep in sync. Both stay
+in the published schemas and both still replay, because a captain in the wild
+holds events nothing may make unreadable (§5.3). Nothing mints them.
 
 **Future knowledge (goals).** The Captain knows where the ship is heading, not just where it's been: `plan` events create `goal` entities (target states, roadmaps, planned procurement). Two special semantics: **open goals never decay out of hot memory** — the future loses relevance by *resolution* (`achieved`/`dropped`), not by age — and **every plan or design discussion must state its alignment or conflict with each relevant open goal** (`works_toward` relations link the work). Commercial amounts in quotations/budgets are excluded by default; the graph records *what* is planned, not what it costs.
 
 **Design rules for the contract:**
 
 1. **Events are facts, Entities are things, Relations are meaning.** Adapters may only *append* Events; Entities/Relations are (re)derived, so a bad ingest is always recoverable.
-2. **IDs are the join keys across worlds.** File paths join to graphify's code graph; ADR IDs join tasks ↔ branches ↔ PRs; service names join deploy config ↔ incidents. ID conventions are enforced by schema.
+2. **IDs are the join keys across worlds.** File paths join to graphify's code graph; ADR IDs join branches ↔ PRs ↔ changed files; service names join deploy config ↔ incidents. ID conventions are enforced by schema.
 3. **Everything cites provenance.** Every relation and profile fact points back to the Event(s) it came from — same "trace and cite" principle as graphify.
 
 ### 3.3 Graph layer
@@ -186,7 +173,7 @@ Code facts distilled into events rot silently as code moves; org facts kept in a
 | determinism | semantic edges vary run to run | index fully deterministic; only anchors are proposed |
 | refresh | full deep pass per change | re-index free at ingest; name-based anchors survive |
 | yield | rich intra-code semantic edges | org ↔ code joins, which captain queries actually need |
-| role | explicit per-repo choice when deep code semantics warrant it | default for every fleet repo |
+| role | explicit per-repo choice when deep code semantics warrant it | default for every workspace repo |
 
 The captain's queries need the *join* (which code embodies this decision), not intra-code semantics; deep mode stays an explicit opt-in.
 
@@ -203,11 +190,11 @@ temp(k) = w_r · recency(k) + w_i · impact(k) + w_d · domain_weight(k) + w_a �
 
 | Tier | What | Where it lives | When Claude sees it |
 |---|---|---|---|
-| **Hot** | active tasks, recent/critical incidents, load-bearing ADRs | `memory/hot.md`, generated; referenced from CLAUDE.md | Always — injected at session start |
+| **Hot** | the workspace map, open goals, recent/critical incidents, load-bearing ADRs | `memory/hot.md`, generated; referenced from CLAUDE.md | Always — injected at session start |
 | **Warm** | Per-domain summaries + entity index (one line per entity) | `memory/index.md`, `memory/domains/*.md` | Loaded when the conversation touches that domain |
 | **Cold** | Full events, full bodies, superseded decisions | `graph/events/**` | Retrieved by graph query only |
 
-**Hot budget is dynamic, not fixed.** `captain.toml` sets only a ceiling as a % of the model's context window (default: `hot_max_context: 25%`). Within that ceiling, what actually gets included is decided by temperature score at generation time — no per-category quotas. If an active incident plus five tasks compete, the score decides; if the ceiling is hit, the lowest-scored items demote to warm with a pointer line so nothing silently disappears.
+**Hot budget is dynamic, not fixed.** `captain.toml` sets only a ceiling as a % of the model's context window (default: `hot_max_context: 25%`). Within that ceiling, what actually gets included is decided by temperature score at generation time — no per-category quotas. If an active incident plus five ADRs compete, the score decides; if the ceiling is hit, the lowest-scored items demote to warm with a pointer line so nothing silently disappears.
 
 This mirrors how the 25-year veteran actually works: a few things top-of-mind, a mental index of "I know we have something about that," and the ability to go dig up the details.
 
@@ -219,10 +206,10 @@ A Captain ships as a **Claude Code plugin** (skills + hooks), but the primary UX
 
 | Moment | Trigger | What's saved (after a one-line confirmation) |
 |---|---|---|
-| Decision accepted | user approves a proposed design/flow | ADR entity + task (todo) + discussion-summary Event |
+| Decision accepted | user approves a proposed design/flow | ADR entity + discussion-summary Event |
 | Fact stated | user asserts knowledge ("we dropped Kafka for SQS") | Event, connected to existing entities; conflict-probe if it supersedes something |
 | Incident mentioned | user describes an outage/failure | incident Event + relations |
-| Work completed | PR/branch with ADR ID observed at ingest | task state transition with evidence |
+| Work completed | PR/branch with ADR ID observed at ingest | pr_merged Event, ADR-linked, changed files cited |
 
 The confirmation line is the **validation gate**: it restates intent and shows which existing entities it will connect to, so the graph stays trustworthy without ceremony.
 
@@ -233,15 +220,14 @@ user types plain english
   │
   ▼  session = captain (persona + hot.md injected at start)
   ├─ asks about the system      → [skill: recall]  → tsubasa query
-  ├─ discusses, then accepts    → [skill: capture] → tsubasa adr/task write
+  ├─ discusses, then accepts    → [skill: capture] → tsubasa event add (ADR)
   ├─ states a fact / incident   → [skill: inject]  → gate → tsubasa event append
-  ├─ mentions done work         → [skill: sync]    → tsubasa ingest --incremental
   └─ ordinary coding request    → plain claude, knowledge-flavored
 ```
 
 The `tsubasa` CLI remains the explicit override for scripting, CI, and debugging.
 
-**Hooks:** `SessionStart` loads the hot tier; a post-commit/PR hook (or CI job) triggers incremental ingest so task states stay current without anyone asking.
+**Hooks:** `SessionStart` loads the hot tier; a post-commit/PR hook (or CI job) triggers incremental ingest so the graph stays current without anyone asking.
 
 ### 3.6 Captain as team lead — orchestration
 
@@ -262,7 +248,7 @@ The Captain **plans and validates; subagents implement**. It never writes featur
 The delegation loop:
 
 ```
-plan approved (ADR + task exist)
+plan approved (the ADR exists)
   │
   ▼ captain decomposes → briefs, each brief carries:
   │    scoped goal · relevant warm-knowledge slice · constraints
@@ -274,12 +260,12 @@ plan approved (ADR + task exist)
   │        │                       else escalates to USER
   │        └─ output ready       → captain validates vs. graph:
   │              ├─ violates an ADR/constraint → send back with citation
-  │              └─ pass → accept · task advances · Event captured
+  │              └─ pass → accept · Event captured, ADR-linked
   ▼
   user only sees: the plan, escalations, and the validated result
 ```
 
-Because briefs are generated from the graph, subagents inherit the Captain's knowledge without loading all of it — each gets only the slice its task needs.
+Because briefs are generated from the graph, subagents inherit the Captain's knowledge without loading all of it — each gets only the slice its brief needs.
 
 ### 3.7 Captain response contract
 
@@ -300,14 +286,14 @@ The Captain's voice is part of the spec. `tsubasa init` writes the full principl
 tsubasa/
 ├── README.md
 ├── DESIGN.md                    # this document
-├── schema/                      # JSON Schema for event/entity/relation/task
+├── schema/                      # JSON Schema for event/entity/relation
 ├── src/tsubasa/                 # Python CLI (uv), deterministic core
-│   ├── cli.py                   # init · ingest · query · task · study · doctor
+│   ├── cli.py                   # init · upgrade · ingest · query · study · doctor
 │   ├── adapters/                # git · github · adr · incident · code · docs
 │   ├── graph/                   # assembly, reconciliation, query, graphify bridge
 │   └── memory/                  # temperature scoring, tier generation
 ├── plugin/                      # Claude Code plugin
-│   ├── skills/                  # onboard · recall · capture · inject · sync · delegate
+│   ├── skills/                  # onboard · recall · capture · inject · delegate
 │   └── hooks/                   # SessionStart: persona + hot tier
 └── tests/
 ```
@@ -324,7 +310,6 @@ their-project/
 │   │   ├── entities.toon
 │   │   ├── relations.toon
 │   │   └── events/2026/07/evt-*.toon
-│   ├── tasks/task-*.toon
 │   └── memory/                  # generated — hot.md, index.md, domains/*.md
 ├── CLAUDE.md                    # persona principles + @.tsubasa/memory/hot.md
 └── ... their code ...
@@ -371,9 +356,9 @@ sequenceDiagram
 
 The validation step is what keeps the graph trustworthy: the Captain restates *what it understood* (type, entities touched, criticality, what it supersedes) before anything is written.
 
-### 5.3 Task lifecycle — ADR ID as the thread
+### 5.3 Work threading — ADR ID as the thread
 
-Task creation is **ambient** (§3.5): the user discusses a change with the Captain as a normal conversation; on acceptance the Captain drafts the ADR, creates the task, and commits — no command needed. From there the convention takes over: **the ADR ID appears in the branch name and/or PR title**, and that's all the tracking machinery needs.
+Capture is **ambient** (§3.5): the user discusses a change with the Captain as a normal conversation; on acceptance the Captain drafts the ADR and commits — no command needed. From there the convention takes over: **the ADR ID appears in the branch name and/or PR title**, and that's all the threading machinery needs.
 
 ```mermaid
 sequenceDiagram
@@ -386,16 +371,18 @@ sequenceDiagram
     CP->>G: query prior art (old auth ADRs, related incidents)
     CP->>U: drafts ADR adr-auth-xyz (context-aware: cites the 2025 session-fixation incident)
     U->>CP: accept
-    CP->>G: Entity adr-auth-xyz + Task task-auth-xyz (state: todo)
+    CP->>G: Entity adr-auth-xyz + decision Event
     Note over U: implementation happens on branch feat/adr-auth-xyz-oidc
     GH-->>CP: ingest sees branch/PR containing "adr-auth-xyz"
-    CP->>G: task → in_progress · relation PR-1902 —implements→ adr-auth-xyz
+    CP->>G: pr_merged Event, ref adr:adr-auth-xyz + ref pr:PR-1902
     GH-->>CP: PR merged
-    CP->>G: task → done · pr_merged Event · changed files linked to ADR
-    Note over G: forever answerable: "why does auth/oidc.go exist?"<br/>→ adr-auth-xyz → task → PR-1902 → the original ask
+    CP->>G: changed files cited as file refs on that Event
+    Note over G: forever answerable: "why does auth/oidc.go exist?"<br/>→ adr-auth-xyz → PR-1902 → the original ask
 ```
 
-State transitions made by the Captain always carry `evidence` (which PR, which event) in the task history — auditable, like everything else.
+**There is no task record.** Threading is a *derived* view over the log, not a state machine kept beside it. A task row is a second copy of what the events already say, and second copies drift: it can be `in_progress` while the PR is merged, or `done` while the branch is abandoned. The events cannot, because each one is a fact with provenance and none of them is ever edited. "What is in flight" is answered by asking the log which ADRs have a decision Event and no merged PR carrying their id.
+
+Schema 1 did keep tasks, so captains built on it hold `task_update` events and `task`-typed entities. Replay tolerates both and reproduces them verbatim; nothing emits them. `tsubasa upgrade` moves the orphaned `tasks/*.toon` files aside without deleting them, and leaves the events exactly where they are — append-only means append-only, and a later version could resurface them.
 
 ### 5.4 Query
 
@@ -442,7 +429,7 @@ The knowledge format is the stable public interface — any agent that can read 
 ## 7. Roadmap
 
 - **v0.1 — the contract + walking skeleton:** schemas (incl. `trust`); `init`/`ingest`(adr, manual)/`query`; **reconciliation pass (§5.5)** — self-correction is core, not a later add-on; hot/warm/cold generation; Captain recall + capture + inject skills; example captain-tsubasa.
-- **v0.2 — real-world task thread:** `forgejo`/gitea adapter (PR sync where GitHub isn't the host), scheduled ingest (CI cron / forgejo actions template), headless batch study (`claude -p`) for deep history distillation, access tracking (the `w_access` temperature signal).
+- **v0.2 — real-world work thread:** `forgejo`/gitea adapter (PR sync where GitHub isn't the host), scheduled ingest (CI cron / forgejo actions template), headless batch study (`claude -p`) for deep history distillation, access tracking (the `w_access` temperature signal).
 - **v0.3 — the veteran:** entity resolution + hub summarization LLM passes (cookbook stages 2-3), decay/compaction job (event rollups), temporal queries ("what did we believe in March?"), graphify bridge for symbol-level structure.
 - **v0.4 — ecosystem:** visibility tiers on events (sensitive knowledge), per-actor authority model, Captain Core extraction (Agent SDK) for chatbot shells, push adapters (WhatsApp/Slack streams), adapter plugin API, eval harness (gold Q&A per captain).
 

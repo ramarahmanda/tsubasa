@@ -1,0 +1,28 @@
+{
+  "qid": "G5",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The candidate answer is an API error message with no content addressing the question, so it fails to state any required facts and contradicts the standard by omission of substance.",
+  "required_missing": [
+    "No, the reasoning is not sound: that exact argument was committed for BRIN indexes and then reverted (5753d4ee32 / e3fcca0d0d)",
+    "The argument is half right and half wrong: HOT chains are not an issue, but visibility info alone can't keep the summary current"
+  ],
+  "contradictions": [
+    "Answer contains no substantive content at all, merely an API error message"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "No, the reasoning is not sound: that exact argument was committed for BRIN indexes and then reverted (5753d4ee32 / e3fcca0d0d)",
+    "The argument is half right and half wrong: HOT chains are not an issue, but visibility info alone can't keep the summary current"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0316747,
+  "blind": true,
+  "task_sha256": "692f9786771e94b7e3dbbd245eedc1709a051442f8a8a4b9fe290205b72156f8",
+  "stub": false,
+  "arm": "A"
+}

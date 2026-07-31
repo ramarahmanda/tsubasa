@@ -1,0 +1,20 @@
+{
+  "qid": "X1",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the StatefulSet-specific PVC-resize gap is unfixed, quotes the cnpg controller.md limitation verbatim, and explicitly rules out KEP-1847 as being about auto-deletion rather than resizing, satisfying all three required facts. It carefully separates the generic (GA) volume-expansion primitive from the still-missing StatefulSet-native resize orchestration rather than presenting the former as proof the latter was fixed, so none of the forbidden claims are triggered.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.12093970000000001,
+  "blind": true,
+  "task_sha256": "4949bb5a9bbc3d4fb52e29bee61aee20a770563b93ddac7329c65678ddd839e4",
+  "stub": false,
+  "arm": "A"
+}

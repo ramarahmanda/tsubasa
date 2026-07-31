@@ -1,0 +1,28 @@
+{
+  "qid": "B4",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer correctly identifies kubernetes-enhancements as a design-doc/KEP tracking repo (not source code) with per-KEP kep.yaml + README.md pairs, satisfying required fact 1, and states nothing that contradicts the record. However, it never names or references etcd/Documentation/contributor-guide/bump_etcd_version_k8s.md (required fact 2), instead substituting a different, real coupling (KEP-4743, client/v3/kubernetes) with no contradiction. One fabrication: the citation to KEP-4647 with specific README line numbers (README.md:65,73-74) is UNRESOLVED per the resolution block, so it is an invented cross-reference.",
+  "required_missing": [
+    "etcd/Documentation/contributor-guide/bump_etcd_version_k8s.md as the location documenting the etcd/Kubernetes version coupling"
+  ],
+  "contradictions": [],
+  "fabrications": [
+    "'the KEP-4743 README itself cross-references KEP-4647 (livez/readyz) as a planned migration away from Kubernetes-side custom probing (README.md:65,73-74)' — KEP-4647 is UNRESOLVED per the resolution block (rule 1)"
+  ],
+  "load_bearing_missing": [
+    "etcd/Documentation/contributor-guide/bump_etcd_version_k8s.md as the location documenting the etcd/Kubernetes version coupling"
+  ],
+  "unsupported_claims": [
+    "'the KEP-4743 README itself cross-references KEP-4647 (livez/readyz) as a planned migration away from Kubernetes-side custom probing (README.md:65,73-74)' — KEP-4647 is UNRESOLVED per the resolution block (rule 1)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1015897,
+  "blind": true,
+  "task_sha256": "842e60236b7e81a0469eb853303cf517b1a5d1edee5b9e4cb84fa335ed2f5154",
+  "stub": false,
+  "arm": "A"
+}

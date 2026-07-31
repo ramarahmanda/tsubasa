@@ -5,7 +5,6 @@ Layout under <root>/.tsubasa/:
     graph/entities.toon        one document: entities[N]: - ...
     graph/relations.toon       tabular: relations[N]{source,predicate,target,ts,provenance}:
     graph/events/YYYY/MM/<event-id>.toon
-    tasks/<task-id>.toon
     memory/                    generated tiers (hot.md, index.md, domains/)
     state.toon                 adapter cursors (last ingest points)
 """
@@ -16,7 +15,7 @@ from pathlib import Path
 
 from . import toon
 from .config import TSUBASA_DIR
-from .models import Entity, Event, Relation, Task, parse_ts
+from .models import Entity, Event, Relation, parse_ts
 from .redact import redact_event
 
 
@@ -26,8 +25,9 @@ class Store:
         self.base = self.root / TSUBASA_DIR
         self.graph_dir = self.base / "graph"
         self.events_dir = self.graph_dir / "events"
-        self.tasks_dir = self.base / "tasks"
         self.memory_dir = self.base / "memory"
+        # schema 1 wrote task-*.toon here; `tsubasa upgrade` retires them
+        self.legacy_tasks_dir = self.base / "tasks"
 
     # ------------------------------------------------------------ entities
 
@@ -133,24 +133,6 @@ class Store:
                 sub.rmdir()
         self._events_cache = None
         return moved
-
-    # ------------------------------------------------------------ tasks
-
-    def load_tasks(self) -> dict[str, Task]:
-        if not self.tasks_dir.is_dir():
-            return {}
-        tasks = {}
-        for path in sorted(self.tasks_dir.glob("task-*.toon")):
-            doc = toon.decode(path.read_text())
-            t = Task.from_dict(doc["task"])
-            tasks[t.id] = t
-        return tasks
-
-    def save_task(self, task: Task) -> Path:
-        self.tasks_dir.mkdir(parents=True, exist_ok=True)
-        path = self.tasks_dir / f"{task.id}.toon"
-        path.write_text(toon.encode({"task": task.to_dict()}))
-        return path
 
     # ------------------------------------------------------------ code snapshot
 

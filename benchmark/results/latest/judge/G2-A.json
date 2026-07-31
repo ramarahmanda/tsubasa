@@ -1,0 +1,24 @@
+{
+  "qid": "G2",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer correctly states the core substance required: the aliasing behavior was implemented and then deliberately reverted, and the reason was a data-durability defect (RECORD-typed tuples written to disk becoming unreadable by other sessions), matching the required facts. However, it identifies the revert commit as `205214c8b8` with an attributed Tom Lane quote, while the required sources identify the actual revert as commit `ec62cb0aac5b` (also tied to graph event `evt-20220317-postgres-revert-ec62cb0a`); asserting a different specific sha as the revert artifact contradicts what the required sources record for that artifact.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "Citing commit `205214c8b8` as 'Revert applying column aliases to the output of whole-row Vars' and attributing Tom Lane's revert commit message to it, when the required sources identify `ec62cb0aac5b` as the revert commit (rule 3)."
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "Citing commit `205214c8b8` as 'Revert applying column aliases to the output of whole-row Vars' and attributing Tom Lane's revert commit message to it, when the required sources identify `ec62cb0aac5b` as the revert commit (rule 3)."
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1378787,
+  "blind": true,
+  "task_sha256": "fca123b87960f491e1386b1f1e5d3458b2caa3abecd9cac605d0e5c8699536ea",
+  "stub": false,
+  "arm": "A"
+}

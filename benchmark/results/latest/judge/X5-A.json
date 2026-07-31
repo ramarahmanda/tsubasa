@@ -1,0 +1,29 @@
+{
+  "qid": "X5",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer states outright 'Yes — the path is settled' and claims the migration of experimental flags to feature-gates 'already happened,' including asserting that experimental flags have been fully removed from etcd server config and citing a release (v3.6.5) where they no longer appear — this is exactly the forbidden claim of declaring the migration complete and flags removed, contradicting the required facts that the KEP is still 'status: provisional' and that wholesale migration is a stated goal, not a completed one. The KEP's provisional status is mentioned but explicitly dismissed rather than treated as unresolved, so the contradiction stands regardless. No additional fabrications beyond the forbidden claim itself: all path/line citations resolved, and commit SHAs (uncheckable content) and the CHANGELOG reference are not provably invented per the grading rules, so they are not separately counted as fabrications.",
+  "required_missing": [
+    "etcd's contributor-guide requirement that new features must use a feature gate (e.g. quoting 'Add an Alpha feature gate' or the ServerFeatureGate.Enabled check) is not stated"
+  ],
+  "contradictions": [
+    "'Yes — the path is settled and largely already executed for etcd server flags.'",
+    "'implementation has already gone past that on the etcd side' (dismissing the provisional KEP status)",
+    "'there are zero remaining experimental-* flags in server/embed/config.go or server/etcdmain/config.go (confirmed via grep — no matches)'",
+    "'CHANGELOG-3.6.md:179 confirms the last vestige ... was removed from --help output in v3.6.5 (2025-09-19)'"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "etcd's contributor-guide requirement that new features must use a feature gate (e.g. quoting 'Add an Alpha feature gate' or the ServerFeatureGate.Enabled check) is not stated"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1011457,
+  "blind": true,
+  "task_sha256": "2bedb4b90a69521dc056dd4397b3b3eec6969181a302f150057f1e308b0f9655",
+  "stub": false,
+  "arm": "A"
+}

@@ -1,0 +1,30 @@
+{
+  "qid": "F6",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 2,
+  "rationale": "The candidate grounds its claim in the blank Status/Bug cells at line 126, contrasts it with real neighboring DONE rows (matching quoted/required source content), and never attributes a tracking issue to the row itself, so nothing contradicts the record. However, it frames the blank cell as a determination that the item is 'still open' rather than as an unresolved/unknown status, which is the excluded form for required fact 1, so that fact is not satisfied; it also adds two unsupported specifics ('six adjacent items marked DONE' and 'the postmortem file... per the doc metadata, no revision noting closure') that no cited or quoted source establishes.",
+  "required_missing": [
+    "Fact 1's required framing that completion status is unknown/unresolved (the answer instead reads the blank as a positive 'not done'/'still open' finding, which is the explicitly excluded form)"
+  ],
+  "contradictions": [],
+  "fabrications": [
+    "\"unlike the six adjacent items marked DONE\" — a specific count of adjacent DONE rows not supported by the quoted lines or Required sources (rule 3)",
+    "\"the postmortem file (last touched per the doc metadata, no revision noting closure) still shows it open\" — asserts specific document/revision metadata not backed by any cited or resolved source (rule 3)"
+  ],
+  "load_bearing_missing": [
+    "Fact 1's required framing that completion status is unknown/unresolved (the answer instead reads the blank as a positive 'not done'/'still open' finding, which is the explicitly excluded form)"
+  ],
+  "unsupported_claims": [
+    "\"unlike the six adjacent items marked DONE\" — a specific count of adjacent DONE rows not supported by the quoted lines or Required sources (rule 3)",
+    "\"the postmortem file (last touched per the doc metadata, no revision noting closure) still shows it open\" — asserts specific document/revision metadata not backed by any cited or resolved source (rule 3)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1547737,
+  "blind": true,
+  "task_sha256": "6a778dabce1e26f7051e915a97ab756964b772ab3e096970da71157c02e2d8d0",
+  "stub": false,
+  "arm": "B"
+}

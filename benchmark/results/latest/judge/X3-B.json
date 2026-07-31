@@ -1,0 +1,24 @@
+{
+  "qid": "X3",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly separates control-plane state (etcd, CRDs, leases) from PostgreSQL data (PVCs/WAL), matching required fact 1, and does not claim data corruption or nil impact, matching the forbidden-claim constraints and citing the postmortem's own hedge accurately. It never states the second required fact (that the operator's reconciliation can go stale while PostgreSQL keeps serving, i.e. the 'DBA' degraded-mode point), so that fact is missing, but omission alone doesn't create a contradiction. All citations are either resolved in the block or are elided/abbreviated references to a real file or bare graph ids not covered by the resolution block, so no fabrication is provable.",
+  "required_missing": [
+    "The bounded-not-harmless framing: that losing/reverting Cluster CRs makes the operator reconcile toward stale desired state while PostgreSQL keeps serving (the 'running a database without a DBA' point, or the instance manager keeping the server up/archiving WAL)."
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "The bounded-not-harmless framing: that losing/reverting Cluster CRs makes the operator reconcile toward stale desired state while PostgreSQL keeps serving (the 'running a database without a DBA' point, or the instance manager keeping the server up/archiving WAL)."
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0921917,
+  "blind": true,
+  "task_sha256": "ecca5ff58d755548bd9df8d90ad19b6cb50161b8e077d14c4bb18f763d3d0fb4",
+  "stub": false,
+  "arm": "B"
+}

@@ -1,0 +1,20 @@
+{
+  "qid": "C10",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer explicitly states `status: implemented`, `stage: stable` from kep.yaml, satisfying the required fact, and does not assert any forbidden status (beta/provisional/implementable/not-GA) as the current status. The README.md citations (bare filenames, no slash) do not appear in the resolution block, so per the rules their PR numbers, dates, and quoted content are uncheckable rather than provably fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0453757,
+  "blind": true,
+  "task_sha256": "fe39cd8dab7dbca04b6d4884ccf7e943091a5e1dc892e3da3b321501856fc348",
+  "stub": false,
+  "arm": "A"
+}

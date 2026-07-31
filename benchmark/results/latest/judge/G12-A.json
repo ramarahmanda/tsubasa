@@ -1,0 +1,20 @@
+{
+  "qid": "G12",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the alternate-form equivalent of required fact 1 (fixed 2021-08-23, reverted 12 days later across master and all back branches, 'It is not present') and explicitly satisfies fact 2 by calling the revert reason 'unspecified' rather than inventing a defect, so no forbidden claim (specific defect, re-landing, or denial of the hazard) is made. All four citations resolved per the mechanical block, including the quoted xlog.c lines which are consistent with (not contradicted by) the answer's narrative, so no rule-1/2/3 fabrication applies; the differing SHAs relative to the Required list's canonical hashes are resolved real artifacts and per the grading rules any real supporting source is acceptable.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1490107,
+  "blind": true,
+  "task_sha256": "2030e313e22d094b171bd86f6c7a26fef57d94dacdb53ba6cf34d187f8fe7671",
+  "stub": false,
+  "arm": "A"
+}

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="the tsubasa captain: a skull tricorn and round spectacles">
+<title>tsubasa</title>
+<defs>
+<path id="d" d="M200 12 C 268 10 334 50 362 114 C 388 176 382 252 344 306 C 306 362 244 392 190 388 C 128 384 66 350 36 292 C 8 236 10 158 44 104 C 78 50 138 16 200 12 Z"/>
+<clipPath id="i"><use href="#d"/></clipPath>
+</defs>
+<use href="#d" fill="#EFE7D8"/>
+<g clip-path="url(#i)">
+
+<!-- long hair, behind -->
+<g fill="#17130F">
+<path d="M104 206 C 84 248 80 314 94 364 C 99 386 107 398 116 400 L 126 356 C 110 312 108 260 120 220 Z"/>
+<path d="M296 206 C 318 250 324 320 308 370 C 303 390 295 399 286 400 L 276 354 C 292 310 294 256 282 216 Z"/>
+</g>
+
+<!-- face -->
+<path d="M92 208 C 92 190 122 178 200 178 C 278 178 308 190 308 208
+         C 312 262 302 316 276 348 C 252 378 226 392 200 392
+         C 174 392 148 378 124 348 C 98 316 88 262 92 208 Z"
+      fill="#EFE7D8" stroke="#17130F" stroke-width="12" stroke-linejoin="round"/>
+
+<!-- a lock of hair falling across the right cheek -->
+<path d="M296 214 C 302 262 296 314 278 350 C 272 306 268 254 262 210 Z" fill="#17130F"/>
+
+<!-- frown -->
+<path d="M170 336 C 185 322 215 322 230 336" fill="none" stroke="#17130F"
+      stroke-width="12" stroke-linecap="round"/>
+
+<!-- round spectacles -->
+<g fill="#EFE7D8" stroke="#17130F" stroke-width="11">
+  <circle cx="152" cy="266" r="37"/>
+  <circle cx="248" cy="266" r="37"/>
+</g>
+<path d="M190 266 L 210 266" stroke="#17130F" stroke-width="9" stroke-linecap="round"/>
+<g fill="#17130F">
+  <ellipse cx="158" cy="268" rx="16" ry="17"/>
+  <ellipse cx="242" cy="268" rx="16" ry="17"/>
+</g>
+
+<!-- tricorn: silhouette lifted from the traced artwork -->
+<path fill="#17130F" d="M136.4 61.4 147.6 56.9 158.9 53.5 170.2 51.3 181.4 51.3 192.7 52.4 203.9 53.5 212.9 53.5 222.0 49.0 231.0 43.4 240.0 40.0 249.0 40.0 258.0 43.4 264.7 49.0 269.2 60.3 273.8 71.5 278.3 82.8 282.8 94.0 288.4 105.3 295.1 116.6 303.0 125.6 314.3 134.6 326.7 141.3 341.3 148.1 354.8 154.9 363.8 162.7 369.5 170.6 372.8 178.5 374.0 185.3 366.1 194.3 357.1 201.0 345.8 207.8 332.3 213.4 300.8 224.7 233.2 229.2 165.7 229.2 98.1 224.7 82.3 215.7 71.1 208.9 59.8 201.0 48.6 193.1 39.5 184.1 35.0 176.2 35.0 168.4 39.5 160.5 48.6 153.7 59.8 148.1 72.2 142.5 84.6 136.8 95.8 132.3 104.9 126.7 110.5 118.8 112.7 107.6 112.7 96.3 115.0 85.0 118.4 74.9 125.1 67.0 131.9 63.6Z"/>
+
+<!-- the crown's turned fold, cut in paper -->
+<path d="M139 62 C 152 92 172 106 190 104 C 212 101 230 80 240 52"
+      fill="none" stroke="#EFE7D8" stroke-width="13" stroke-linecap="round"/>
+<!-- the brim's rolled edge -->
+<path d="M48 178 C 96 206 148 218 200 218 C 252 218 304 206 352 178"
+      fill="none" stroke="#EFE7D8" stroke-width="11" stroke-linecap="round"/>
+
+<!-- skull and crossbones on the crown -->
+<g transform="translate(207 152) scale(1.05)">
+  <g stroke="#EFE7D8" stroke-width="13" stroke-linecap="round">
+    <path d="M-46 -18 L 46 20"/>
+    <path d="M46 -18 L -46 20"/>
+  </g>
+  <g fill="#EFE7D8">
+    <circle cx="-46" cy="-18" r="8"/><circle cx="46" cy="-18" r="8"/>
+    <circle cx="-46" cy="20" r="8"/><circle cx="46" cy="20" r="8"/>
+    <path d="M0 -26 C 19 -26 33 -12 33 4 C 33 13 29 20 22 24
+             L 22 32 L -22 32 L -22 24 C -29 20 -33 13 -33 4
+             C -33 -12 -19 -26 0 -26 Z"/>
+  </g>
+  <g fill="#17130F">
+    <circle cx="-13" cy="1" r="8"/>
+    <circle cx="13" cy="1" r="8"/>
+    <path d="M0 8 L 6 20 L -6 20 Z"/>
+    <rect x="-4" y="22" width="4" height="10"/>
+    <rect x="4" y="22" width="4" height="10"/>
+  </g>
+</g>
+
+<!-- brows, driven down toward the nose, riding over the rims -->
+<g stroke="#17130F" stroke-width="19" stroke-linecap="round" fill="none">
+  <path d="M116 238 L 182 254"/>
+  <path d="M284 238 L 218 254"/>
+</g>
+
+</g>
+</svg>

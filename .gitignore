@@ -4,3 +4,16 @@ __pycache__/
 .pytest_cache/
 dist/
 .DS_Store
+
+# benchmark run artifacts. The graded verdicts and the summary ARE the evidence
+# for the numbers in BENCHMARK.md, so they ship; everything else here is
+# regenerable bulk — raw agent transcripts, per-turn and superseded verdicts,
+# the 8MB of answers, and the budget ledger.
+benchmark/results/*
+!benchmark/results/latest
+benchmark/results/latest/*
+!benchmark/results/latest/judge
+benchmark/results/latest/judge/*.turn*.json
+benchmark/results/latest/judge/*.attempt*.json
+!benchmark/results/latest/summary.md
+!benchmark/results/latest/summary.json

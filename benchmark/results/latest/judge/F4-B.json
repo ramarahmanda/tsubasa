@@ -1,0 +1,20 @@
+{
+  "qid": "F4",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer opens by correcting the premise (no Restore CRD), names the real path (Cluster's spec.bootstrap.recovery.recoveryTarget), citing api/v1/cluster_types.go:2138 which the resolution confirms holds the RecoveryTarget field. All three citations resolved and their quoted content supports the claims made about them.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.038027700000000005,
+  "blind": true,
+  "task_sha256": "d9845a17de2e404fbeb4b4dc318a13d65ed349f7ade783d9acc96a4213b0d7aa",
+  "stub": false,
+  "arm": "B"
+}

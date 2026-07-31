@@ -1,0 +1,33 @@
+{
+  "qid": "G5",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 1,
+  "rationale": "The answer asserts the reasoning is sound and 'exactly what Postgres already does' currently, which is the explicitly forbidden claim — the record shows this exact BRIN-as-unindexed logic was committed (5753d4ee32) and then reverted for index corruption (e3fcca0d0d), so it is not current, correct behavior. The answer also claims the tsubasa graph 'has no entity for this HOT/BRIN interaction specifically,' which is contradicted by the required sources listing graph event evt-20220616-postgres-revert-e3fcca0d, which covers exactly that interaction.",
+  "required_missing": [
+    "No — the reasoning was tried and reverted (commits 5753d4ee32 / e3fcca0d0d, June 2022)",
+    "The half-right/half-wrong nuance: HOT chains are indeed not an issue, but visibility info alone can't keep the BRIN range summary current, so the index can be corrupted"
+  ],
+  "contradictions": [
+    "'Sound, and it's exactly what Postgres already does' — asserts current Postgres ignores BRIN-only columns for HOT eligibility, contradicting the fact that this was reverted for causing index corruption",
+    "'not from the tsubasa graph, which has no entity for this HOT/BRIN interaction specifically' — contradicted by the existence of graph event evt-20220616-postgres-revert-e3fcca0d"
+  ],
+  "fabrications": [
+    "'not from the tsubasa graph, which has no entity for this HOT/BRIN interaction specifically' — rule 3, contradicted by required source graph event evt-20220616-postgres-revert-e3fcca0d which documents exactly this HOT/BRIN interaction"
+  ],
+  "load_bearing_missing": [
+    "No — the reasoning was tried and reverted (commits 5753d4ee32 / e3fcca0d0d, June 2022)",
+    "The half-right/half-wrong nuance: HOT chains are indeed not an issue, but visibility info alone can't keep the BRIN range summary current, so the index can be corrupted"
+  ],
+  "unsupported_claims": [
+    "'not from the tsubasa graph, which has no entity for this HOT/BRIN interaction specifically' — rule 3, contradicted by required source graph event evt-20220616-postgres-revert-e3fcca0d which documents exactly this HOT/BRIN interaction"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0863607,
+  "blind": true,
+  "task_sha256": "7fb10dd8afacc9eb742b5bb7794582086cbdc0ec85dcb465a6b310e557fa56e5",
+  "stub": false,
+  "arm": "B"
+}

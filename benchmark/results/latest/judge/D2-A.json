@@ -1,0 +1,24 @@
+{
+  "qid": "D2",
+  "category": "d-supersession",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer correctly identifies the sig-node 'Kubelet Credential Providers' KEP as the successor, with the forward pointer from kep.yaml:23 and correct status/stage/milestone details, satisfying the required fact and avoiding all forbidden claims. However, it separately cites the bare path 'keps/sig-cloud-provider/20191004-out-of-tree-credential-providers.md', which the resolution block marks UNRESOLVED, so that quoted path citation counts as one fabrication even though the candidate correctly used it only as the backward-pointing 'replaces' value, not as the successor.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "The bare path citation 'keps/sig-cloud-provider/20191004-out-of-tree-credential-providers.md' embedded in the quoted replaces field is UNRESOLVED per the resolution block (rule 1)."
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "The bare path citation 'keps/sig-cloud-provider/20191004-out-of-tree-credential-providers.md' embedded in the quoted replaces field is UNRESOLVED per the resolution block (rule 1)."
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.06497270000000001,
+  "blind": true,
+  "task_sha256": "adf007740bd83904c1a850e0d4d9b50f1f2a3c77b2fade3aac544897a2d197e8",
+  "stub": false,
+  "arm": "A"
+}

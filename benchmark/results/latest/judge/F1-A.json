@@ -1,0 +1,26 @@
+{
+  "qid": "F1",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer explicitly claims no file in any of the four repos mentions 'Zalando' or 'postgres-operator', but cloudnative-pg/docs/src/faq.md:142-160 lists the Zalando Postgres Operator by name, directly contradicting this claim. It also never surfaces the faq.md near-miss (required fact 2), instead falsely asserting its absence.",
+  "required_missing": [
+    "cnpg's own FAQ list of other Postgres operators (faq.md:142-160), which names Zalando's operator but declines to compare them, was never cited; instead the answer falsely claims no mention of Zalando exists in the repo"
+  ],
+  "contradictions": [
+    "\"No file in any of the four repos (cloudnative-pg, etcd, kubernetes-enhancements, postgres) mentions 'Zalando' or 'postgres-operator' (checked case-insensitively across the whole workspace).\" — contradicted by faq.md:142-160 which names the '[Zalando Postgres Operator](https://github.com/zalando/postgres-operator) (2017)'"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "cnpg's own FAQ list of other Postgres operators (faq.md:142-160), which names Zalando's operator but declines to compare them, was never cited; instead the answer falsely claims no mention of Zalando exists in the repo"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0458937,
+  "blind": true,
+  "task_sha256": "b2a699aa59f2823ee50f69deb8bbe315b7a6bc48cd8abdbebc5113050222bbe5",
+  "stub": false,
+  "arm": "A"
+}

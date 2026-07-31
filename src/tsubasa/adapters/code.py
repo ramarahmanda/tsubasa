@@ -45,7 +45,7 @@ class CodeAdapter(Adapter):
 
     def snapshot(self) -> tuple[list[dict], list[dict], list[str]]:
         base = (self.root / self.source.path).resolve()
-        repos = self._fleet_repos(base)
+        repos = self._workspace_repos(base)
         entities: dict[str, dict] = {}
         relations: list[dict] = []
         provenance: list[str] = []
@@ -64,11 +64,11 @@ class CodeAdapter(Adapter):
         return list(entities.values()), _dedupe(relations), provenance
 
 
-    def _fleet_repos(self, base: Path) -> list[Path]:
-        """The fleet is DECLARED, not discovered: when this source points at
+    def _workspace_repos(self, base: Path) -> list[Path]:
+        """The repo set is DECLARED, not discovered: when this source points at
         the workspace root and git sources are configured, snapshot exactly
         those repos (plus the root's own manifests). A stray cloned repo in
-        the workspace is not fleet knowledge. Directory discovery remains
+        the workspace is not workspace knowledge. Directory discovery remains
         only as the fallback when no git sources exist yet (fresh onboard)."""
         if base != self.root.resolve():
             return _candidate_repos(base)  # explicitly scoped code source

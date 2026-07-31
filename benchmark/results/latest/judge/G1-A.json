@@ -1,0 +1,30 @@
+{
+  "qid": "G1",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The record shows the GROUP BY reordering feature (added by db0d67db24) was reverted by f4c7c410ee before v15 shipped, but the candidate flatly asserts it 'is live in current Postgres... on by default today' and 'still present in the current tree,' which is the explicitly forbidden claim. No citation resolves as UNRESOLVED and no quoted source lines are given to contradict, so nothing meets the bar for a counted fabrication beyond the forbidden claim itself (scored on accuracy only).",
+  "required_missing": [
+    "that the feature was implemented and then reverted (commit f4c7c410ee) before v15 shipped",
+    "the cost-model-inputs reason for the revert (e.g. procost being useless, lack of trustworthy group-size/ndistinct statistics)"
+  ],
+  "contradictions": [
+    "\"This is live in current Postgres (master, in this workspace's checkout) — not just proposed, it merged.\"",
+    "\"Yes — Postgres implemented this in 2022, and it's on by default today.\"",
+    "\"Still present in the current tree — src/include/optimizer/paths.h, ... all reference it.\""
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "that the feature was implemented and then reverted (commit f4c7c410ee) before v15 shipped",
+    "the cost-model-inputs reason for the revert (e.g. procost being useless, lack of trustworthy group-size/ndistinct statistics)"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.06429170000000001,
+  "blind": true,
+  "task_sha256": "2320e54bf2f4ad0fdf0343c39df38e7b2c22cddb3498dc8d67091cd2ffc23cab",
+  "stub": false,
+  "arm": "A"
+}

@@ -1,0 +1,26 @@
+{
+  "qid": "G10",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The candidate never states or contradicts either required fact (the 2019 fast-path/2020 revert history, or the livelock hazard); it substitutes an entirely different, self-constructed risk (relfrozenxid/datfrozenxid/CLOG truncation stalling) that is not shown to contradict any quoted source, so accuracy stays correct under the strict contradiction-only rule. All five citations resolved, the one quoted excerpt (vacuumlazy.c:1804-1816) is accurately represented, and the unquoted commit-content claims (052026c9b9, 4d41799261, d7965d65fc) and unrecognized file:line references (autovacuum.c, vacuum.c) are uncheckable rather than proven false, so no fabrications are countable.",
+  "required_missing": [
+    "No mention that the fast path was implemented (2aa6e331ea) and later reverted (dd9ac7d5d8), i.e. that the optimization was tried and reverted a year later",
+    "No mention that the hazard is autovacuum locking down/livelocking by repeatedly retrying the same skipped relations indefinitely (nor the VACUUM FREEZE escape hatch)"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "No mention that the fast path was implemented (2aa6e331ea) and later reverted (dd9ac7d5d8), i.e. that the optimization was tried and reverted a year later",
+    "No mention that the hazard is autovacuum locking down/livelocking by repeatedly retrying the same skipped relations indefinitely (nor the VACUUM FREEZE escape hatch)"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1814967,
+  "blind": true,
+  "task_sha256": "fdf47224a38be58dc18457e4bd05c2e43c2adff305ec01a88269ebb4f49df78e",
+  "stub": false,
+  "arm": "A"
+}

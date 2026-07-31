@@ -1,0 +1,20 @@
+{
+  "qid": "A4",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "Both required facts are present: the kep.yaml status field is named with a concrete resolved example, and the legal seven values are enumerated with the 0000-kep-process README cited (plus supporting proposal.go and template citations, which are explicitly allowed alongside the README). The closing graph note calls proposal.go the 'true enforcement point' but this is attached to a RESOLVED-but-unquoted graph citation, so per the rules it is uncheckable rather than fabricated, and it does not contradict any quoted source since the README is still cited as the definition site.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0691487,
+  "blind": true,
+  "task_sha256": "03140505fa8f4636bab387609ae73c681aaa6c88c122089df3a09b6e771a2640",
+  "stub": false,
+  "arm": "B"
+}

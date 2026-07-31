@@ -1,0 +1,20 @@
+{
+  "qid": "C1",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states `status: implemented` citing kep.yaml:8, matching the required fact exactly, and does not assert any forbidden status. All three citations resolved against the fixture, and the timeline/README details hang off resolved but unquoted lines (README.md:118-162,287-291), which is not counted as fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.031484700000000004,
+  "blind": true,
+  "task_sha256": "d01e8cc415d8cc07df6da2f18e3ab1b88163bbf4dec07060ca29d8c27a452db2",
+  "stub": false,
+  "arm": "A"
+}

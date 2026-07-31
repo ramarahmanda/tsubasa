@@ -1,0 +1,22 @@
+{
+  "qid": "B4",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states both required facts: it describes kubernetes-enhancements as a KEP proposal-tracking repo of kep.yaml+README.md pairs that is 'not Kubernetes source code' (not implementation), and it names etcd/Documentation/contributor-guide/bump_etcd_version_k8s.md as the file documenting the etcd/K8s version-bump coupling. It avoids all forbidden claims (no KEP is credited with the version mapping, etcd/README.md is not cited for the coupling, and kubernetes-enhancements is explicitly denied as source code). Because the resolution block marks no citations as extractable/UNRESOLVED, none of the additional specific details (447/647 KEP grep count, cmd/kepctl, feature_gate.go fork, ADOPTERS.md quote) can be proven unsupported, so fabrication is 0 per the rules.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0887917,
+  "blind": true,
+  "task_sha256": "adccec2768e4139f0cd5de81273f9a16e9fed9ace9e32ad3130b7e64127b2b4e",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 3
+}

@@ -1,6 +1,6 @@
 [project]
 name = "tsubasa"
-version = "0.1.1"
+version = "0.2.0"
 description = "Framework for creating Captains: persistent, domain-expert AI personas for a codebase or organization."
 readme = "README.md"
 license = { text = "MIT" }
@@ -20,6 +20,12 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/tsubasa"]
+
+# The sdist ships what a user of the LIBRARY needs, nothing else. Left to the
+# default, hatchling packs everything git tracks — measured: 191 benchmark
+# files, questions, graded verdicts — into every `pip download tsubasa`.
+[tool.hatch.build.targets.sdist]
+include = ["src/tsubasa", "schema", "/README.md", "LICENSE"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

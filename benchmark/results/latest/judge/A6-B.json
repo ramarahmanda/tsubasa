@@ -1,0 +1,20 @@
+{
+  "qid": "A6",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly names postgres/src/backend/storage/aio/README.md as the design doc, matching the required path and title. All citations, including the graph ids, resolved successfully, so nothing is proven unsupported.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0325987,
+  "blind": true,
+  "task_sha256": "e93f3f269c691d5b824579b1f256ae53c6edf8f8a9a8f2aae3c472139f07c492",
+  "stub": false,
+  "arm": "B"
+}

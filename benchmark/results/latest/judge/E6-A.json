@@ -1,0 +1,20 @@
+{
+  "qid": "E6",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states status: implementable and stage: alpha at commit 44828bde (2022-10-06), the governing commit for 2023-01-01, matching Required fact 1 exactly. It also pairs this with the later withdrawn status (19decda7, 2023-09-29), satisfying Required fact 2's pairing requirement, and never claims beta or withdrawn for the 2023-01-01 date.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.050495700000000004,
+  "blind": true,
+  "task_sha256": "fc9606c5c87e0401add85587b0f908f98a9be2613df4016b9a5e78654eb38959",
+  "stub": false,
+  "arm": "A"
+}

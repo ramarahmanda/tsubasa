@@ -1,0 +1,20 @@
+{
+  "qid": "I4",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states plainly that avoiding StatefulSets is a deliberate, documented design decision, names concrete reasons (PVC resizing, primary/replica non-ordinal promotion, multi-PVC coherence, node-eviction strategy), and cites docs/src/controller.md and docs/src/faq.md by path/line — satisfying both required facts. It explicitly recommends against the refactor rather than producing a migration plan, so no forbidden claim is triggered. All ten resolved citations either match their quoted content (e.g. cluster_scale.go:78-89 matching EnsureInstancePVCGroupIsDeleted) or are unquoted/unlisted line ranges (e.g. controller.md:30-38, :75-93) and file line-counts whose contents cannot be checked but are not contradicted, so nothing qualifies as fabrication under the stated rules.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.10356570000000001,
+  "blind": true,
+  "task_sha256": "c95f443004c546554dc9bdd35cca0d96349c6706b24bb5cfcf83958636798a18",
+  "stub": false,
+  "arm": "A"
+}

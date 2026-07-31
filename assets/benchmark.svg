@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <style>
+    .ttl  { font-size: 14.5px; font-weight: 600; fill: #1f2328; }
+    .sub  { font-size: 11.5px; fill: #656d76; }
+    .axis { font-size: 11px; fill: #656d76; }
+    .lab  { font-size: 12.5px; fill: #1f2328; }
+    .val  { font-size: 14px; font-weight: 700; fill: #ffffff; }
+    .cut  { font-size: 11.5px; fill: #1a7f37; font-weight: 600; }
+    .bar  { fill: #1f6feb; }
+    .base { stroke: #8c959f; stroke-width: 1.5; stroke-dasharray: 4 3; }
+    .grid { stroke: #d8dee4; stroke-width: 1; }
+    @media (prefers-color-scheme: dark) {
+      .ttl, .lab { fill: #e6edf3; }
+      .sub, .axis { fill: #8b949e; }
+      .bar  { fill: #388bfd; }
+      .cut  { fill: #3fb950; }
+      .base { stroke: #6e7681; }
+      .grid { stroke: #30363d; }
+    }
+  </style>
+
+  <text class="ttl" x="24" y="26">Each metric as a percent of the no-captain baseline</text>
+  <text class="sub" x="24" y="45">72 questions · four pinned public repos · 144 runs · Claude Sonnet 5 in both arms and as the judge</text>
+
+  <!-- gridlines -->
+  <g class="grid">
+    <line x1="96" y1="240" x2="672" y2="240"/>
+    <line x1="96" y1="165" x2="672" y2="165"/>
+  </g>
+  <text class="axis" x="88" y="244" text-anchor="end">0%</text>
+  <text class="axis" x="88" y="169" text-anchor="end">50%</text>
+
+  <!-- the baseline: vanilla = 100% -->
+  <line class="base" x1="96" y1="90" x2="672" y2="90"/>
+  <text class="axis" x="88" y="94" text-anchor="end">100%</text>
+  <text class="axis" x="676" y="87">no captain</text>
+
+  <!-- wrong answers: 53% -->
+  <rect class="bar" x="130" y="160.5" width="86" height="79.5" rx="3"/>
+  <text class="val" x="173" y="184" text-anchor="middle">53%</text>
+  <text class="cut" x="173" y="82"  text-anchor="middle">−47%</text>
+  <text class="lab" x="173" y="262" text-anchor="middle">wrong answers</text>
+
+  <!-- cost: 60% -->
+  <rect class="bar" x="272" y="150" width="86" height="90" rx="3"/>
+  <text class="val" x="315" y="174" text-anchor="middle">60%</text>
+  <text class="cut" x="315" y="82"  text-anchor="middle">−40%</text>
+  <text class="lab" x="315" y="262" text-anchor="middle">cost</text>
+
+  <!-- tool calls: 51% -->
+  <rect class="bar" x="414" y="163.5" width="86" height="76.5" rx="3"/>
+  <text class="val" x="457" y="187" text-anchor="middle">51%</text>
+  <text class="cut" x="457" y="82"  text-anchor="middle">−49%</text>
+  <text class="lab" x="457" y="262" text-anchor="middle">tool calls</text>
+
+  <!-- time: 76% -->
+  <rect class="bar" x="556" y="126" width="86" height="114" rx="3"/>
+  <text class="val" x="599" y="150" text-anchor="middle">76%</text>
+  <text class="cut" x="599" y="82"  text-anchor="middle">−24%</text>
+  <text class="lab" x="599" y="262" text-anchor="middle">time</text>
+
+  <text class="sub" x="24" y="288">Lower is better on every bar. The captain is the only arm that cuts all four, and it answers 88% correctly against 76%.</text>
+</svg>

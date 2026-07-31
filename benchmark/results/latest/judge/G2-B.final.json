@@ -1,0 +1,28 @@
+{
+  "qid": "G2",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer makes no claim that contradicts the record (it doesn't assert current Postgres propagates FROM-clause aliases into base-table whole-row references, nor does it deny the feature was ever tried); instead it asks for clarification and offers unverifiable, non-slash file citations that the resolution block did not extract, so nothing here is provably fabricated. However it never states the required history (implemented then reverted, commits bf7ca15875/ec62cb0aac) or the data-durability rationale.",
+  "required_missing": [
+    "that the whole-row-relabeling behavior was implemented and later reverted (e.g. naming bf7ca15875/ec62cb0aac or 'tried and reverted')",
+    "that the reason was a data-durability defect (tuples labelled RECORD written to disk unreadable by other sessions, or similar mechanism)"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "that the whole-row-relabeling behavior was implemented and later reverted (e.g. naming bf7ca15875/ec62cb0aac or 'tried and reverted')",
+    "that the reason was a data-durability defect (tuples labelled RECORD written to disk unreadable by other sessions, or similar mechanism)"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0712477,
+  "blind": true,
+  "task_sha256": "25573125bee1e6cd9fee43ba975c73acff0690aedcacaa1f7e035be854b4188b",
+  "stub": false,
+  "arm": "B",
+  "graded_turn": "final",
+  "turns_used": 3
+}

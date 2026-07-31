@@ -1,0 +1,20 @@
+{
+  "qid": "A1",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required full path `etcd/Documentation/postmortems/v3.5-data-inconsistency.md` and makes no forbidden claims (no CHANGELOG/robustness misattribution, no external-URL substitution, no denial of a write-up existing). All cited paths resolved, and while several detail claims (author, date, status, line contents beyond :13) are unverifiable against quoted text, none were marked UNRESOLVED nor contradicted by quoted lines, so none can be proven fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0481847,
+  "blind": true,
+  "task_sha256": "87490086f4e7e9f9fd55abb343a5ac2f347e64f47d810241f54eb23918b32269",
+  "stub": false,
+  "arm": "A"
+}

@@ -12,8 +12,13 @@ history via `claude -p`, in chunks, at extraction-model cost.
 from __future__ import annotations
 
 import hashlib
+import re
 import subprocess
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+from typing import NamedTuple
 
 from . import llm
 from .config import CaptainConfig, SourceConfig
@@ -23,6 +28,8 @@ from .storage import Store
 STUDY_MODEL = "haiku"      # extraction scale; resolve/profile use the default model
 CHUNK_COMMITS = 250
 DOC_CHARS_CAP = 8000       # per-file cap so a huge doc doesn't blow the extraction budget
+STUDY_JOBS = 6             # concurrent `claude -p` calls
+DEFAULT_SINCE = "3y"       # full history is decades of noise; recent history is the knowledge
 
 STUDY_PROMPT = """\
 You are distilling git history into an engineering knowledge graph for the
@@ -108,61 +115,326 @@ Return ONLY a JSON object (no prose):
 
 def study(store: Store, cfg: CaptainConfig, root: Path, claude_cmd: str = "claude",
           chunk: int = CHUNK_COMMITS, max_chunks: int = 0, model: str = STUDY_MODEL,
-          log=print) -> list[Event]:
-    """Distill full git history of every git source, and the prose in every
-    doc source, into events."""
+          since: str | None = None, noise_filter: bool = True, jobs: int = STUDY_JOBS,
+          stats: dict | None = None, log=print) -> list[Event]:
+    """Distill recent git history of every git source, and the prose in every
+    doc source, into events.
+
+    `since=None` means "resume from the watermark, else the default window";
+    any explicit value (including "" for all history) overrides the watermark.
+    The window itself resolves per repo: explicit `since` wins, else the
+    source's own `since`, else DEFAULT_SINCE (see `_window`).
+    Chunks are distilled concurrently but appended in chunk order, so the
+    resulting event log is identical to a sequential run.
+
+    `stats` collects counts the caller wants to summarize (chunks, docs)."""
+    counted = stats if stats is not None else {}
+    from .adapters import gitlog
     existing_ids = sorted(store.load_entities())
     new_events: list[Event] = []
+    state = store.load_state()
+    marks = state.setdefault("study", {})
+    dirty = False
+    log = _serialized(log)  # worker threads log; keep lines from interleaving
     repos = [s for s in cfg.sources if s.adapter == "git"]
     for src in repos:
         repo = (root / src.path).resolve()
         if not (repo / ".git").exists():
             continue
-        lines = _git_log(repo)
-        chunks = [lines[i:i + chunk] for i in range(0, len(lines), chunk)]
+        requested, from_source = _window(since, src)
+        window = since_arg(requested)
+        if window and not _since_understood(repo, window):
+            raise ValueError(
+                f"{'source since' if from_source else '--since'} {requested!r} is not a "
+                "date git understands (try '3y', '18 months', '2015-01-01', "
+                "or '' for all history)")
+        key = f"git:{src.path}"
+        mark = marks.get(key) or {}
+        after = _watermark(repo, mark, since, window, noise_filter, log)
+        # same rev the git adapter reads, so `pull --study` sees what pull fetched
+        rev = gitlog.local_rev(repo, str(src.options.get("branch") or ""))
+        commits = _git_log(repo, since=window, after=after, rev=rev)
+        files_by_sha = {c.sha: list(c.files) for c in commits}
+        dropped = {"bot": 0, "merge": 0, "mechanical": 0}
+        if noise_filter:
+            kept = []
+            for c in commits:
+                reason = _noise(c)
+                if reason:
+                    dropped[reason] += 1
+                else:
+                    kept.append(c)
+            commits = kept
+        # every repo line states the window it used; the origin is named only
+        # when it is the source's own setting, which is what distinguishes a
+        # per-source window from the global default
+        where = " (source since)" if from_source else ""
+        note = f"{requested} window{where}" if window else f"all history{where}"
+        scope = f"resuming from {after} ({mark.get('date', '?')}), {note}" if after else note
+        filtered = (f" ({sum(dropped.values()):,} filtered: {dropped['bot']:,} bot, "
+                    f"{dropped['merge']:,} merge, {dropped['mechanical']:,} mechanical)"
+                    if noise_filter else " (filter off)")
+        if not commits:
+            log(f"[study] {repo.name}: {scope}, nothing new")
+            continue
+        chunks = [commits[i:i + chunk] for i in range(0, len(commits), chunk)]
+        truncated = bool(max_chunks) and len(chunks) > max_chunks
         if max_chunks:
             chunks = chunks[-max_chunks:]  # newest history first in priority
-        log(f"[study] {repo.name}: {len(lines)} commits in {len(chunks)} chunk(s)")
-        for n, chunk_lines in enumerate(chunks, 1):
-            span = f"{chunk_lines[0].split('|')[1]}..{chunk_lines[-1].split('|')[1]}"
-            log(f"[study] {repo.name} chunk {n}/{len(chunks)}: distilling {len(chunk_lines)} commits ({span})...")
+        # Chunks already distilled in an earlier run, identified by their last
+        # commit. The contiguous watermark below cannot express "3 failed but
+        # 4-34 succeeded", so those would otherwise all be re-paid for on resume.
+        # Identity is the chunk boundary, so a changed window or filter reshuffles
+        # boundaries, nothing matches, and the work is redone: conservative, never wrong.
+        done: set[str] = set(mark.get("done") or [])
+        pending = [(i, g) for i, g in enumerate(chunks, 1) if g[-1].sha not in done]
+        skipped = len(chunks) - len(pending)
+        total = len(chunks)
+        counted["chunks"] = counted.get("chunks", 0) + len(pending)
+        log(f"[study] {repo.name}: {scope}, {len(commits):,} commits{filtered}, {total} chunk(s)"
+            + (f", {skipped} already distilled" if skipped else ""))
+        if not pending:
+            log(f"[study] {repo.name}: every chunk already distilled")
+            continue
+
+        def distill_chunk(numbered: tuple[int, list[_Commit]]) -> list[Event] | None:
+            """None means the chunk failed; the watermark must not pass it."""
+            n, group = numbered
+            span = f"{group[0].date}..{group[-1].date}"
+            log(f"[study] {repo.name} chunk {n}/{total}: distilling {len(group)} commits ({span})...")
             try:
-                raw = llm.run_claude(
+                items = llm.extract_json(llm.run_claude(
                     STUDY_PROMPT.format(
-                        repo=repo.name, commits="\n".join(chunk_lines),
+                        repo=repo.name, commits="\n".join(c.line for c in group),
                         domains=", ".join(cfg.domains) or "any",
                         entity_ids=", ".join(existing_ids[:60]) or "none yet",
                     ),
                     model=model, claude_cmd=claude_cmd,
-                )
-                items = llm.extract_json(raw)
+                ))
             except llm.LLMError as e:
-                log(f"[study] {repo.name} chunk {n}/{len(chunks)}: SKIPPED ({e})")
-                continue
-            made = 0
-            for item in items if isinstance(items, list) else []:
-                ev = _study_event(item, repo.name, repo)
-                if ev is not None and not store.has_event(ev.id):
+                log(f"[study] {repo.name} chunk {n}/{total}: SKIPPED ({e})")
+                return None
+            return [ev for ev in (_study_event(it, repo.name, repo, files_by_sha)
+                                  for it in (items if isinstance(items, list) else []))
+                    if ev is not None]
+
+        finished = [0]
+
+        def note(i: int, result: list[Event] | None) -> None:
+            finished[0] += 1  # chunks land out of order; say which one and how far along
+            what = "SKIPPED" if result is None else f"{len(result)} event(s)"
+            log(f"[study] {repo.name} chunk {i}/{total}: {what} "
+                f"[{finished[0]}/{len(pending)} done]")
+
+        results = _pmap(distill_chunk, pending, jobs, note)
+        added = 0
+        for result in results:  # serial, in chunk order: identical to a sequential run
+            for ev in result or []:
+                if not store.has_event(ev.id):
                     store.append_event(ev)
                     new_events.append(ev)
-                    made += 1
-            log(f"[study] {repo.name} chunk {n}/{len(chunks)}: {made} event(s)")
+                    added += 1
+        log(f"[study] {repo.name}: {added} new event(s) from {len(pending)} chunk(s)")
+        # record every chunk that landed, so a later run skips exactly these
+        done |= {g[-1].sha for (_, g), r in zip(pending, results) if r is not None}
+        # the contiguous prefix, in original chunk order, decides the watermark
+        by_index = {i: r for (i, _), r in zip(pending, results)}
+        ordered = [by_index.get(i, []) for i in range(1, total + 1)]
+        failed = next((i for i, r in enumerate(ordered) if r is None), None)
+        safe = total if failed is None else failed
+        if truncated:
+            log(f"[study] {repo.name}: --max-chunks skipped older history, watermark not advanced")
+        elif safe == 0:
+            log(f"[study] {repo.name}: chunk 1 failed, watermark not advanced")
+        else:
+            last = chunks[safe - 1][-1]
+            covered = {g[-1].sha for g in chunks[:safe]}  # subsumed by the watermark
+            marks[key] = {"sha": last.sha, "date": last.date,
+                          "since": window, "filter": noise_filter,
+                          "done": sorted(done - covered)}
+            # Persist per repo, not once at the end. A run killed in a later repo
+            # (quota, Ctrl-C, OOM) must not discard the repos that already
+            # finished — resume matters most exactly when a run does not.
+            store.save_state(state)
+            if failed is not None:
+                log(f"[study] {repo.name}: chunk {failed + 1} failed, "
+                    f"watermark held at {last.sha} ({last.date})")
     doc_sources = [s for s in cfg.sources if s.adapter == "doc"]
     for src in doc_sources:
-        new_events.extend(_study_docs(store, src, root, cfg, existing_ids, claude_cmd, model, log))
+        docs = _study_docs(store, src, root, cfg, existing_ids, claude_cmd, model, jobs, log)
+        counted["docs"] = counted.get("docs", 0) + len(docs)
+        new_events.extend(docs)
+    if dirty:
+        store.save_state(state)
     return new_events
 
 
-def _git_log(repo: Path) -> list[str]:
-    out = subprocess.run(
-        ["git", "-C", str(repo), "log", "--reverse", "--date=short", "--format=%h|%ad|%s"],
-        capture_output=True, text=True, timeout=120,
-    )
-    return [l for l in out.stdout.splitlines() if l.strip()]
+def _serialized(log):
+    lock = threading.Lock()
+
+    def emit(msg: str) -> None:
+        with lock:
+            log(msg)
+    return emit
+
+
+def _pmap(fn, items: list, jobs: int, on_done=None) -> list:
+    """Map fn over items with a thread pool (the work is blocking subprocesses),
+    returning results in INPUT order however they complete. fn must swallow its
+    own errors: one bad item must not drain the pool."""
+    results: list = [None] * len(items)
+    if jobs <= 1 or len(items) < 2:
+        for i, item in enumerate(items):
+            results[i] = fn(item)
+            if on_done:
+                on_done(i, results[i])
+        return results
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        futures = {pool.submit(fn, item): i for i, item in enumerate(items)}
+        for fut in as_completed(futures):
+            i = futures[fut]
+            results[i] = fut.result()
+            if on_done:
+                on_done(i, results[i])
+    return results
+
+
+# ------------------------------------------------------------------ git window
+
+class _Commit(NamedTuple):
+    sha: str
+    date: str
+    author: str          # "name <email>", for the bot check
+    subject: str
+    files: tuple[str, ...]
+    merge: bool = False
+
+    @property
+    def line(self) -> str:
+        return f"{self.sha}|{self.date}|{self.subject}"
+
+
+# \x1e delimits records so the --name-only file lists parse back
+_GIT_FORMAT = "%x1e%h|%ad|%an <%ae>|%p|%s"
+
+_SHORTHAND = re.compile(r"^(\d+)\s*([a-z]+)$", re.IGNORECASE)
+_UNITS = {"y": "years", "yr": "years", "yrs": "years", "year": "years", "years": "years",
+          "mo": "months", "mon": "months", "m": "months", "month": "months", "months": "months",
+          "w": "weeks", "wk": "weeks", "week": "weeks", "weeks": "weeks",
+          "d": "days", "day": "days", "days": "days"}
+
+
+def _window(since: str | None, src: SourceConfig) -> tuple[str, bool]:
+    """Resolve one repo's history window: an explicit `--since` overrides
+    everything (the escape hatch), else the source's own `since`, else the
+    global default. Returns (requested, came_from_the_source)."""
+    if since is not None:
+        return since, False
+    if src.since is not None:
+        return src.since, True
+    return DEFAULT_SINCE, False
+
+
+def since_arg(since: str) -> str:
+    """Expand the shorthand we advertise into something git actually parses.
+    git's approxidate reads a bare "3y" as ~26 days and "90d" as the year 1990,
+    silently, so never hand it through untouched."""
+    s = since.strip()
+    m = _SHORTHAND.match(s)
+    unit = _UNITS.get(m.group(2).lower()) if m else None
+    return f"{m.group(1)} {unit} ago" if unit else s
+
+
+def _since_understood(repo: Path, since: str) -> bool:
+    """approxidate resolves anything it cannot parse to *now*, which would
+    quietly study zero commits. Anything landing within seconds of now is junk."""
+    out = subprocess.run(["git", "-C", str(repo), "rev-parse", f"--since={since}"],
+                         capture_output=True, text=True, timeout=30)
+    m = re.search(r"--max-age=(\d+)", out.stdout)
+    return bool(m) and time.time() - int(m.group(1)) > 5
+
+
+def _git_log(repo: Path, since: str = "", after: str = "", rev: str = "HEAD") -> list[_Commit]:
+    """One pass for subjects, authors and files touched. --name-only reads trees
+    only, so this still works on a blobless clone."""
+    cmd = ["git", "-C", str(repo), "log", "--reverse", "--date=short",
+           "--name-only", f"--format={_GIT_FORMAT}"]
+    cmd.append(f"{after}..{rev}" if after else rev)
+    if since and not after:  # a watermark range is already exact
+        cmd.append(f"--since={since}")
+    out = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+    if out.returncode != 0:
+        return []
+    commits: list[_Commit] = []
+    for record in out.stdout.split("\x1e")[1:]:
+        head, _, rest = record.partition("\n")
+        parts = head.split("|", 4)
+        if len(parts) != 5:
+            continue
+        sha, date, author, parents, subject = parts
+        commits.append(_Commit(sha, date, author, subject,
+                               tuple(f for f in rest.splitlines() if f.strip()),
+                               merge=len(parents.split()) > 1))
+    return commits
+
+
+# ------------------------------------------------------------------ noise filter
+
+_BOT_MARKERS = ("[bot]", "dependabot", "renovate", "github-actions")
+_LOCKFILES = {"go.mod", "go.sum", "package-lock.json", "yarn.lock", "cargo.lock"}
+_MECHANICAL_DIRS = {".github", "vendor"}
+# Anchored conventional-commit types only. Free text is never enough on its own:
+# "Revert bump allocator change" and "test(backup): widen deadline margin" are
+# both real knowledge, so no substring match and no test(/style( in this set.
+_CHORE_RE = re.compile(r"^(chore|ci|build|deps)(\([^)]*\))?!?:", re.IGNORECASE)
+
+
+def _mechanical_path(path: str) -> bool:
+    parts = path.lower().split("/")
+    return parts[-1] in _LOCKFILES or any(p in _MECHANICAL_DIRS for p in parts[:-1])
+
+
+def _noise(c: _Commit) -> str:
+    """"" to keep the commit, else the bucket it was dropped into. Judged on who
+    authored it and what it touches, not on what the subject says."""
+    # a merge has no diff of its own and every commit it merges is listed
+    # separately in the same log, so it is pure duplication (43% of etcd's window)
+    if c.merge:
+        return "merge"
+    if any(m in c.author.lower() for m in _BOT_MARKERS):
+        return "bot"
+    if _CHORE_RE.match(c.subject):
+        return "mechanical"
+    # a commit that touches real source alongside a lockfile is real work
+    if c.files and all(_mechanical_path(f) for f in c.files):
+        return "mechanical"
+    return ""
+
+
+# ------------------------------------------------------------------ watermark
+
+def _watermark(repo: Path, mark: dict, since: str | None, window: str,
+               noise_filter: bool, log) -> str:
+    """The sha to resume after, or "" to (re)scan the whole window."""
+    if since is not None or not mark.get("sha"):
+        return ""
+    if mark.get("since") != window or bool(mark.get("filter")) != noise_filter:
+        log(f"[study] {repo.name}: window/filter changed since last run, rescanning")
+        return ""
+    if not _rev_exists(repo, str(mark["sha"])):
+        log(f"[study] {repo.name}: watermark {mark['sha']} is gone (history rewritten), rescanning")
+        return ""
+    return str(mark["sha"])
+
+
+def _rev_exists(repo: Path, sha: str) -> bool:
+    return subprocess.run(["git", "-C", str(repo), "cat-file", "-e", f"{sha}^{{commit}}"],
+                          capture_output=True, timeout=30).returncode == 0
 
 
 def _study_docs(store: Store, src: SourceConfig, root: Path, cfg: CaptainConfig,
-                existing_ids: list[str], claude_cmd: str, model: str, log) -> list[Event]:
+                existing_ids: list[str], claude_cmd: str, model: str, jobs: int,
+                log) -> list[Event]:
     """Distill the prose of one doc source, file by file. `.toon` files are
     skipped — DocAdapter already turns them into structured entities
     deterministically (see adapters/docs.py); this pass is for free text
@@ -176,25 +448,27 @@ def _study_docs(store: Store, src: SourceConfig, root: Path, cfg: CaptainConfig,
     if not paths:
         return []
     log(f"[study] {src.path}: distilling {len(paths)} doc(s)...")
-    new_events: list[Event] = []
-    for path in paths:
+
+    def distill_doc(path: Path) -> Event | None:
         rel = str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
         text = path.read_text(errors="replace")
         digest = hashlib.sha1(text.encode()).hexdigest()[:12]
         try:
-            raw = llm.run_claude(
+            item = llm.extract_json(llm.run_claude(
                 STUDY_DOC_PROMPT.format(
                     kind=kind, path=rel, text=text[:DOC_CHARS_CAP],
                     domains=", ".join(cfg.domains) or "any",
                     entity_ids=", ".join(existing_ids[:60]) or "none yet",
                 ),
                 model=model, claude_cmd=claude_cmd,
-            )
-            item = llm.extract_json(raw)
+            ))
         except llm.LLMError as e:
             log(f"[study] {rel}: SKIPPED ({e})")
-            continue
-        ev = _study_doc_event(item, kind, rel, digest) if isinstance(item, dict) else None
+            return None
+        return _study_doc_event(item, kind, rel, digest) if isinstance(item, dict) else None
+
+    new_events: list[Event] = []
+    for ev in _pmap(distill_doc, paths, jobs):  # concurrent calls, append in path order
         if ev is not None and not store.has_event(ev.id):
             store.append_event(ev)
             new_events.append(ev)
@@ -222,7 +496,8 @@ def _study_doc_event(item: dict, kind: str, rel: str, digest: str) -> Event | No
     )
 
 
-def _study_event(item: dict, repo_name: str, repo: Path) -> Event | None:
+def _study_event(item: dict, repo_name: str, repo: Path,
+                 files_by_sha: dict[str, list[str]] | None = None) -> Event | None:
     title = str(item.get("title", "")).strip()
     date = str(item.get("date", ""))[:10]
     if not title or len(date) != 10:
@@ -231,7 +506,10 @@ def _study_event(item: dict, repo_name: str, repo: Path) -> Event | None:
     commit_shas = [str(c)[:12] for c in item.get("commits", [])[:8]]
     files: list[str] = []
     for sha in commit_shas:
-        for f in _changed_files(repo, sha):
+        # the window pass already read every file list; only a sha it never saw
+        # (an older or hallucinated one) costs a subprocess
+        cached = (files_by_sha or {}).get(sha)
+        for f in cached[:10] if cached is not None else _changed_files(repo, sha):
             if f not in files:
                 files.append(f)
     return Event(
@@ -315,7 +593,7 @@ def graphify_python(log=print) -> str | None:
 
 def index_code(cfg: CaptainConfig, root: Path, only: str = "",
                timeout: int = 600, log=print) -> int:
-    """Build/refresh code-only graphify indexes for fleet repos.
+    """Build/refresh code-only graphify indexes for workspace repos.
 
     Deterministic and free: code sources are indexed from AST alone, so no
     model, no agents, no permissions. graph.json per repo is the artifact
@@ -358,7 +636,7 @@ def index_code(cfg: CaptainConfig, root: Path, only: str = "",
 
 def _clean_engine_cache(repo: Path) -> None:
     """The engine leaves an AST cache under <repo>/graphify-out as a side
-    effect; remove it so fleet repos stay pristine. A user-built full
+    effect; remove it so workspace repos stay pristine. A user-built full
     graphify-out (has graph.json / report) is left alone."""
     import shutil
     gfo = repo / "graphify-out"
@@ -460,7 +738,9 @@ def resolve(store: Store, claude_cmd: str = "claude", model: str = "", log=print
         by_type.setdefault(e.type, []).append(e)
     added = 0
     for etype, group in sorted(by_type.items()):
-        if len(group) < 2 or etype in ("adr", "goal", "task"):  # ids are convention-stable
+        # `task` is retired but a schema-1 log still replays them, and their
+        # ids are as convention-stable as the live types beside it
+        if len(group) < 2 or etype in ("adr", "goal", "task"):
             continue
         listing = "\n".join(
             f"{e.id} | {e.name} | {','.join(e.aliases) or '-'} | {e.description[:120]}"

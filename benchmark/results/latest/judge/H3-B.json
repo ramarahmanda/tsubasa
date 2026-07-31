@@ -1,0 +1,20 @@
+{
+  "qid": "H3",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly states walsenders are not killed with regular backends on smart/fast shutdown and are terminated later (they 'outlive' regular backends, matching required fact 1), and it lays out the ordering — regular backends terminate, checkpointer writes the shutdown checkpoint, then walsenders stream the remainder including that checkpoint before exiting at PM_WAIT_XLOG_ARCHIVAL — matching required fact 2. The postmaster.c:2966-2977 citation resolves and its quoted text supports the claims made about it; the walsender.c and further postmaster.c line citations are bare filenames without slashes, so per the resolution rules they are absent from the block rather than proven inventions, and nothing quoted contradicts any assertion.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0986927,
+  "blind": true,
+  "task_sha256": "e2333f605629e4ef5428cc41d87e844d8a75e5e5f46cf3fc8f32cbf1ea309051",
+  "stub": false,
+  "arm": "B"
+}

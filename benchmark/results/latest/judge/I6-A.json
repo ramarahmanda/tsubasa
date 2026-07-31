@@ -1,0 +1,20 @@
+{
+  "qid": "I6",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly refuses to wire in selfLink, citing the KEP (kep.yaml:16,24,29-30, status implemented/stable v1.24) and quoting README.md:106-112 showing the field's removal and non-repopulation ('ObjectMeta.SelfLink will simply be an empty string'), satisfying both required facts without producing the forbidden wiring or claiming the field is still populated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0611717,
+  "blind": true,
+  "task_sha256": "20957bb1836d66442c2c845c3ca0eb843aeae09a21a1647659438466fdb5b47a",
+  "stub": false,
+  "arm": "A"
+}

@@ -1,0 +1,20 @@
+{
+  "qid": "X6",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the 40-to-55-second range verbatim from failover.md:247-250 and correctly attributes it to --node-monitor-grace-period rising from 40s (1.29-1.31) to 50s (1.32+), matching both required facts. No forbidden claims are made: the tolerationSeconds/eviction mention is explicitly framed as unrelated to detection, and failoverDelay is correctly described as additive with default 0s rather than part of the detection window.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0691197,
+  "blind": true,
+  "task_sha256": "08c32d1f1a479b9e15d9258263b8a50428d0099d97e23208585cc948935409e3",
+  "stub": false,
+  "arm": "B"
+}

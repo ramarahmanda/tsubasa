@@ -1,0 +1,22 @@
+{
+  "qid": "C6",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required status (rejected, from kep.yaml:8) and explicitly quotes the README.md:89-94 note that kustomize was retained in kubectl, matching both required facts with no forbidden claims present. The extra citation to kubernetes/community#2910 (kep.yaml:18-19) is a bare, non-slash citation absent from the resolution block, so per the rules its absence is not evidence of fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0576037,
+  "blind": true,
+  "task_sha256": "6b0686adf3be7817ee1c60a28fa6a76f55e27715ea7a4a6d23f5230b38f7e314",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

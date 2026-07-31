@@ -1,0 +1,20 @@
+{
+  "qid": "G1",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states both required facts: it names db0d67db24 as the commit that added cost-based reordering and f4c7c410ee as the revert commit, and it names concrete mechanisms from the revert message (procost uninformative, ndistinct insufficient for group-size estimation, multi-column ndistinct compounding unreliability), explicitly denying the approach was fundamentally unsound. All four citations resolved successfully, and the quoted planner.c lines support the claim about the 2024 reimplementation matching pathkeys only, so no fabrication is present.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0405577,
+  "blind": true,
+  "task_sha256": "aabd807046dfc17b1f954c85a49345cdfd4aa8fcae4f5a39d07d203c57e5feb4",
+  "stub": false,
+  "arm": "B"
+}

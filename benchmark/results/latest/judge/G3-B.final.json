@@ -1,0 +1,30 @@
+{
+  "qid": "G3",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The record requires stating that Postgres added a redo LSN to the pgstats file (commit b860848232aa) and then reverted it (commit 5721e5453e) due to pg_upgrade/control-file interactions; the candidate instead flatly concludes 'no, Postgres does not do this today' and presents this as if no such attempt ever existed, which is an explicitly forbidden claim. No fabrications can be charged because the resolution block states the answer contains no extractable citations, so none of its file/line/commit references were marked UNRESOLVED or contradicted by quoted source text.",
+  "required_missing": [
+    "that a redo LSN was added to pgstats files and later reverted (b860848232aa / 5721e5453e)",
+    "the pg_upgrade / control-file staleness mechanism that motivated the revert"
+  ],
+  "contradictions": [
+    "'no, Postgres does not do this today' presented as if no such attempt exists, when the record shows it was implemented (b860848232aa) and then reverted (5721e5453e)"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "that a redo LSN was added to pgstats files and later reverted (b860848232aa / 5721e5453e)",
+    "the pg_upgrade / control-file staleness mechanism that motivated the revert"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0534537,
+  "blind": true,
+  "task_sha256": "bd568d1efeb867a848a8be78f5b274a4a50dc68355b8219c28fcc3f3aeeb669f",
+  "stub": false,
+  "arm": "B",
+  "graded_turn": "final",
+  "turns_used": 3
+}

@@ -1,0 +1,20 @@
+{
+  "qid": "G6",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer names both attempts and both reverts with matching dates (6a2275b895/3fb58625d1 on 2025-02-17; bc22dc0e0d/c13070a27b on 2025-08-22), satisfying required fact 1, and correctly gives the critical-section/postmaster-death/corruption reason for the second revert, satisfying required fact 2, without asserting any forbidden claim (it explicitly says the lock still guards WAL buffer assignment today, i.e. not removed in current Postgres). No fabrications are provable under the resolution rules: the xlog.c:312 and :2176 citations are either bare (no slash, absent from the block, not evidence) or imprecise line numbers within an already-verified file; the 2ce6abdf50 SHA and reviewer/reporter names hang off RESOLVED-but-unquoted citations and are therefore uncheckable, not fabricated; and the discussion URL simply doesn't appear in the resolution block, which is absence, not proof of invention.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.08383170000000001,
+  "blind": true,
+  "task_sha256": "e391a3abe416106ac151a5665ba804b79fa73bdaf0aa8c456be7cb475545d276",
+  "stub": false,
+  "arm": "A"
+}

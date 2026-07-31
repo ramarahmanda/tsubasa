@@ -1,0 +1,24 @@
+{
+  "qid": "E6",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer correctly states status=implementable, stage=alpha as of 2023-01-01 (matching commit 44828bde) and correctly pairs today's withdrawn status with its date (2023-09-29), satisfying both required facts without any forbidden claims. However, the claim 'renamed from KEP-2594' cites KEP-2594 which the resolution block marks UNRESOLVED, counting as one fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "'2021-09-09 83972f6 renamed from KEP-2594' cites KEP-2594, marked UNRESOLVED in the resolution block (rule 1)"
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "'2021-09-09 83972f6 renamed from KEP-2594' cites KEP-2594, marked UNRESOLVED in the resolution block (rule 1)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0335907,
+  "blind": true,
+  "task_sha256": "2b022b770cddb7c3e0286d6de03d32877886d1055c071ef13bd420de9526060e",
+  "stub": false,
+  "arm": "B"
+}

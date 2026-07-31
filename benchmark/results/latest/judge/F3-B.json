@@ -1,0 +1,24 @@
+{
+  "qid": "F3",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly states no KEP in this workspace tracks StatefulSet PVC resizing and cites no forbidden KEP or release, satisfying required fact 1 without contradiction. It omits the specific near-miss sources listed in required fact 2 (the six sig-apps StatefulSet KEPs or the cnpg doc), citing instead an unrelated sig-storage README mention, but this is a completeness gap, not a contradiction.",
+  "required_missing": [
+    "Required fact 2: a citation to either the six StatefulSet KEPs under keps/sig-apps/ or cloudnative-pg/docs/src/controller.md:31-33 as the near-miss, with explanation of why it falls short"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "Required fact 2: a citation to either the six StatefulSet KEPs under keps/sig-apps/ or cloudnative-pg/docs/src/controller.md:31-33 as the near-miss, with explanation of why it falls short"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.055578699999999995,
+  "blind": true,
+  "task_sha256": "f2b4754886e04cc44610f70234cba5453ccf5fb92ca857b8742df2e9ac832c2c",
+  "stub": false,
+  "arm": "B"
+}

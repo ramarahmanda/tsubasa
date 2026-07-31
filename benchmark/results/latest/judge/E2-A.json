@@ -1,0 +1,24 @@
+{
+  "qid": "E2",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly states the recorded status as `provisional` on 2022-06-01, backed by the governing commit 7eef794b, matching Required fact 1 with no contradiction. It never states today's recorded value as `implemented` (only says 'reached GA'), so Required fact 2 is not satisfied in an accepted form, but this is an omission rather than a contradiction, so accuracy stays correct; no citation was unresolved or contradicted by quoted lines, so fabrication is 0.",
+  "required_missing": [
+    "Today's status value stated as `implemented` paired with the 2022-06-01 `provisional` value (the answer only says the KEP 'reached GA' without giving the literal `implemented` status)"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "Today's status value stated as `implemented` paired with the 2022-06-01 `provisional` value (the answer only says the KEP 'reached GA' without giving the literal `implemented` status)"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.07567670000000001,
+  "blind": true,
+  "task_sha256": "0389e5aaf447ead0ab1522fab47e83202e39f0dcee076feeb28606327bbec840",
+  "stub": false,
+  "arm": "A"
+}

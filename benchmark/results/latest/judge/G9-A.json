@@ -1,0 +1,28 @@
+{
+  "qid": "G9",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer never mentions that a blanket error-throwing printf-family wrapper was tried (16304a0134) and reverted a day later (0c071936e9) over the psql/EPIPE pager failure and the 'one-size-fits-all is unworkable' verdict; instead it asserts the opposite — that Postgres 'already has' such a wrapper (pvsnprintf/psprintf/appendStringInfo) 'used pervasively across the backend' as the general-case solution, which is exactly the forbidden claim that the backend currently routes printf-family calls through error-throwing wrappers as a pervasive pattern. That directly contradicts the record's judgment that a universal wrapper approach was tried and abandoned in favor of case-by-case hardening, so accuracy is wrong regardless of the fabrication count.",
+  "required_missing": [
+    "It was done and then reverted, one day later (16304a0134 / 0c071936e9)",
+    "What killed it was the EPIPE/psql-pager failure and the one-size-fits-all judgment"
+  ],
+  "contradictions": [
+    "\"The wrapper already exists for the general case... psprintf()... and appendStringInfo/appendStringInfoVA... are built on top of it and are already used pervasively across the backend\" — matches the forbidden claim that the backend currently routes printf-family calls through error-throwing wrappers pervasively, contradicting the record's history that a blanket wrapper approach was tried and reverted."
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "It was done and then reverted, one day later (16304a0134 / 0c071936e9)",
+    "What killed it was the EPIPE/psql-pager failure and the one-size-fits-all judgment"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1717507,
+  "blind": true,
+  "task_sha256": "2b85cb86d9d1f963c10bbfdd83b56d8c6461cdb853c14174c58096f246bb54a3",
+  "stub": false,
+  "arm": "A"
+}

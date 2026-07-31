@@ -1,0 +1,20 @@
+{
+  "qid": "D3",
+  "category": "d-supersession",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly states KEP-3130 was replaced by KEP-3299 'KMS v2 Improvements', citing 3130's status:replaced and 3299's replaces: block, satisfying both required facts. The extra claim about shared feature-gate lineage and README goals has no citation resolved or unresolved against it, so it cannot be proven unsupported and is not counted as fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.051988700000000006,
+  "blind": true,
+  "task_sha256": "190b548ec9fd670f1168c7c3465fc8a67b18224a347943b19bcef957b3bd3a20",
+  "stub": false,
+  "arm": "A"
+}

@@ -1,0 +1,22 @@
+{
+  "qid": "B1",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "All four repositories are named with correct roles: cloudnative-pg as a Kubernetes operator for PostgreSQL, etcd as a distributed key-value store using Raft, kubernetes-enhancements as the SIG Architecture-owned KEP tracking repo, and postgres as the PostgreSQL source distribution. No forbidden claims appear, and the resolver found no extractable/unresolved citations to flag as invented, so per the rules (bare paths without matching resolution entries aren't proof of invention, and commit SHAs' contents are uncheckable but not fabricated) nothing is countable as fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0345297,
+  "blind": true,
+  "task_sha256": "5b2c82eb49bf5c27225880bddc33e7bfe1b5a28ed5fc2a8e65f2a4fdb7d9ae57",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 2
+}

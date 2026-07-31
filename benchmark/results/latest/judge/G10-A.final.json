@@ -1,0 +1,34 @@
+{
+  "qid": "G10",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 1,
+  "rationale": "The answer never states the required fact that this optimization was actually implemented (commit 2aa6e331ea) and later reverted (commit dd9ac7d5d8); instead it argues purely from first-principles code reasoning about vac_update_datfrozenxid, which the standard explicitly excludes as a substitute for citing the record. It also asserts a wraparound/CLOG-truncation risk mechanism, which is a forbidden claim since the recorded revert reason is a livelock hazard on shared catalogs, not wraparound-safety or CLOG truncation danger.",
+  "required_missing": [
+    "1. that the fast path was implemented and reverted (commit 2aa6e331ea / dd9ac7d5d8, or equivalent narrative)",
+    "2. that the hazard is autovacuum workers repeatedly retrying the same skipped relations indefinitely (livelock), with the VACUUM FREEZE escape hatch"
+  ],
+  "contradictions": [
+    "The answer attributes the risk to wraparound/CLOG truncation danger ('the permanent floor blocking CLOG truncation for the whole database'), which is a forbidden claim — the actual recorded revert reason is a livelock on shared catalog vacuum jobs, not wraparound safety or CLOG truncation."
+  ],
+  "fabrications": [
+    "'That value then gates pg_xact/pg_multixact truncation in vac_truncate_clog()... it becomes the permanent floor blocking CLOG truncation for the whole database' — this attributes the risk to a wraparound/CLOG-truncation mechanism not supported by the required sources, and the citation vacuum.c:1672-1721 is not in the resolution block (no extractable citations resolved), rule 3."
+  ],
+  "load_bearing_missing": [
+    "1. that the fast path was implemented and reverted (commit 2aa6e331ea / dd9ac7d5d8, or equivalent narrative)",
+    "2. that the hazard is autovacuum workers repeatedly retrying the same skipped relations indefinitely (livelock), with the VACUUM FREEZE escape hatch"
+  ],
+  "unsupported_claims": [
+    "'That value then gates pg_xact/pg_multixact truncation in vac_truncate_clog()... it becomes the permanent floor blocking CLOG truncation for the whole database' — this attributes the risk to a wraparound/CLOG-truncation mechanism not supported by the required sources, and the citation vacuum.c:1672-1721 is not in the resolution block (no extractable citations resolved), rule 3."
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.042154699999999996,
+  "blind": true,
+  "task_sha256": "22055c13114c45fb4b8cb23c5bf0485c3788bc63ff3b6a658c8c25e51bbbae32",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 3
+}

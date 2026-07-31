@@ -1,0 +1,20 @@
+{
+  "qid": "E2",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required historical value `provisional` for 2022-06-01, citing the KEP file, and pairs it with today's value `implemented` at its correct date (2025-01-23), satisfying both required facts without asserting any forbidden value as the 2022 status.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0362367,
+  "blind": true,
+  "task_sha256": "59c50c6fb62089555fed4dae75288e25871bd39e93010b671aee29b69e8b1f5a",
+  "stub": false,
+  "arm": "B"
+}

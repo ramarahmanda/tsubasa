@@ -1,0 +1,26 @@
+{
+  "qid": "G4",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer never mentions that PostgreSQL actually shipped this exemption in PG14 (commit d9d076222f) and reverted it in 2022 (commit e28bb88519) due to index corruption risk; instead it frames the current exclusion of CIC/REINDEX CONCURRENTLY from the vacuum horizon as 'already deliberately not done,' implying no such attempt was ever made — a direct contradiction of the record and a forbidden claim. The failure-mode mechanism (HOT pruning missing rows during CIC's snapshot-held scan) is correctly described, satisfying required fact 2, but required fact 1 (tried-and-reverted history) is absent and contradicted.",
+  "required_missing": [
+    "That the ignore-CONCURRENTLY-in-horizon change was implemented and shipped in PG14 (commit d9d076222f) and then reverted (commit e28bb88519) in 2022"
+  ],
+  "contradictions": [
+    "\"No. This is already deliberately not done...\" implies the exemption was never attempted/shipped, when the record shows it was implemented in PG14 and later reverted"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "That the ignore-CONCURRENTLY-in-horizon change was implemented and shipped in PG14 (commit d9d076222f) and then reverted (commit e28bb88519) in 2022"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.054830699999999996,
+  "blind": true,
+  "task_sha256": "79d9fbd209a5af1533c74e1153611809feffcb4665814abacf805bd610f82fe9",
+  "stub": false,
+  "arm": "B"
+}

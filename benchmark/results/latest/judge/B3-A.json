@@ -1,0 +1,24 @@
+{
+  "qid": "B3",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer correctly states CNPG does not use etcd as its distributed store, naming Kubernetes API server/CRDs/Lease objects as the actual mechanism, and correctly frames etcd as only indirectly present as Kubernetes' backing store, satisfying both required facts. However, it cites a specific sha 'db9c8771' for the LeaderElectionID value, which the resolution block marks UNRESOLVED, making that a fabricated claim under rule 1.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "'LeaderElectionID = \"db9c8771.cnpg.io\"' — sha db9c8771 is UNRESOLVED per the citation resolution block (rule 1)"
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "'LeaderElectionID = \"db9c8771.cnpg.io\"' — sha db9c8771 is UNRESOLVED per the citation resolution block (rule 1)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0452797,
+  "blind": true,
+  "task_sha256": "14c80a2dd4da0b852d7b2cb046941daaa7ca49026502d8d5587b79838b6021d4",
+  "stub": false,
+  "arm": "A"
+}

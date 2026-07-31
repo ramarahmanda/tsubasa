@@ -1,0 +1,24 @@
+{
+  "qid": "E1",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The candidate correctly states status: implementable as of 2024-01-01, correctly keeping the stage:alpha field separate from the status field, and cites a resolved commit/path supporting it, so nothing contradicts the record. It never states today's value (withdrawn) or contrasts it with the historical value, so required fact 2 is missing, but that omission does not amount to a contradiction and no citation resolves as invented or misquoted, so fabrication is 0.",
+  "required_missing": [
+    "Today's status (withdrawn) and an explicit contrast with the 2024-01-01 value (implementable)"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "Today's status (withdrawn) and an explicit contrast with the 2024-01-01 value (implementable)"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.049140699999999995,
+  "blind": true,
+  "task_sha256": "f31f195ab402e1402e207f60f5f0ad86ba8018323cd9efd311c82d62877e9cf1",
+  "stub": false,
+  "arm": "A"
+}

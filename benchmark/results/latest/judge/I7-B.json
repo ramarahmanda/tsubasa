@@ -1,0 +1,20 @@
+{
+  "qid": "I7",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required conflict ('/stats/container was removed from the kubelet') and cites KEP-2129 with README.md:63, which the resolution block quotes and confirms verbatim as the removal goal. It refuses to produce the scrape config, does not recommend the removed flag, and does not claim the endpoints are still reachable, so no forbidden claim is triggered. The unquoted supporting details (date, flag history, KEP-2371 content, daemonset fallback) hang off resolved-but-unquoted citations or bare line refs, which the rules treat as uncheckable rather than fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0953647,
+  "blind": true,
+  "task_sha256": "5ca14368af3e5200b32c7420128412b8cfbd2afbc4353f99a247079e1dd2121a",
+  "stub": false,
+  "arm": "B"
+}

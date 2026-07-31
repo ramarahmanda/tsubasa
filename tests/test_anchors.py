@@ -35,7 +35,7 @@ def repo(tmp_path, monkeypatch):
         subprocess.run(["git", "init", "-q"], cwd=d, check=True)
         (d / "graphify-out/graph.json").write_text(json.dumps(graph))
         cli.main(["source", "add", "git", name])
-    # fleet entities: the two repo services + a feature + the external target service
+    # workspace entities: the two repo services + a feature + the external target service
     cli.main(["event", "add", "--type", "note", "--title", "seed", "--ts", "2026-07-01",
               "--entity", "svc-gateway:service:gateway:Identity gateway",
               "--entity", "svc-support:service:support:Registration support service",

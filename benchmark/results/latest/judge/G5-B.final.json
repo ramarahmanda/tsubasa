@@ -1,0 +1,30 @@
+{
+  "qid": "G5",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The record shows the exact reasoning in the question was implemented in commit 5753d4ee32 and reverted in e3fcca0d0d because it corrupted BRIN summaries, but the candidate never cites this history and instead asserts the BRIN exemption 'happens to reach the right conclusion' and that current relcache.c code excludes summarized-index attributes from hot_attrs — i.e. that Postgres currently ignores BRIN-only attributes for HOT eligibility, the explicitly forbidden claim. No fabrication is separately countable: the file/line citations were not extracted/resolved by the mechanical pass (so they can't be proven invented under rule 1), and the one factual claim provable wrong by the Required list is already scored as the accuracy contradiction.",
+  "required_missing": [
+    "No statement that this exact change was committed (5753d4ee32) and reverted (e3fcca0d0d)/'reverted in June 2022'",
+    "No statement that visibility info alone is insufficient to keep the range summary current / that the index can be corrupted"
+  ],
+  "contradictions": [
+    "\"the BRIN case happens to reach the right conclusion\" / the described relcache.c logic excluding amsummarizing-index columns from hot_attrs, implying Postgres currently treats BRIN-only columns as unindexed for HOT purposes — contradicted by the fact this was reverted due to index corruption"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "No statement that this exact change was committed (5753d4ee32) and reverted (e3fcca0d0d)/'reverted in June 2022'",
+    "No statement that visibility info alone is insufficient to keep the range summary current / that the index can be corrupted"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.10397469999999999,
+  "blind": true,
+  "task_sha256": "68335b644f8c95dc882880d4c278b3a77c714b9f3b46ff7510bcebd694e16f22",
+  "stub": false,
+  "arm": "B",
+  "graded_turn": "final",
+  "turns_used": 3
+}

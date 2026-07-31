@@ -1,0 +1,24 @@
+{
+  "qid": "G11",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly states the SQL/JSON feature set was reverted before PG15 shipped, naming commit 2f2b18bd3f, the 2022-09-01 date, '23 individual commits being reverted', and quoting 'Backpatch to release 15,' satisfying required fact 1 without contradicting the record or claiming the functions shipped in 15. It never offers a causal explanation for the September revert (the March 1460fc5942 buildfarm issue is presented as a separate, earlier event rather than the cause), so no forbidden claim is made, and all cited shas/paths are marked RESOLVED with unchecked diff/verification details treated as uncheckable rather than fabricated.",
+  "required_missing": [
+    "An explicit statement that the commit message/log for 2f2b18bd3f records no reason for the revert (e.g., 'the log does not say why')."
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "An explicit statement that the commit message/log for 2f2b18bd3f records no reason for the revert (e.g., 'the log does not say why')."
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1117647,
+  "blind": true,
+  "task_sha256": "6830148de1d6995f3930196f0755ca05d7f9474cc3d5c41e90177a1b1177aca3",
+  "stub": false,
+  "arm": "A"
+}

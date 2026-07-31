@@ -1,0 +1,20 @@
+{
+  "qid": "A1",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the exact required path etcd/Documentation/postmortems/v3.5-data-inconsistency.md, matching the required fact. All three citations resolved against the fixture/graph, so no fabrication is present.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0290937,
+  "blind": true,
+  "task_sha256": "3378e8c48c59bd3e409140f6ff4e35aece72bfc5fa04b43a993e8ad99c8c6c6a",
+  "stub": false,
+  "arm": "B"
+}

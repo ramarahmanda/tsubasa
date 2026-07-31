@@ -1,0 +1,20 @@
+{
+  "qid": "B1",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "All four repositories are named and each role is correctly identified (cloudnative-pg as Kubernetes operator for PostgreSQL, postgres as the database itself, etcd as distributed key-value store, kubernetes-enhancements as the KEP/enhancement tracking repo), with no forbidden claims present. The one citation used (evt-20260729-workspace-map) resolved successfully, and the many other unsourced specifics (PID 1, zap logging, approval counts, service names) are uncheckable rather than contradicted, so they are not counted as fabrications per the rules.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0417657,
+  "blind": true,
+  "task_sha256": "d7e8bc1f6ce793c218ee308eb52b0b810566245f840bd8ecfce9c387047ad935",
+  "stub": false,
+  "arm": "B"
+}

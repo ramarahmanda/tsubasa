@@ -1,0 +1,20 @@
+{
+  "qid": "C4",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required fact clearly: status withdrawn, citing kep.yaml:7 and quoting the README.md:69-70 withdrawal notice, matching the required forms exactly. It also correctly reports stage:beta as the stage field (permitted) and does not claim in-tree work is still active or graduating—explicitly noting graduation stages never completed and later stages are unverifiable from the workspace.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.034709699999999996,
+  "blind": true,
+  "task_sha256": "a647c416982cd2fcec733e2060c0b30abed67f6cbfaadf3d4f250ec95a14e5b9",
+  "stub": false,
+  "arm": "A"
+}

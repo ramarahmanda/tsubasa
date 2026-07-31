@@ -3,7 +3,7 @@
   "owner": { "name": "Rama Rahmanda" },
   "metadata": {
     "description": "Captains: repo-resident domain-expert AI personas with a git-stored knowledge graph",
-    "version": "0.1.16"
+    "version": "0.1.17"
   },
   "plugins": [
     {

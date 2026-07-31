@@ -1,0 +1,20 @@
+{
+  "qid": "H1",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly names the intermediate state as half-dead and explains the two-stage process (parent downlink removal vs sibling unlink), matching the README content and covering both required facts. Both citations resolved successfully against the fixture, and the quoted content (BTP_HALF_DEAD flag definition, README stage-one description) supports the claims made; the additional citation ranges (README:279-329, :688-692) were not separately quoted in the resolution block but per the rules a resolved citation's unquoted contents are not fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0398397,
+  "blind": true,
+  "task_sha256": "06ce74d25ebae7bf43562442b9ca8d076c8397a507f33561743c784f5c83fcc4",
+  "stub": false,
+  "arm": "A"
+}

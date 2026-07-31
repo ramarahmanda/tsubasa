@@ -16,6 +16,7 @@
       "pattern": "^evt-[a-z0-9][a-z0-9-]*$"
     },
     "type": {
+      "description": "\"task_update\" is RETIRED (schema 2 removed task management). Nothing emits it any more; it stays in the enum so logs written by schema 1 still validate and still replay.",
       "enum": [
         "incident",
         "adr",
@@ -25,8 +26,8 @@
         "note",
         "release",
         "decision",
-        "task_update",
-        "plan"
+        "plan",
+        "task_update"
       ]
     },
     "ts": {

@@ -1,0 +1,26 @@
+{
+  "qid": "G10",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer never contradicts the record (dd9ac7d5d8/2aa6e331ea) or any forbidden claim; it simply never surfaces the historical fact that this exact optimisation was tried and reverted, arguing entirely from first-principles code analysis instead. Its cited line numbers (vacuumlazy.c, autovacuum.c, vacuum.c) are bare paths without slashes, so per the resolution rules they are absent from the resolution block rather than proven invented, yielding no fabrication count.",
+  "required_missing": [
+    "That the fast path was already implemented (commit 2aa6e331ea) and later reverted (commit dd9ac7d5d8), back-patched through 12",
+    "That the hazard is autovacuum livelock — workers repeatedly retrying the same skipped relations indefinitely — rather than a generic 'removes wraparound backstop' or 'VM corruption' concern"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "That the fast path was already implemented (commit 2aa6e331ea) and later reverted (commit dd9ac7d5d8), back-patched through 12",
+    "That the hazard is autovacuum livelock — workers repeatedly retrying the same skipped relations indefinitely — rather than a generic 'removes wraparound backstop' or 'VM corruption' concern"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0926507,
+  "blind": true,
+  "task_sha256": "47349524b3443506c67f1c35534756e293bea53319a8f2ae685cb0f53bbd8837",
+  "stub": false,
+  "arm": "B"
+}

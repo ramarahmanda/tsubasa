@@ -1,0 +1,20 @@
+{
+  "qid": "G7",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states both required facts: it names 0da92dc530 as the commit that added sequence decoding and 2c7ea57e56 as the revert covering nine commits, and it quotes the exact revert message diagnosing the transactional/non-transactional mismatch. It avoids the forbidden claims by explicitly distancing the later 'sequencesync' poll/fetch feature from logical decoding ('sidesteps decoding entirely') rather than claiming decoded sequence positions cross the logical replication link or shipped in v15.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.10056770000000001,
+  "blind": true,
+  "task_sha256": "929f7ddfa08d3a16efe3ce07bd4a098ee5a53b304b3689975a74f7a17d9173c4",
+  "stub": false,
+  "arm": "A"
+}

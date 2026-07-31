@@ -1,0 +1,24 @@
+{
+  "qid": "F7",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer correctly quotes the README passage, explicitly states the -hackers thread is not in the workspace, and reports no fabricated objections or participants, satisfying both required facts. However, it asserts the cited paper is 'Schroeder et al., DRAM errors in the wild, SIGMETRICS'09' as if that attribution came from the cited source, when the quoted README text gives only a URL with no author or title, making this an unsupported specific artifact claim under rule 3.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "\"the cited paper (Schroeder et al., DRAM errors in the wild, SIGMETRICS'09)\" — asserts a specific paper title/author not present in the quoted README text (rule 3)"
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "\"the cited paper (Schroeder et al., DRAM errors in the wild, SIGMETRICS'09)\" — asserts a specific paper title/author not present in the quoted README text (rule 3)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.04662569999999999,
+  "blind": true,
+  "task_sha256": "e38e9a847b7e8ef03537b2059356a0741c435fbb29f0b1b4f23f52907091b4df",
+  "stub": false,
+  "arm": "B"
+}

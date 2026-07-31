@@ -1,0 +1,20 @@
+{
+  "qid": "A3",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required fact exactly: postgres/src/backend/access/heap/README.HOT as the dedicated design doc for HOT. All other citations resolved against the fixture, and the 'referenced by, not duplicated in' list is presented as inference from file names, not a quoted claim contradicted by any source.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.030071700000000007,
+  "blind": true,
+  "task_sha256": "e14e0552e47d29011bf13c95abd0d5a1591b572c0892c7aa3ab966a70a060b2d",
+  "stub": false,
+  "arm": "B"
+}

@@ -1,0 +1,29 @@
+{
+  "qid": "G12",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The record establishes that the WAL cross-segment fix (515e3d84a0) was reverted (96b665083e) and is not currently in the tree, with no stated reason beyond 'a number of problems'; the candidate instead asserts the fix is confirmed and present via a supposed re-landing commit (64a8687a68) and invents a specific defect ('incomplete and having scalability problems') as the revert's cause — both are explicitly forbidden claims. The detailed attributions to 64a8687a68 (its message, date, mechanism) hang off a SHA that resolved but was never quoted, so per the uncheckable-detail rule they are not separately fabricated, and the forbidden claims themselves are scored only on accuracy, not fabrication.",
+  "required_missing": [
+    "that the fix (515e3d84a0) was reverted by 96b665083e and is not currently in the tree",
+    "that the commit log does not record why the fix was reverted"
+  ],
+  "contradictions": [
+    "'Confirmed and in the tree' / 'yes, fixed, and present in this tree' — contradicts that no re-landing commit appears in the log and the fix is not present",
+    "'reverted for being incomplete and having scalability problems' — offers a specific defect reason for the revert that the record does not state"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "that the fix (515e3d84a0) was reverted by 96b665083e and is not currently in the tree",
+    "that the commit log does not record why the fix was reverted"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1436507,
+  "blind": true,
+  "task_sha256": "748f08272f5edc1f77144fe77d1a290b5ed90d44a9c934201dfa4ee1a96648a2",
+  "stub": false,
+  "arm": "B"
+}

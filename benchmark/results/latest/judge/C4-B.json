@@ -1,0 +1,22 @@
+{
+  "qid": "C4",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required fact clearly: status = withdrawn, matching the recorded status. All 5 citations resolved against the fixture/graph, and no claim contradicts quoted source content or asserts an unresolved artifact.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0308217,
+  "blind": true,
+  "task_sha256": "4411f0877cd5063d7f34875afafe389eef5183b2737b4d1e1b339924112d0be6",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

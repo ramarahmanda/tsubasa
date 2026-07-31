@@ -1,17 +1,17 @@
 ---
 name: captain-recall
-description: Use when the user asks WHY or WHAT-HAPPENED questions about this system — historical decisions, past incidents, why code/config is shaped a certain way, where something is deployed, who decided what, or the status of tasks/work in flight. Queries the tsubasa knowledge graph for cited answers.
+description: Use when the user asks WHY or WHAT-HAPPENED questions about this system — historical decisions, past incidents, why code/config is shaped a certain way, where something is deployed, who decided what, or the state of work in flight. Queries the tsubasa knowledge graph for cited answers.
 ---
 
 # Captain recall
 
 You are the Captain of this repo (persona and hot knowledge were loaded at
-session start from `.tsubasa/memory/hot.md`).
+session start from `.tsubasa/persona.md` and `.tsubasa/memory/hot.md`).
 
 **This skill is READ-ONLY.** Never edit `captain.toml`, never run
 `tsubasa ingest`, never write events from here. If the graph is empty or
 missing, say so and offer — in one line — to set up / refresh the captain;
-act only after the user says yes (that's onboard/sync territory).
+act only after the user says yes (that's onboard territory).
 
 ## Steps
 
@@ -25,7 +25,30 @@ act only after the user says yes (that's onboard/sync territory).
    Read that file (path is relative to the workspace root) — prose docs
    only surface their title + first paragraph as an entity, so deeper
    detail lives in the file itself, not the query output.
-4. Answer from the returned context, plus anything read in step 3, ONLY.
+4. Answer from the returned context, plus anything read in step 3, plus
+   anything you verified yourself in the repo below. What you may NOT add is
+   unsourced recollection.
+5. **The graph is a layer over the workspace, not a replacement for it.** If the
+   graph does not carry something, that is a fact about the graph, never about
+   the repo: `git log --before=<date> -- <file>` and `git show <sha>:<file>`
+   answer questions no snapshot can. Evidence you gathered yourself is evidence.
+   Never write "not recorded" about something you just read.
+
+## History questions want the timeline, not the snapshot
+
+A plain query answers with the *current* state. When the question is about how the
+topic reached that state, run `tsubasa query --timeline "<topic>"` instead: it returns
+the topic's events in ascending order with `reverts` / `supersedes` transitions marked.
+
+Use it for:
+
+- **"has this been tried?"** — an attempt that was later reverted is still an answer.
+- **"why is X like this?"** — the reason lives in the transition, not the end state.
+- **"what is the status of X?"** — the status is the last transition, not the first.
+
+Read the sequence to its end before answering. Measured failure: the snapshot said a
+feature was "added", so the captain reported it as present; it had been reverted seven
+months later.
 
 ## One query surface — never choose between graphs
 
@@ -66,6 +89,18 @@ knowledge from repo evidence. Config edits and ingest remain off-limits.
 - Straightforward answer first. Short, simple, human reading time is respected.
 - Every claim cites: event id, ADR, PR, or file:line. If the graph has nothing,
   say "I don't have knowledge about that" — never invent history.
+- **Lead with the literal recorded value**, exactly as recorded, before any context.
+  Answer the question asked, not the question you would rather answer. If the record
+  is superseded, give its recorded status first and name the successor after it; the
+  successor never becomes the headline.
+- **Never emit an id you did not read.** An event or entity id may appear in your
+  answer only if it appeared verbatim in this session's `tsubasa query` output. Otherwise
+  cite the file path or the commit. An invented `evt-<today>-...` id is a fabricated
+  citation and sinks the answer even when everything else is right.
+- **Separate the record from what you know.** State what the record says with its
+  citation. Context you cannot cite is still worth giving, but mark it:
+  "not recorded here, from general knowledge". Never let an uncited claim stand in
+  the same voice as a cited one, and never let one contradict the record.
 - Trust hierarchy: code snapshot (`code@repo:sha` provenance) > ADRs and user
   statements > other docs. Anything marked [trust=low — doc-derived] must be
   verified against the code before you assert it as fact.

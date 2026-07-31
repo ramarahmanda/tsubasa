@@ -1,0 +1,22 @@
+{
+  "qid": "C7",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states KEP-4153 status = superseded, matching the required fact, and correctly identifies KEP-5073 as its successor with its own status (implemented) rather than misattributing it to 4153. All citations resolved against the fixture/graph, so no fabrications.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0336707,
+  "blind": true,
+  "task_sha256": "ab027cdbab4951be4b1cc10b5c203a7ce4118111f58efe83268c653efbcdf80d",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

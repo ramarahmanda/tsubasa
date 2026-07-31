@@ -1,8 +1,8 @@
-"""The data structure layer: Event, Entity, Relation, Task.
+"""The data structure layer: Event, Entity, Relation.
 
 Events are facts (immutable, append-only). Entities are things (derived,
-upsertable). Relations are meaning (triples with provenance). Tasks are
-stateful and ADR-linked. See DESIGN.md §3.2.
+upsertable). Relations are meaning (triples with provenance). Work threads on
+the ADR id, and the event log is its paper trail. See DESIGN.md §3.2.
 """
 
 from __future__ import annotations
@@ -11,10 +11,14 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
-EVENT_TYPES = {"incident", "adr", "pr_merged", "deploy", "config_change", "note", "release", "decision", "task_update", "plan"}
-ENTITY_TYPES = {"service", "module", "adr", "incident", "feature", "task", "env", "team", "secret-ref", "external", "person", "goal", "doc"}
+# Accepted on WRITE. Reads never validate against these sets: a captain built
+# by an older version carries retired types, and a log that will not load is
+# data loss. RETIRED_* names what is tolerated on read and never re-emitted.
+EVENT_TYPES = {"incident", "adr", "pr_merged", "deploy", "config_change", "note", "release", "decision", "plan"}
+ENTITY_TYPES = {"service", "module", "adr", "incident", "feature", "env", "team", "secret-ref", "external", "person", "goal", "doc"}
+RETIRED_EVENT_TYPES = {"task_update"}   # task management, removed in schema 2
+RETIRED_ENTITY_TYPES = {"task"}
 ENTITY_STATUSES = {"active", "superseded", "achieved", "dropped"}
-TASK_STATES = {"draft", "todo", "in_progress", "in_review", "done", "abandoned"}
 IMPACT_LEVELS = {"high", "medium", "low"}
 TRUST_LEVELS = {"high", "normal", "low"}
 
@@ -173,62 +177,3 @@ class Relation:
     def from_dict(cls, d: dict) -> "Relation":
         return cls(source=d["source"], predicate=d["predicate"], target=d["target"],
                    ts=str(d.get("ts", "")), provenance=d.get("provenance", ""))
-
-
-@dataclass
-class TaskHistoryEntry:
-    ts: str
-    state: str
-    by: str  # user | captain | adapter:<name>
-    evidence: str = ""
-
-    def to_dict(self) -> dict:
-        return _clean({"ts": self.ts, "state": self.state, "by": self.by, "evidence": self.evidence})
-
-    @classmethod
-    def from_dict(cls, d: dict) -> "TaskHistoryEntry":
-        return cls(ts=str(d["ts"]), state=d["state"], by=d.get("by", ""), evidence=d.get("evidence", ""))
-
-
-@dataclass
-class Task:
-    id: str
-    title: str
-    state: str = "todo"
-    adr: str = ""
-    branch: str = ""
-    prs: list[str] = field(default_factory=list)
-    domains: list[str] = field(default_factory=list)
-    created: str = ""
-    updated: str = ""
-    history: list[TaskHistoryEntry] = field(default_factory=list)
-
-    def transition(self, state: str, by: str, evidence: str = "", ts: str | None = None) -> bool:
-        """Move to `state` with evidence; returns False if already there."""
-        if state not in TASK_STATES:
-            raise ValueError(f"unknown task state: {state}")
-        if state == self.state:
-            return False
-        ts = ts or now_iso()
-        self.state = state
-        self.updated = ts
-        self.history.append(TaskHistoryEntry(ts=ts, state=state, by=by, evidence=evidence))
-        return True
-
-    def to_dict(self) -> dict:
-        return _clean({
-            "id": self.id, "title": self.title, "state": self.state, "adr": self.adr,
-            "branch": self.branch, "prs": self.prs, "domains": self.domains,
-            "created": self.created, "updated": self.updated,
-            "history": [h.to_dict() for h in self.history],
-        })
-
-    @classmethod
-    def from_dict(cls, d: dict) -> "Task":
-        return cls(
-            id=d["id"], title=d.get("title", ""), state=d.get("state", "todo"),
-            adr=d.get("adr", ""), branch=d.get("branch", ""), prs=[str(p) for p in d.get("prs", [])],
-            domains=list(d.get("domains", [])), created=str(d.get("created", "")),
-            updated=str(d.get("updated", "")),
-            history=[TaskHistoryEntry.from_dict(h) for h in d.get("history", [])],
-        )

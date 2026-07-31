@@ -1,0 +1,24 @@
+{
+  "qid": "I2",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer refuses to sketch the PR sequence, explicitly naming that in-tree cloud providers were removed via implemented KEP-2395 and KEP-1179, satisfying both required facts with no forbidden claims made as live guidance. However, it cites 'adr-out-of-tree-{gce,vsphere,azure,openstack,ibm,aws}' as a graph id which resolved as UNRESOLVED, supporting the specific claim about per-provider migration to out-of-tree CCM.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "'adr-out-of-tree-{gce,vsphere,azure,openstack,ibm,aws}' (KEP-668/669/670/671/667/2394) ... Per-provider migration to out-of-tree cloud-controller-manager' relies on graph_id adr-out-of-tree which resolved UNRESOLVED (rule 1)"
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "'adr-out-of-tree-{gce,vsphere,azure,openstack,ibm,aws}' (KEP-668/669/670/671/667/2394) ... Per-provider migration to out-of-tree cloud-controller-manager' relies on graph_id adr-out-of-tree which resolved UNRESOLVED (rule 1)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0549087,
+  "blind": true,
+  "task_sha256": "711d14f2fe71beecf0ed9a4f2ee56ba91694381d63b5da3747f7ae98ced8edaf",
+  "stub": false,
+  "arm": "B"
+}

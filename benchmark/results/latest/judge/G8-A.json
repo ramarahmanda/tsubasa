@@ -1,0 +1,20 @@
+{
+  "qid": "G8",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the feature was implemented (b0eaa4c51b, 2019-02-04) and reverted (7db0cde6b5, 2019-05-07), satisfying fact 1, and correctly frames the objection as being about the process-local tracking mechanism that should have lived in relcache with proper invalidation, satisfying fact 2 without claiming the underlying idea was rejected. No forbidden claims are made (it does not say the feature shipped, does not deny any attempt existed, and does not blame pg_upgrade/crashes/WAL for the revert). All extra detail (the ac88d2962a/a23676503b pre-attempt, the 4-page threshold, per-file specifics) hangs off resolved-but-unquoted SHAs/paths, which per the rules is not fabrication, and all 11 citations resolved with none marked UNRESOLVED.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0858747,
+  "blind": true,
+  "task_sha256": "43b4feb93bafd7e20cdb580b7d94d436fc706e039e1be09c141ec891c0f32aa1",
+  "stub": false,
+  "arm": "A"
+}

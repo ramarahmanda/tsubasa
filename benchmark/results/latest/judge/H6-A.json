@@ -1,0 +1,20 @@
+{
+  "qid": "H6",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states both required facts: it explicitly says 143 is not an etcd error and quotes the doc's 0/1/2 exit-code set, and it explains 143 as 128+15 SIGTERM re-raised by a non-PID-1 process, correctly distinguishing PID-1 (exit 0) from non-PID-1 (143) behavior per the quoted line 5. No forbidden claim is made (it never asserts SIGTERM always yields 143 regardless of PID, nor claims universality across platforms, nor treats 143 as a crash).",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.07228070000000002,
+  "blind": true,
+  "task_sha256": "29d37d2e141409120164397bae9898d2db3858cc4daee35eb48b605382055e72",
+  "stub": false,
+  "arm": "A"
+}

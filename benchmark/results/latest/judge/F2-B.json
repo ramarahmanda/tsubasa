@@ -1,0 +1,20 @@
+{
+  "qid": "F2",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer explicitly states the objection is not recorded in the workspace, satisfying required fact 1, and cites kep.yaml:9 (status: rejected) plus the README's Implementation History reviewer list, satisfying required fact 2, without asserting any forbidden objection as the recorded reason. Extra claims (git log --follow scope, commit content at creation, upstream PR discussion) are either uncheckable commit-content details or explicitly marked as external/not from the workspace, so none meet the fabrication criteria.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0616547,
+  "blind": true,
+  "task_sha256": "b80f3e16798235a9bdb4c2fbc3a2d5f65f09f2e0c4627157b546f92f68d3750a",
+  "stub": false,
+  "arm": "B"
+}

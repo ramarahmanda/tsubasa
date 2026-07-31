@@ -1,0 +1,26 @@
+{
+  "qid": "B2",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer explicitly states that CloudNativePG 'does not reimplement the replication protocol or WAL apply logic' and that streaming replication uses native Postgres mechanisms (pg_basebackup, primary_conninfo), which satisfies required fact 1 and makes no forbidden claim about reimplementing replication itself. Required fact 2 (operator deploys upstream Postgres as a container image) is never stated, but since the resolution block marks no citations as extractable/UNRESOLVED and none of the answer's specific code claims contradict a quoted source, no fabrications can be charged.",
+  "required_missing": [
+    "The operator deploys upstream PostgreSQL as a container image (e.g. ghcr.io/cloudnative-pg/postgresql:...) rather than containing its own engine"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "The operator deploys upstream PostgreSQL as a container image (e.g. ghcr.io/cloudnative-pg/postgresql:...) rather than containing its own engine"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0769657,
+  "blind": true,
+  "task_sha256": "a005e21ba846016f5d59d87e1c9ed5cfb6bf6d493bab22560c35a7ed10eb3f69",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 3
+}

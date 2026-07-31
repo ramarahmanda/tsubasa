@@ -1,0 +1,22 @@
+{
+  "qid": "C3",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required status value 'removed' with a citation, matching the record. All cited references resolved successfully (7/7), including the KEP-4656 supersession claim, so no fabrication is present.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.031169699999999998,
+  "blind": true,
+  "task_sha256": "5b5837c498f03411141bd2a030636ad1a740b95bbf03e0df7cef949919be43b7",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

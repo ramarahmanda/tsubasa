@@ -1,0 +1,24 @@
+{
+  "qid": "B4",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly identifies kubernetes-enhancements as holding KEPs (design/decision docs, not implementation) and explicitly disclaims any runtime code, satisfying fact 1 and avoiding forbidden claim 3. It never names or discusses etcd/Documentation/contributor-guide/bump_etcd_version_k8s.md, so required fact 2 is entirely absent, though this is an omission rather than a contradiction. All 11 citations resolved per the ground-truth block, and unresolved-but-uncited corpus/graph identifiers (e.g. corpus-kubernetes-enhancements-keps) are absent from the resolution block rather than marked UNRESOLVED, so per the rules they are not provable fabrications.",
+  "required_missing": [
+    "etcd/Documentation/contributor-guide/bump_etcd_version_k8s.md as the location documenting the etcd/Kubernetes version-bump coupling"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "etcd/Documentation/contributor-guide/bump_etcd_version_k8s.md as the location documenting the etcd/Kubernetes version-bump coupling"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1068177,
+  "blind": true,
+  "task_sha256": "69ab1e889c6f0fd01319cdfc55e8cc44b3fa952aa227a57eb6e267785f34275d",
+  "stub": false,
+  "arm": "B"
+}

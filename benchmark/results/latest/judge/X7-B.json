@@ -1,0 +1,20 @@
+{
+  "qid": "X7",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states KEP-1539 stage: stable and GA in v1.22 (Required #1), names the exit code 135 bus error crash and attributes it to cgroup v1's incomplete hugepages support (Required #2), and reproduces the config recipe with requests.memory + limits.hugepages-2Mi and notes hugepages must be available for every pod (Required #3). It cites two repositories (kubernetes-enhancements and cloudnative-pg) and does not repeat any forbidden claim.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0485017,
+  "blind": true,
+  "task_sha256": "90b7551c5c5a0e0ecf719313ce7ade93cceeb6ee2e7cede8fc09be3a0f4d1cca",
+  "stub": false,
+  "arm": "B"
+}

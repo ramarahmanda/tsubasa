@@ -1,0 +1,20 @@
+{
+  "qid": "A3",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The candidate correctly names the required file `postgres/src/backend/access/heap/README.HOT` with its full path, satisfying the required fact, and makes none of the forbidden claims. The added line-range and content details for README.HOT, storage.sgml, and the four code files are all detail hanging off citations that RESOLVED but were not quoted, so per the grading rules they cannot be proven contradicted and don't count as fabrications.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.042559700000000006,
+  "blind": true,
+  "task_sha256": "a8b43f8ec228c47c609319448576d434c2359d64d08c612c86712e46a56e84a9",
+  "stub": false,
+  "arm": "A"
+}

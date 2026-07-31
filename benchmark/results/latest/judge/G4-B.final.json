@@ -1,0 +1,26 @@
+{
+  "qid": "G4",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer never states or contradicts anything about the shipped-and-reverted PG14 history (commits d9d076222f/e28bb88519), so it doesn't trigger the wrong grade, but it also never asserts that idea 'never existed' — it just omits the historical record entirely, reasoning purely from current code. Fact 2 (index corruption via HOT-pruned tuples the scan never saw) is substantively stated ('corrupted/incomplete index'). No extractable citations exist per the resolution block, so nothing can be proven fabricated.",
+  "required_missing": [
+    "That the horizon-exemption idea was actually implemented (d9d076222f), shipped in PG14, and reverted (e28bb88519) — the answer argues purely from first-principles code reading (indexcmds.c, procarray.c) with no mention of this history."
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "That the horizon-exemption idea was actually implemented (d9d076222f), shipped in PG14, and reverted (e28bb88519) — the answer argues purely from first-principles code reading (indexcmds.c, procarray.c) with no mention of this history."
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0983497,
+  "blind": true,
+  "task_sha256": "632ee864fe16a360be8f3196f8efcd89ccfc972231cd594f8f22ad31c587ab62",
+  "stub": false,
+  "arm": "B",
+  "graded_turn": "final",
+  "turns_used": 2
+}

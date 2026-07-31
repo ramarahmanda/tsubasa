@@ -1,0 +1,20 @@
+{
+  "qid": "I10",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly cites api/v1/cluster_types.go:2392-2399 with the exact XXu format, the barmanObjectStore-only constraint, and gives a working '30d' example, matching the required mechanism. All three citations resolved and match the quoted source text, so nothing is fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0420447,
+  "blind": true,
+  "task_sha256": "d0fb3d50ccf3e37e31af42d31104651475730022f10f77d48f4e5843a387d3a8",
+  "stub": false,
+  "arm": "A"
+}

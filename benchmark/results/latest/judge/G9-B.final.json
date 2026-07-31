@@ -1,0 +1,30 @@
+{
+  "qid": "G9",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer asserts that the backend's printf-family calls already go through an error-throwing wrapper (pvsnprintf/elog(ERROR)) as an established, uninterrupted pattern that should simply be extended — this directly contradicts the record, which shows a blanket error-throwing wrapper approach (16304a0134) was added and then reverted one day later (0c071936e9) specifically because of the EPIPE/pager failure mode and a broader judgement against one-size-fits-all handling. None of the required facts (the tried-and-reverted history, the EPIPE cause) are mentioned at all. The resolution block states no extractable citations were found, so per the rules the quoted code snippets and file/line references cannot be charged as fabrications (absence from the resolution block is not evidence of invention), and the forbidden-claim violation is scored on accuracy, not fabrication.",
+  "required_missing": [
+    "It was done and then reverted, one day later (commits 16304a0134 / 0c071936e9)",
+    "The EPIPE-in-psql-pager failure and/or the one-size-fits-all judgement that killed the wrapper"
+  ],
+  "contradictions": [
+    "Claims the backend already routes printf-family calls through an established error-throwing wrapper (pvsnprintf/elog(ERROR)) as ongoing precedent, omitting that this exact approach was implemented and reverted due to a real production failure."
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "It was done and then reverted, one day later (commits 16304a0134 / 0c071936e9)",
+    "The EPIPE-in-psql-pager failure and/or the one-size-fits-all judgement that killed the wrapper"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0591867,
+  "blind": true,
+  "task_sha256": "b9e235df7f7cc4a1618716719d841f4a7385630e96d865cdf4f37dbbfc2b9a85",
+  "stub": false,
+  "arm": "B",
+  "graded_turn": "final",
+  "turns_used": 3
+}

@@ -1,0 +1,20 @@
+{
+  "qid": "G6",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly names both attempts and both reverts with matching commits/dates, and states the fundamental reason (postmaster death causing WaitLatch to release locks instead of PANIC, risking corruption) with an explicit quote attributed to the c13070a27b revert. No forbidden claims are made (it does not say the lock is gone from master, does not claim no attempt exists, and does not misattribute the buildfarm reason as the final verdict or the second revert's cause to contention/benchmark/memory-ordering).",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0516637,
+  "blind": true,
+  "task_sha256": "7137a99281edd83d9d18cc0c60b47d86315293d69fa80597e512bca813056be0",
+  "stub": false,
+  "arm": "B"
+}

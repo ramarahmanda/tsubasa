@@ -45,17 +45,18 @@ def test_event_and_query(repo, capsys):
     assert "evt-20260701-session-store-replication-lag" in out
 
 
-def test_task_lifecycle_via_adr_thread(repo, capsys):
-    run(["task", "new", "--title", "Session double write", "--adr", "adr-gw-session-double-write",
-         "--domains", "auth"])
-    # a merged PR event carrying the ADR id moves the task to done with evidence
+def test_adr_id_threads_work_through_the_event_log(repo):
+    # no task bookkeeping: the ADR id is the thread, and events are the trail
+    run(["event", "add", "--type", "decision", "--title", "Session double write",
+         "--ts", "2026-07-01", "--domains", "auth",
+         "--entity", "adr-gw-session-double-write:adr:Session double write"])
     run(["event", "add", "--type", "pr_merged", "--title", "auth-gateway PR-1042: session double write",
          "--ts", "2026-07-14", "--ref", "pr:PR-1042", "--ref", "adr:adr-gw-session-double-write"])
     store = Store(repo)
-    task = store.load_tasks()["task-session-double-write"]
-    assert task.state == "done"
-    assert task.prs == ["PR-1042"]
-    assert any("PR-1042" in h.evidence for h in task.history)
+    merged = next(e for e in store.load_events() if e.type == "pr_merged")
+    assert {(r.kind, r.id) for r in merged.refs} == {
+        ("pr", "PR-1042"), ("adr", "adr-gw-session-double-write")}
+    assert "adr-gw-session-double-write" in store.load_entities()
 
 
 def test_reconcile_supersede(repo, capsys):
@@ -111,6 +112,8 @@ def test_adr_adapter(repo):
         "We choose Postgres over MySQL because of the existing operational experience "
         "in the team and better JSONB support.\n"
     )
+    # the fixture inits an empty dir, so nothing is auto-detected
+    assert run(["source", "add", "adr", "docs/adr"]) == 0
     assert run(["ingest", "adr"]) == 0
     store = Store(repo)
     entities = store.load_entities()
@@ -143,11 +146,10 @@ def test_git_adapter_adr_commits(repo):
                     "-q", "-m", "feat: adr-use-postgres migration"], cwd=sub, check=True)
     cfg_path = repo / ".tsubasa/captain.toml"
     cfg_path.write_text(cfg_path.read_text() + '\n[[sources]]\nadapter = "git"\npath = "svc"\n')
-    run(["task", "new", "--title", "Postgres migration", "--adr", "adr-use-postgres"])
     assert run(["ingest", "git"]) == 0
     store = Store(repo)
-    assert store.load_tasks()["task-postgres-migration"].state == "in_progress"
     ev = next(e for e in store.load_events() if e.type == "pr_merged")
+    assert any(r.kind == "adr" and r.id == "adr-use-postgres" for r in ev.refs)
     # the commit's changed files are cited on the event as file refs, so the
     # graph knows what actually changed, not just which ADR the commit names
     assert any(r.kind == "file" and r.id == "db.py" for r in ev.refs)

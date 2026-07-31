@@ -1,0 +1,20 @@
+{
+  "qid": "E4",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the 2025-06-01 status as `implementable` (matching commit ea7c223a) and separately notes today's status is `implemented` per the graph ADR, satisfying both required facts without triggering any forbidden claim (it never labels `beta` as the status field, only as the stage field). The additional stage/milestone/feature-gate detail hangs off a resolved-but-unquoted citation, so per the rules it is not provable fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0616097,
+  "blind": true,
+  "task_sha256": "cdcceee2c294a146d832e0ad929d72a45e6277b8b15956a9c6ce16fee88431b1",
+  "stub": false,
+  "arm": "B"
+}

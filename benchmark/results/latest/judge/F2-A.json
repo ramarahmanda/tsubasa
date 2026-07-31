@@ -1,0 +1,30 @@
+{
+  "qid": "F2",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 1,
+  "rationale": "The answer presents the README's risk/drawbacks framing (tools hardcoding $HOME/.kube, migration cost, backwards compatibility) as 'the objection' behind rejection, which is explicitly forbidden regardless of the trailing caveat/hedge. It also cites 'HOME/.kube' as a path, which the resolution block marks UNRESOLVED, counting as one fabrication.",
+  "required_missing": [
+    "The answer never states that the workspace records only the rejected status and not the objection/rationale; instead it supplies an objection (with a hedge) which does not satisfy fact 1."
+  ],
+  "contradictions": [
+    "Presenting README-documented drawbacks (static $HOME/.kube references breaking tools, need to 'spread the word', migration cost) as 'the objection' behind the KEP's rejection"
+  ],
+  "fabrications": [
+    "'hardcode $HOME/.kube' citation path 'HOME/.kube' is UNRESOLVED per the resolution block (rule 1)"
+  ],
+  "load_bearing_missing": [
+    "The answer never states that the workspace records only the rejected status and not the objection/rationale; instead it supplies an objection (with a hedge) which does not satisfy fact 1."
+  ],
+  "unsupported_claims": [
+    "'hardcode $HOME/.kube' citation path 'HOME/.kube' is UNRESOLVED per the resolution block (rule 1)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.05920770000000001,
+  "blind": true,
+  "task_sha256": "85a9cfdb6f3d570ff3633661ee382e139ffa600983f09795bdd67039c8368c99",
+  "stub": false,
+  "arm": "A"
+}

@@ -1,0 +1,26 @@
+{
+  "qid": "E1",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the 2024-01-01 status as `implementable`, matching the required record value, and does not repeat any forbidden claim (no `withdrawn` or `alpha` given as the historical status). It never states today's `withdrawn` status or distinguishes it from the historical value, so required fact 2 is missing; its specific commit hashes and merge-date claims are unverifiable (no extractable citations, none marked UNRESOLVED), so per the rules they are not countable fabrications.",
+  "required_missing": [
+    "Today's value (`withdrawn`) is never stated or distinguished from the 2024-01-01 value (`implementable`)."
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "Today's value (`withdrawn`) is never stated or distinguished from the 2024-01-01 value (`implementable`)."
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.07844770000000001,
+  "blind": true,
+  "task_sha256": "74f408d8450e44ef8e2ef95e71123cfdf11bc24b9b33fa7b7809386bcef04efa",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 3
+}

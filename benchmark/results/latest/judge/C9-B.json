@@ -1,0 +1,22 @@
+{
+  "qid": "C9",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states status = `implemented`, GA in v1.35, matching the required fact form. All 15 citations resolved against the fixture/graph, and the additional claims about GA changes and related KEPs are supported by resolved citations (commit shas resolved but uncheckable content, which is not fabrication).",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0335097,
+  "blind": true,
+  "task_sha256": "6de197db66d7a118fa5678757a1df61572f897b3ebec57c7bd13c25ae54ec1d0",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

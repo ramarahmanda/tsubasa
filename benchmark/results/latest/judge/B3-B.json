@@ -1,0 +1,20 @@
+{
+  "qid": "B3",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer clearly states CloudNativePG does not use etcd and names the alternative (Kubernetes CRDs/API server), satisfying fact 1's both halves, and explains etcd as Kubernetes' own backing store one layer below the operator, satisfying fact 2's transitive-relationship requirement. Both graph citations resolved, and no forbidden claims (Patroni-shaped HA, direct etcd dependency) are made.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0417017,
+  "blind": true,
+  "task_sha256": "1cb4d135b1c47e4649d9dab6c1afc52c5801c033bf327f253c6ccfd5bda4e5e9",
+  "stub": false,
+  "arm": "B"
+}

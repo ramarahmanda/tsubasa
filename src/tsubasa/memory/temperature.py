@@ -10,10 +10,11 @@ hot again (re-heating comes free from assemble.touch()).
 from __future__ import annotations
 
 import math
+import re
 from datetime import datetime, timezone
 
 from ..config import CaptainConfig
-from ..models import Entity, Task, parse_ts
+from ..models import Entity, parse_ts
 
 IMPACT_SCORE = {"high": 1.0, "medium": 0.6, "low": 0.3}
 HOT_THRESHOLD = 0.55
@@ -51,15 +52,6 @@ def score_entity(e: Entity, cfg: CaptainConfig, now: datetime | None = None) -> 
     return s
 
 
-def score_task(t: Task, cfg: CaptainConfig, now: datetime | None = None) -> float:
-    if t.state in ("done", "abandoned"):
-        base = 0.15
-    else:
-        base = 1.0  # in-flight work is always top of mind
-    return base * (0.5 + 0.5 * recency(t.updated or t.created, cfg.half_life_days, now)) \
-        + cfg.weights["domain"] * domain_weight(t.domains, cfg)
-
-
 def tier_of(score: float) -> str:
     if score >= HOT_THRESHOLD:
         return "hot"
@@ -68,5 +60,20 @@ def tier_of(score: float) -> str:
     return "cold"
 
 
+# Calibrated against measured Claude tokenization of two real hot.md files
+# (60,511 B -> 26,300 tok; 9,583 B -> 5,110 tok). The old len//4 rule reported
+# 47-58% of that: memory tiers are id-dense (evt-design-tablespaces-6bf927b0),
+# and hyphenated ids with hex suffixes split far harder than prose. A budget
+# guard must never under-count, so the piece count carries a margin and errs high.
+_PIECE = re.compile(r"[A-Za-z]+|\d+|[^\sA-Za-z0-9]")
+_TOKEN_MARGIN = 1.2
+
+
 def estimate_tokens(text: str) -> int:
-    return max(1, len(text) // 4)
+    """Approximate token count: alphanumeric runs split roughly every 3
+    characters, each punctuation character stands alone."""
+    n = 0
+    for m in _PIECE.finditer(text):
+        run = m.group(0)
+        n += -(-len(run) // 3) if run[0].isalnum() else 1
+    return max(1, int(n * _TOKEN_MARGIN))

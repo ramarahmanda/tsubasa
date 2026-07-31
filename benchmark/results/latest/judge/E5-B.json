@@ -1,0 +1,20 @@
+{
+  "qid": "E5",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The candidate states status `implementable` as of 2024-06-01 with the correct commit 3801dda4, and separately gives today's value as `superseded`, satisfying both required facts without conflating stage `alpha` with status. All citations resolved and no quoted source is contradicted; details about commit 6a5d411c's contents and the graph events' payloads are unquoted and therefore uncheckable, not fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.049347699999999994,
+  "blind": true,
+  "task_sha256": "d15a2e2320d4e1cfa28dbeb083e8e74acdbe3e72bab6cc6ae36e92c7feb2e2cd",
+  "stub": false,
+  "arm": "B"
+}

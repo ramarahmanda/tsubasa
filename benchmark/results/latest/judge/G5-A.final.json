@@ -1,0 +1,28 @@
+{
+  "qid": "G5",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The candidate explicitly states that a BRIN-only ('summarizing') column 'doesn't block HOT' and that the update 'can still take the HOT path,' i.e. that Postgres currently ignores BRIN-only attributes when deciding whether an update can be heap-only — this is the forbidden claim. The answer also omits any mention that this exact reasoning was committed (5753d4ee32) and then reverted for causing index corruption (e3fcca0d0d), presenting instead an elaborate 'already correctly handled' mechanism (amsummarizing/TU_Summarizing) as settled current behavior.",
+  "required_missing": [
+    "No mention that the argument was committed (5753d4ee32) and reverted (e3fcca0d0d) for causing BRIN corruption"
+  ],
+  "contradictions": [
+    "'the column doesn't *block* HOT' / 'the update can still take the HOT path' — asserts Postgres currently ignores the BRIN-only attribute when deciding heap-only eligibility, contradicting the forbidden claim that this was tried and reverted rather than being settled current behavior"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "No mention that the argument was committed (5753d4ee32) and reverted (e3fcca0d0d) for causing BRIN corruption"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1418747,
+  "blind": true,
+  "task_sha256": "9936c48c3c5c03ff48b1afeefbbee0ad6baa3b9249b345448bd253fd8e214fbc",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 3
+}

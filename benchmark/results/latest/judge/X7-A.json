@@ -1,0 +1,24 @@
+{
+  "qid": "X7",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer correctly states KEP-1539 is stage:stable/status:implemented and GA since v1.22, correctly locates the real hazard in cgroup v1's incomplete hugepages support (citing the exit-code-135 bus error and BUG #17757 rather than blaming Kubernetes or CNPG), and covers the memory-request-alongside-hugepages-limit requirement via the webhook validation claim, drawing on both the kubernetes-enhancements and cloudnative-pg repos as required. The one deduction is the bare 'v1.15/v1.16' version citation, which the resolution block explicitly marks UNRESOLVED as a path.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "'has been configurable via .spec.postgresql.parameters since CNPG v1.15/v1.16' cites 'v1.15/v1.16' which resolution marks UNRESOLVED (rule 1), though the same fact is separately and correctly supported by the two resolved release-notes citations immediately following it"
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "'has been configurable via .spec.postgresql.parameters since CNPG v1.15/v1.16' cites 'v1.15/v1.16' which resolution marks UNRESOLVED (rule 1), though the same fact is separately and correctly supported by the two resolved release-notes citations immediately following it"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.14308069999999998,
+  "blind": true,
+  "task_sha256": "9fc17caaae2120c1dd7ea67b897239a9e9f31d5c62b4210de3bd4130053f5afe",
+  "stub": false,
+  "arm": "A"
+}

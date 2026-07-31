@@ -1,0 +1,28 @@
+{
+  "qid": "G11",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer correctly states the September 2022 revert (2f2b18bd3f, Andrew Dunstan, 'reverted 23 commits', 'Backpatch to release 15'), satisfying required fact 1, and it does not commit any forbidden claim — it explicitly distinguishes the March buildfarm-related revert (865fe4d5df/1460fc5942) from the September wholesale revert rather than using it as the cause, and it never claims the features shipped in PG15. However, it never explicitly states that the commit message/log gives no reason for the September revert, so required fact 2 is missing. The claim about doc/src/sgml/release-15.sgml containing zero trace of JSON_TABLE, cited as 'verified' via grep, rests on a path the resolution block marks UNRESOLVED, making it a fabricated artifact citation.",
+  "required_missing": [
+    "The commit message records no reason, and the answer explicitly says so"
+  ],
+  "contradictions": [],
+  "fabrications": [
+    "\"ships with ZERO trace of JSON_TABLE/SQL-JSON in doc/src/sgml/release-15.sgml (verified: grep for JSON_TABLE|SQL/JSON|IS JSON returns nothing)\" — cites doc/src/sgml/release-15.sgml, which the resolution block marks UNRESOLVED (rule 1)"
+  ],
+  "load_bearing_missing": [
+    "The commit message records no reason, and the answer explicitly says so"
+  ],
+  "unsupported_claims": [
+    "\"ships with ZERO trace of JSON_TABLE/SQL-JSON in doc/src/sgml/release-15.sgml (verified: grep for JSON_TABLE|SQL/JSON|IS JSON returns nothing)\" — cites doc/src/sgml/release-15.sgml, which the resolution block marks UNRESOLVED (rule 1)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0756387,
+  "blind": true,
+  "task_sha256": "6290e829e4243b090eb42b168a78a37f129b914caea39e2bb125da09c284c05e",
+  "stub": false,
+  "arm": "B"
+}

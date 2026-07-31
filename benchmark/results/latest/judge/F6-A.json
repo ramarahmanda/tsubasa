@@ -1,0 +1,24 @@
+{
+  "qid": "F6",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer grounds its verdict in the blank Status/Bug cells at line 126, quoted accurately, and explicitly contrasts them with neighboring DONE rows (13775, 14911, 13973), which is the carved-out pattern that passes even though it reads the blank as 'not done' rather than 'unknown'. All five citations resolved and matched their quoted content (or were unquoted-but-resolved commit shas whose details are uncheckable, not fabricated), so no invented sources or contradicted quotations were found.",
+  "required_missing": [
+    "The answer never states that completion is unknown/unresolved because the Status cell is simply blank; it instead affirmatively concludes 'still open,' which the standard says does not satisfy required fact 1 (reading the blank as recorded 'not done' does not count)."
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "The answer never states that completion is unknown/unresolved because the Status cell is simply blank; it instead affirmatively concludes 'still open,' which the standard says does not satisfy required fact 1 (reading the blank as recorded 'not done' does not count)."
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.10974669999999999,
+  "blind": true,
+  "task_sha256": "69031026f5de625f233d5f723a29ec2ffcceacdc6354a05c4c7fe35d7bedd9a7",
+  "stub": false,
+  "arm": "A"
+}

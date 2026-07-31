@@ -1,0 +1,32 @@
+{
+  "qid": "X3",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 1,
+  "rationale": "The answer explicitly claims the etcd v3.5 bug can cause 'actual PostgreSQL data divergence, not just Kubernetes metadata corruption' via a Lease-based split-brain scenario, which directly contradicts the required framing that PostgreSQL data lives on PVCs outside etcd's control and matches the forbidden claim about the bug corrupting PostgreSQL data. It also never states the required 'bounded, not harmless' framing from cnpg's FAQ (operator impaired but instance manager keeps Postgres serving safely). The `db9c8771` sha citation is UNRESOLVED per the resolution block and is counted as one fabrication per instructions, even though the underlying string is present in quoted source text elsewhere.",
+  "required_missing": [
+    "Fact 1: that etcd holds Kubernetes API objects (Cluster/Backup/Pooler CRs) while PostgreSQL data lives on PVCs outside etcd's scope",
+    "Fact 2: the FAQ-sourced 'bounded' framing that operator impairment does not necessarily mean a PostgreSQL outage, with the instance manager keeping the server up/archiving WAL/exporting metrics"
+  ],
+  "contradictions": [
+    "\"actual PostgreSQL data divergence, not just Kubernetes metadata corruption\" — asserts the etcd bug can cause real Postgres data corruption/divergence, contradicting the required control-plane-only blast radius and matching the forbidden claim about PostgreSQL data corruption"
+  ],
+  "fabrications": [
+    "`db9c8771` cited as a sha and marked UNRESOLVED in the resolution block (rule 1), even though the literal string appears in quoted text from a separately RESOLVED file_line citation"
+  ],
+  "load_bearing_missing": [
+    "Fact 1: that etcd holds Kubernetes API objects (Cluster/Backup/Pooler CRs) while PostgreSQL data lives on PVCs outside etcd's scope",
+    "Fact 2: the FAQ-sourced 'bounded' framing that operator impairment does not necessarily mean a PostgreSQL outage, with the instance manager keeping the server up/archiving WAL/exporting metrics"
+  ],
+  "unsupported_claims": [
+    "`db9c8771` cited as a sha and marked UNRESOLVED in the resolution block (rule 1), even though the literal string appears in quoted text from a separately RESOLVED file_line citation"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1095017,
+  "blind": true,
+  "task_sha256": "cef63579657a6a00f895cda986e10fe8eb42aafa2ac67d58b13785434ec89558",
+  "stub": false,
+  "arm": "A"
+}

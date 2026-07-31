@@ -1,0 +1,28 @@
+{
+  "qid": "G9",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer explicitly states 'No graph record exists for this pattern; this is from reading the current source, not a cited decision,' which is a forbidden claim since the record does contain a documented prior attempt (commits 16304a0134/0c071936e9, graph event evt-20150519-postgres-revert-0c071936). Both required facts (the tried-and-reverted wrapper, and the EPIPE/one-size-fits-all reason) are entirely absent from the answer.",
+  "required_missing": [
+    "that a blanket error-throwing wrapper was implemented and then reverted one day later (16304a0134 / 0c071936e9)",
+    "that the revert was caused by a legitimate EPIPE error in psql's pager-quit path (or the one-size-fits-all judgement)"
+  ],
+  "contradictions": [
+    "'No graph record exists for this pattern; this is from reading the current source, not a cited decision' — directly contradicts the existence of graph event evt-20150519-postgres-revert-0c071936 and commits 16304a0134/0c071936e9 documenting a prior blanket-wrapper attempt and revert"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "that a blanket error-throwing wrapper was implemented and then reverted one day later (16304a0134 / 0c071936e9)",
+    "that the revert was caused by a legitimate EPIPE error in psql's pager-quit path (or the one-size-fits-all judgement)"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0578937,
+  "blind": true,
+  "task_sha256": "5ed86b0784e94c1e06c8375fd7fad05341ecf303f8fdf336274f5936a839b56a",
+  "stub": false,
+  "arm": "B"
+}

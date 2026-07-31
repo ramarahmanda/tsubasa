@@ -1,0 +1,20 @@
+{
+  "qid": "C9",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required fact: 'status: implemented' for KEP-1287, sourced from kep.yaml:14-42, which matches the record. No forbidden claims (alpha/beta/implementable) are given as the current status of KEP-1287 itself; those labels are correctly applied only to the distinct adjacent KEPs 5419/5554/5440. All citations resolved or were properly elided.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.036722700000000004,
+  "blind": true,
+  "task_sha256": "d8b8d189d4a5a435198a375d60374e54a099b5e4a98a161e2e619b90e99eece5",
+  "stub": false,
+  "arm": "A"
+}

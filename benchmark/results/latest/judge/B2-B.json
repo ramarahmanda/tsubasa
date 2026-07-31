@@ -1,0 +1,24 @@
+{
+  "qid": "B2",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly states that CloudNativePG reuses PostgreSQL's native physical replication rather than reimplementing it, citing replication.md:26-32 which supports this. It never claims storage-level replication, forking, or patching, so nothing contradicts the record; the extra graph-id citations (feat-streaming-replication, design-replication, etc.) are absent from the resolution block rather than marked UNRESOLVED, so they are not counted as fabrications.",
+  "required_missing": [
+    "The operator-to-engine dependency direction (cnpg deploys a PostgreSQL container image) is never stated explicitly."
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "The operator-to-engine dependency direction (cnpg deploys a PostgreSQL container image) is never stated explicitly."
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0609997,
+  "blind": true,
+  "task_sha256": "a4c35f5e5a7917d6e3a17c748d46ce22b9247b03681ea15d125a40caf7132315",
+  "stub": false,
+  "arm": "B"
+}

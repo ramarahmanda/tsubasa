@@ -1,0 +1,20 @@
+{
+  "qid": "E5",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the 2024-06-01 status as `implementable` and separately notes today's value is `superseded` due to KEP-5073, satisfying both required facts without triggering any forbidden claims (it correctly separates `stage: alpha` from `status: implementable`). The specific field values attributed to commit a6dd9a27 are unquoted content hanging off a RESOLVED sha citation, so per the rules they are uncheckable rather than fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0471537,
+  "blind": true,
+  "task_sha256": "2eebb12b6d0654b16b02a974a69cd2bdb7bcb3fb0e9ae0022509b566c80ab73f",
+  "stub": false,
+  "arm": "A"
+}

@@ -127,7 +127,7 @@ def test_snapshot_follows_declared_sources_not_stray_repos(repo):
     cli.main(["source", "add", "code", "."])
     cli.main(["ingest", "code"])
     entities, _ = Store(repo).load_code_graph()
-    assert "svc-gateway" in entities       # declared fleet member: scanned
+    assert "svc-gateway" in entities       # declared workspace repo: scanned
     assert "svc-straysvc" not in entities  # stray repo: ignored
 
 

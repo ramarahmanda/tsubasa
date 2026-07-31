@@ -1,0 +1,22 @@
+{
+  "qid": "H4",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer clearly states no failover occurs and explicitly quotes the reason ('avoids triggering a failover, which could complicate recovery'), satisfying both required facts, and it does not make any forbidden claims (no failover-to-replica, no undetected-disk-full claim, remedy matches the documented PVC-resize path). The resolution block reports no extractable citations, so none of the many file/line/commit references can be flagged as UNRESOLVED, and no quoted source in the Required list contradicts any specific claim made, leaving nothing provably fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.055910699999999994,
+  "blind": true,
+  "task_sha256": "e178018470291a301f657fee7a722ef6cd56e0f3454676c162dba9d6f8c10517",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 2
+}

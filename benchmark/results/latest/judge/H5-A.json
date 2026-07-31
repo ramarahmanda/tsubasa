@@ -1,0 +1,24 @@
+{
+  "qid": "H5",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly states that a clean switchover does not require the full lease wait and that hand-over latency is bounded by retryPeriodSeconds (default 2s), matching failover.md:163-171 and the code constants, with no forbidden claims made. However, it never mentions releasedLeaseDurationSeconds or its 1-second default, so required fact 2 is missing; all cited sources resolve and match the quoted text, so no fabrications.",
+  "required_missing": [
+    "releasedLeaseDurationSeconds default 1 second as the TTL written on clean release"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "releasedLeaseDurationSeconds default 1 second as the TTL written on clean release"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0497497,
+  "blind": true,
+  "task_sha256": "58ea01cca410f9494355391a18ffb829709cfeb579bc16ba1b149b765297c321",
+  "stub": false,
+  "arm": "A"
+}

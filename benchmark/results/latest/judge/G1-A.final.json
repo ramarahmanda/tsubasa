@@ -1,0 +1,22 @@
+{
+  "qid": "G1",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states both required facts: it names db0d67db24 (Mar 2022, Tomas Vondra) as implementing cost-based GROUP BY key reordering and f4c7c410ee (Oct 2022, Tom Lane) as reverting it, matching the recorded dates/authors, and gives a concrete mechanism from the revert message (procost mostly labeled 1.0, ndistinct/group-size estimation limits) rather than calling the idea unsound. No forbidden claim is made — it explicitly denies the cost-based version shipped and attributes the revert to estimate-quality concerns plus an evidence gap, not a measured regression or process-only reason.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.07545570000000001,
+  "blind": true,
+  "task_sha256": "933a34ab2f35ea69fb0ff496d290641bb40267e3ef591b406bb8333cd38aefb7",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 2
+}

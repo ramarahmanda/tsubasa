@@ -1,0 +1,22 @@
+# tsubasa benchmark fixture — pinned
+#
+# Four public repos. Every gold answer in benchmark/questions/ resolves against
+# these exact commits. Re-pin only with a full re-verification of the gold set.
+#
+# Reproduce:
+#   mkdir tsubasa-benchmark && cd tsubasa-benchmark
+#   git clone https://github.com/cloudnative-pg/cloudnative-pg.git cloudnative-pg
+#   git clone https://github.com/etcd-io/etcd.git etcd
+#   git clone https://github.com/kubernetes/enhancements.git kubernetes-enhancements
+#   git clone --filter=blob:none https://github.com/postgres/postgres.git postgres
+#   while read -r name sha _; do git -C "$name" checkout -q "$sha"; done < fixture.lock
+#   tsubasa init tsubasa-benchmark --role "Principal Engineer" --domains kubernetes,postgres,storage
+
+cloudnative-pg           0cf3f500cdd8219f250c0ca3bfe97a3ad30ba4a5  2026-07-29  commits=5112
+etcd                     d519de5b57564c74442e6727f3750b54d0518e76  2026-07-29  commits=25100
+kubernetes-enhancements  e32008ea3ed16998fca89b72754bc7c598a07679  2026-07-28  commits=11290
+postgres                 33b392eaabdd1c563d40388784df051821e03c6b  2026-07-29  commits=64879
+
+# Working set ~678MB. postgres is blobless: full history, blobs fetched lazily.
+# Knowledge corpus at this pin: 676 KEP docs + 656 kep.yaml, 82 cnpg docs,
+# 39 postgres design READMEs, 18 etcd Documentation docs, 1 etcd postmortem.

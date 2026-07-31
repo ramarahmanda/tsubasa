@@ -1,0 +1,22 @@
+{
+  "qid": "C5",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer gives the required status ('withdrawn') with the correct last-updated date 2023-05-28, and does not claim implementable/GA or ongoing migration, correctly noting only alpha (v1.26) was reached — no forbidden claims are made. Additional details (feature gate names, README claims, sibling KEP statuses) hang off resolved citations or are uncited general claims not matched to an UNRESOLVED reference, so none meet the fabrication criteria.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.048191700000000004,
+  "blind": true,
+  "task_sha256": "1ee0133a2068be097791b81e3c7c67345dce550f4373652bbfc133361c3a77a2",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

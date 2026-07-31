@@ -1,0 +1,30 @@
+{
+  "qid": "X5",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer declares the migration 'Yes, settled' and never mentions KEP 4578 or its provisional status, matching the explicit Forbidden pattern of concluding full settlement from contributor-guide/code evidence alone while ignoring the governing KEP's status. This directly contradicts Required fact 1, which states the path is not settled because the KEP remains provisional.",
+  "required_missing": [
+    "KEP 4578 'Feature Gate in etcd' and its provisional status (fact 1)",
+    "the coexistence-window / no-clear-graduation-path caveat for existing --experimental flags (fact 3)"
+  ],
+  "contradictions": [
+    "'Yes, settled — and mostly done for the main server.' contradicts the record showing KEP 4578 is still status: provisional, i.e. the mechanism itself is not settled."
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "KEP 4578 'Feature Gate in etcd' and its provisional status (fact 1)",
+    "the coexistence-window / no-clear-graduation-path caveat for existing --experimental flags (fact 3)"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0751117,
+  "blind": true,
+  "task_sha256": "917f015dad0801f92a8323e9bb062678758144dc9a1602c894b1fba99b2b3d6e",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

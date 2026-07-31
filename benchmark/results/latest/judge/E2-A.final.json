@@ -1,0 +1,26 @@
+{
+  "qid": "E2",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the recorded 2022-06-01 status as `provisional`, correctly citing commit 7eef794b and the kep.yaml status field, which matches the required fact and contradicts none of the forbidden claims. It never states today's value (`implemented`) or pairs it with the historical value, so required fact 2 is missing, but this is an omission rather than a contradiction, and no claim in the answer is proven unsupported (the resolution block notes no extractable citations, and no UNRESOLVED markers appear), so fabrication is zero.",
+  "required_missing": [
+    "Today's value (`implemented`) is never stated or paired with the historical `provisional` value from 2022-06-01."
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "Today's value (`implemented`) is never stated or paired with the historical `provisional` value from 2022-06-01."
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.04911469999999999,
+  "blind": true,
+  "task_sha256": "29bd7c27c8b36790dd52e70446bec9ead046e81c8b6d971c682fc79f71ffa96f",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 2
+}

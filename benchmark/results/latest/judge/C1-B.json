@@ -1,0 +1,22 @@
+{
+  "qid": "C1",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states 'Status: implemented' with the literal required value, matching kep.yaml:8. All five citations resolved against the fixture/graph, and the added detail (creation date, ingest date) hangs off a resolved-but-unquoted graph citation, which is not countable as fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0366227,
+  "blind": true,
+  "task_sha256": "ba3c6b9802da3f083c1cfd87ca39348a6f72fc34ca4710ee2a4eb1f836762eb6",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

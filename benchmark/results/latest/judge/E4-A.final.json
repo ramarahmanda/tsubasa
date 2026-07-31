@@ -1,0 +1,28 @@
+{
+  "qid": "E4",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The candidate never states the required status value (implementable at the pinned date, implemented today) and instead asks a clarifying question without answering; since none of the required facts are present, the answer fails to convey the correct substance and is scored wrong.",
+  "required_missing": [
+    "status: implementable as of 2025-06-01",
+    "today's value implemented, distinguished from the historical value"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "status: implementable as of 2025-06-01",
+    "today's value implemented, distinguished from the historical value"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.030422699999999997,
+  "blind": true,
+  "task_sha256": "c9ee857af28b01223485a2c70b3e8d1f5d07d6705ad7f884aa23bf3ee7c057a1",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 3
+}

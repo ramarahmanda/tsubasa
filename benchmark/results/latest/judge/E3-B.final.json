@@ -1,0 +1,22 @@
+{
+  "qid": "E3",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the 2022-01-01 value as the literal string `status: implemented (beta)` and separately gives today's value as `status: removed` (landing in commit fa4113d9, 2022-10-10), satisfying both required facts and stating no forbidden claim (it correctly treats `deprecated: v1.22` as a milestone key, not the status field). The resolution block found no extractable citations, so per the rules none of the answer's specific claims (commit shas, additional yaml fields like `stage:`) can be proven unsupported or contradicted; they are uncheckable but not fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.057305699999999994,
+  "blind": true,
+  "task_sha256": "1087009e3f408b1fb29b911b2194d5a492b0fd9280d344c978ce78abf9147d9b",
+  "stub": false,
+  "arm": "B",
+  "graded_turn": "final",
+  "turns_used": 3
+}

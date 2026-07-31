@@ -1,0 +1,20 @@
+{
+  "qid": "D1",
+  "category": "d-supersession",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer identifies KEP 2433 'Topology Aware Hints' as the successor (adr-topology-aware-hints) of adr-topology-aware-routing (KEP 536), satisfying required fact 1 via title; it also states the 'replaced' status was recorded, satisfying required fact 2. All citations resolved against the graph, so no fabrications are countable.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0331127,
+  "blind": true,
+  "task_sha256": "9f5da758835a194c16d02553193d4bac39d5f6754e66c7cd2fe1e09f7dbf3267",
+  "stub": false,
+  "arm": "B"
+}

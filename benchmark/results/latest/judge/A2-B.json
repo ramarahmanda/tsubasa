@@ -1,0 +1,20 @@
+{
+  "qid": "A2",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The candidate names the exact required path postgres/src/backend/storage/lmgr/README-SSI and correctly describes its content, matching the required fact. The mention of predicate.c/predicate.h as related implementation files is not cited as a resolved source but is a plausible unverifiable side detail, not a fabrication under the rules since it's not asserted as a specific recorded artifact detail beyond general knowledge.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.028799699999999998,
+  "blind": true,
+  "task_sha256": "c491189a5598e21f7e29df5cc9b7e1b3d1ca7a6b2ee2e8de5cd4812dea909c69",
+  "stub": false,
+  "arm": "B"
+}

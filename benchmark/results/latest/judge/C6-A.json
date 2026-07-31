@@ -1,0 +1,20 @@
+{
+  "qid": "C6",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "Both required facts are stated explicitly: status rejected with kep.yaml:7 citation, and the README quote confirming kustomize retained in kubectl. The deprecation stages are presented as the proposed (never executed) plan, not as adopted, consistent with the allowed framing.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0324737,
+  "blind": true,
+  "task_sha256": "71d9a308ddabbefa72403c52216eaa55b139ceb4cc772705218da64270d76b43",
+  "stub": false,
+  "arm": "A"
+}

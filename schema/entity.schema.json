@@ -15,20 +15,21 @@
       "pattern": "^[a-z][a-z0-9-]*$"
     },
     "type": {
+      "description": "\"task\" is RETIRED (schema 2 removed task management). Nothing mints it any more; it stays in the enum so graphs written by schema 1 still validate.",
       "enum": [
         "service",
         "module",
         "adr",
         "incident",
         "feature",
-        "task",
         "env",
         "team",
         "secret-ref",
         "external",
         "person",
         "goal",
-        "doc"
+        "doc",
+        "task"
       ]
     },
     "name": {

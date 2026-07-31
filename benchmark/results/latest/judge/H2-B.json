@@ -1,0 +1,20 @@
+{
+  "qid": "H2",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly says PostgreSQL protects shared_buffers via the BAS_BULKWRITE buffer-ring strategy used by COPY, and states the ring size as a fixed 16MB, matching both required facts; it avoids all forbidden claims (no 256KB mix-up, no claim of UPDATE/DELETE coverage, no 'no protection' claim, and all citations point into the postgres source, not external docs).",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0893397,
+  "blind": true,
+  "task_sha256": "c9dbe5d95e767748078e854cb5e1cf77e43c6a70440ca00c95dbf384f55cdb4f",
+  "stub": false,
+  "arm": "B"
+}

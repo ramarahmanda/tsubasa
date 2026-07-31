@@ -1,4 +1,4 @@
-"""GitHub adapter: merged PRs via `gh` CLI → pr_merged events + task sync.
+"""GitHub adapter: merged PRs via `gh` CLI → pr_merged events, threaded by ADR id.
 
 Skips gracefully when `gh` is missing or the path isn't a GitHub repo, so
 offline/self-hosted setups still work with the plain git adapter.

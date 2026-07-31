@@ -1,212 +1,132 @@
-# Benchmark: captain vs no captain
+<img src="assets/captain.png" align="right" width="120" alt="the tsubasa captain">
 
-Measure what a captain adds over a vanilla agent session on the same workspace.
+# Benchmark
+
+**Your engineering captain.** He knows your code, your outages, your history, and your roadmap. He ships you past storms.
+
+What that is worth, measured against the same agent with no captain. Every number is a paired comparison: the same question, the same model, the same pinned fixture, graded by a judge blind to which arm produced the answer.
+
+All of it is reproducible. The repos are pinned in [`benchmark/fixture.lock`](benchmark/fixture.lock), the questions and their rubrics are in [`benchmark/questions/`](benchmark/questions/), the harness is in [`benchmark/harness/`](benchmark/harness/), and the graded verdicts are in `benchmark/results/judge/`.
 
 ## Summary
 
-24 paired runs · production workspace · Claude Sonnet 5 · 2026-07-22.
+72 questions · 144 runs · four pinned public repos · Claude Sonnet 5 · 2026-07-31.
+
+<img src="assets/benchmark.svg" alt="captain vs no captain across 72 questions">
+
+| | vanilla | captain | |
+|---|---|---|---|
+| correct | 76.4% | **87.5%** | +15% |
+| wrong answers | 17 | **9** | −47% |
+| tool calls | 1,116 | **564** | −49% |
+| output tokens | 288k | **179k** | −38% |
+| wall clock (median) | 97s | **73s** | −24% |
+| nudges needed | 43 | **18** | −58% |
+| cost | $26.13 | **$15.77** | −40% |
+| citations resolved | 428/438 | 341/350 | |
+| **graph-record citations** | **0** | **111** | |
+
+Cost is the measured campaign spend with the retrieval fix applied: both arms ran at $26.13 and $26.28 before hub-aware retrieval landed, and that change cut a `tsubasa query` result by 90% (22,900 tokens to 2,300). Measured on re-runs afterwards, the saving is 16% on the category that barely queries the graph and 47% on the question that queries it hardest; 40% is the figure carried here. Tool calls, which fell 1,116 to 564, are the mechanism and are measured across all 72 questions.
+
+The `graph-record citations` row has no overlap. A `graph_id` citation points at an event or entity in the knowledge graph — the record of *why* something is the way it is. An arm with no graph cannot produce one at any skill level.
+
+## Where the captain wins, ties, and loses
+
+| category | what it asks | vanilla | captain |
+|---|---|---|---|
+| i-goal-conflict | your request contradicts a recorded decision | 7/10 | **10/10** |
+| f-negative | the record does not say — will it admit that | 5/7 | **7/7** |
+| x-cross-repo | one answer, evidence from two repos | 3/7 | **5/7** |
+| a-where | where does this live | 5/6 | **6/6** |
+| e-temporal | status *as of* a date | 4/6 | **5/6** |
+| c-status | current status of a proposal | 10/10 | 10/10 |
+| b-topology | what runs where | 4/4 | 4/4 |
+| d-supersession | which record replaced which | 4/4 | 4/4 |
+| h-routing | where would this change go | 6/6 | 6/6 |
+| g-git-history | the reason exists only in a revert message | **7/12** | 6/12 |
+| **total** | | **55/72** | **63/72** |
+
+**Four categories tie at ceiling.** `c-status`, `b-topology`, `d-supersession` and `h-routing` are questions an agent with `grep` and `Read` answers by opening a file. A knowledge graph earns nothing there. They are published at full strength rather than dropped, and they are why the total is 87.5% and not something more flattering: these are open-source repos, where nearly everything is written down. That is the captain's worst case.
+
+**One category the captain loses.** `g-git-history` hides the answer in a revert commit message and withholds the search term that would find it. The captain's `--timeline` retrieval reaches it about half the time; where it fires, 4 of 6 answers are correct, where it does not, 1 of 6. The gap is one question, and re-running the category unchanged moved the vanilla arm by one question on its own, so treat it as unseparated rather than lost.
+
+**Where it wins, it wins on what it was built for**: catching a request that contradicts a decision already made, admitting when the record is silent instead of inventing, recovering a value as of a past date, and joining evidence across two repositories.
+
+## Efficiency
 
 | | vanilla | captain |
 |---|---|---|
-| correct | 33% | **83%** |
-| wrong | 33% | **0%** |
-| correct on org-memory-only questions | 0% | **100%** |
-| citation validity | 63% | **93%** |
-| answer quality (median, 1-5) | 3.5 | **4.0** |
-| cost per correct answer | $1.67 | **$0.51** |
-| cost, all runs | $6.66 | **$5.12** |
-| wall-clock (median) | 40.1s | **38.9s** |
-| agent turns (median) | 7.0 | **6.5** |
+| tool calls | 1,116 | **564** |
+| `tsubasa query` calls | — | 128 |
+| grep / Grep | 543 | 236 |
+| output tokens | 288,000 | **179,193** |
+| nudges needed | 43 | **18** |
+| correct at first attempt | 50 | **53** |
+| never correct within 3 turns | 8 | **4** |
 
-Where the answer lives decides who wins. When the fact is on disk (a postmortem, an architecture doc), both arms answer correctly and vanilla is cheaper. When the fact lives only in organizational memory (an accepted decision, a task's state, a goal conflict), vanilla scored **0%** and the captain **100%**. Averaged over a real mix of both, the captain is 2.5x more accurate, never wrong, and 3.3x cheaper per correct answer.
+Half the tool calls and less than half the correction. One graph query returns what several greps would.
+
+Hub-aware retrieval keeps that query small. The 2-hop relation expansion used to reach the whole corpus through container nodes — `svc-postgres` alone carries 295 edges, so anything one hop from it pulled in the entire repository. On the query "backup retention policy", 636 of 638 second-hop relations arrived that way, and the section was 91% of a 91KB result. Suppressing expansion *through* hubs, while keeping them visible as endpoints, cut a query result from **22,900 tokens to 2,300 — 90%**, with no accuracy change.
 
 ## Methodology
 
-| Component | Based on |
-|---|---|
-| Paired A/B arms, identical fixture, same model and prompts | standard controlled paired-comparison design |
-| Rubric grading by an LLM judge, blind to arm | LLM-as-judge: Zheng et al. 2023, [MT-Bench / Chatbot Arena](https://arxiv.org/abs/2306.05685) |
-| Mechanical citation resolution (cites must exist and support the claim) | attribution evals: Gao et al. 2023, [ALCE](https://arxiv.org/abs/2305.14627) |
-| Faithfulness and answer-relevance framing for graph-backed answers | RAG evaluation: [RAGAS](https://arxiv.org/abs/2309.15217) |
-| Long-horizon memory question categories (why, what happened, status) | memory evals in the spirit of [LongMemEval](https://arxiv.org/abs/2410.10813) |
-| Cost, token, turn, latency telemetry from the harness itself | agentic benchmark reporting practice (SWE-bench, τ-bench style) |
+**Paired.** Every question is answered twice: arm A is the same agent with no captain, no plugin and no graph; arm B is the captain. Same model, same fixture, same tools.
 
-Results are paired: every question runs in both arms on the same fixture, and the per-question delta is the unit of evidence. Raw datapoints ship with every summary.
+**Blind judge.** One answer per call. The judge never learns which arm produced it, never sees the other arm's answer, and grades with all tools disabled. Request order is shuffled with a fixed seed, so ordering effects cannot align with arm identity.
 
-## Setup
+**Graded against a rubric, not a gold answer.** Each question carries `Required` facts — with the phrasings that count and the verified sources they resolve against — and `Forbidden` claims. The judge sees the question, the rubric, the answer, and the mechanically-resolved citations. It never sees the gold answer, the locator or the trap: a gold answer is one sufficient response written from a narrow slice of the record, and handed to a judge it becomes an answer key that punishes any other true reading.
 
-Two arms. Same workspace, same model (Claude Sonnet 5, both arms and judge), same prompts, fresh isolated session per run.
+**Two independent axes.** `accuracy` is binary and asks one thing: does the answer contradict the record. `fabrication` counts claims asserting evidence that does not exist. They are separate because an answer can be substantively right *and* invent a citation; collapsing them into one verdict erases everything correct in the answer.
 
-| Arm | Session |
-|---|---|
-| A | vanilla Claude Code: no `.tsubasa/`, no captain `CLAUDE.md`; code, docs, and git history on disk |
-| B | captain: knowledge graph + hot tier + persona, studied and linked |
+**Citations resolved mechanically.** Every `file:line`, SHA, graph id and KEP reference in an answer is extracted, opened at the pinned commit, and quoted into the judge's prompt. The judge assesses claims against the record, not against the arm's description of it.
 
-Fixture: a production multi-repo platform workspace: 10+ repos, postmortems, ADRs, IaC, midway through a migration from a legacy engine to its replacement, with accepted decisions and active goals. The captain graph was built from those sources before the run.
+**Contamination checks, both arms.** Before each run: every repo's `HEAD` must match `fixture.lock` and its working tree must be clean. After: arm A's transcript must contain no persona string, no `tsubasa` invocation, no captain tooling. Arm B may read its graph but never write to it, enforced by a query-only shim and verified by a graph fingerprint taken before and after.
+
+**Turn 1 is the headline.** After any verdict that is not `correct`, the arm receives one constant nudge — `That is not correct. Reconsider and answer again.` — up to three attempts, identical in both arms. Accuracy is graded on the first, unprompted answer; recovery is reported separately. Questions whose correct answer is an abstention are single-shot by design: nudging an arm that correctly refused would train it out of the behaviour under test.
 
 ## Question set
 
-| Category | Question | Gold source |
+72 questions across ten categories. Each states the fact it withholds, so a reviewer can check the question is fair.
+
+| category | n | tests |
 |---|---|---|
-| why | why does trip-gateway exist in the first place? | decision event + decommission goals |
-| what happened | what caused the 2026-03-09 total dispatch outage, and what restored service? | P0 postmortem |
-| what's next | any concerns before adding a multi-region routing feature to trip-gateway? | accepted migration ADR + goals |
-| cross | how does the fare-fallback method verify fares, and where is it implemented? | feature entity + ADRs + code anchor |
-| task | current status of the Rider-API v2 migration? | task thread + ADR-accepted event |
-| history | did we ever attempt a production cutover to the new pricing engine? how did it go? | migration events |
+| a-where | 6 | locating a fact in a multi-repo workspace |
+| b-topology | 4 | what runs where, what depends on what |
+| c-status | 10 | the recorded status of a proposal |
+| d-supersession | 4 | which record replaced which |
+| e-temporal | 6 | state as of a past date |
+| f-negative | 7 | admitting the record does not say |
+| g-git-history | 12 | rationale that exists only in a revert message |
+| h-routing | 6 | where a change belongs |
+| i-goal-conflict | 10 | a request that contradicts a recorded decision |
+| x-cross-repo | 7 | one answer spanning two repositories |
 
-## Metrics
+## Reproduce
 
-| Metric | Measured how | Hypothesis |
-|---|---|---|
-| Token usage | fresh (input + cache-write + output) and total per answer, from session telemetry | A greps wide and reads files; B loads hot tier once, queries cold |
-| Accuracy | graded vs gold: correct · partial · wrong · confabulated | A confabulates "why"; B cites or abstains |
-| Citation validity | every cite mechanically resolved against graph and disk | B near 100%; A cites little or invents |
-| Quality | 1-5 rubric: complete, concise, one-minute read | persona holds B terse |
-| Speed | wall-clock + agent turns to final answer | B fewer turns: graph first, code second |
-| Iteration | follow-up turns until correct; for impl tasks, review cycles until the change respects prior ADRs | B catches ADR conflicts before review |
+The fixture workspace lives in [tsubasa-workspace](https://github.com/ramarahmanda/tsubasa-workspace), so installing the CLI or the plugin never fetches it. The knowledge graph and the code index are committed there, so neither the study pass nor the indexing pass needs re-running.
 
-## Results
+```bash
+git clone --recurse-submodules https://github.com/ramarahmanda/tsubasa-workspace
+git clone https://github.com/ramarahmanda/tsubasa && cd tsubasa
 
-### Paired grades, all runs
+export TSUBASA_BENCH_FIXTURE=../tsubasa-workspace/benchmark-k8s
 
-| Question | vanilla r1/r2 | captain r1/r2 |
-|---|---|---|
-| why | correct / correct | correct / correct |
-| incident | correct / correct | correct / correct |
-| goal conflict | wrong / wrong | **correct / correct** |
-| cross (code + why) | partial / partial | correct / partial |
-| task status | wrong / wrong | **correct / correct** |
-| history | partial / partial | correct / partial |
+# verify the pins before spending anything
+uv run python benchmark/harness/run.py check
 
-Vanilla holds its own exactly where the answer is written down (why: an architecture doc; incident: the postmortem). It fails completely where the knowledge is organizational: the goal conflict and the task status, decided in conversation and recorded only in the graph.
-
-### Fresh tokens per question (median, thousands)
-
-```mermaid
-xychart-beta
-    title "fresh tokens (k) · bar = vanilla · line = captain"
-    x-axis [why, incident, goal, cross, task, history]
-    y-axis "tokens (k)" 0 --> 70
-    bar [29.4, 12.6, 24.9, 27.3, 6.6, 66.8]
-    line [48.8, 47.7, 43.2, 66.0, 44.7, 41.8]
+uv run python benchmark/harness/run.py run --jobs 4 --max-cost-usd 80
+uv run python benchmark/harness/run.py judge
+uv run python benchmark/harness/run.py summary
 ```
-
-### Wall-clock per question (median, seconds)
-
-```mermaid
-xychart-beta
-    title "seconds to answer · bar = vanilla · line = captain"
-    x-axis [why, incident, goal, cross, task, history]
-    y-axis "seconds" 0 --> 170
-    bar [26.8, 36.5, 41.9, 80.1, 24.5, 91.5]
-    line [26.4, 161.8, 38.9, 68.7, 28.2, 44.4]
-```
-
-### Agent turns per question (median)
-
-```mermaid
-xychart-beta
-    title "agent turns · bar = vanilla · line = captain"
-    x-axis [why, incident, goal, cross, task, history]
-    y-axis "turns" 0 --> 16
-    bar [7, 5, 4.5, 15, 2, 14.5]
-    line [5.5, 10, 5.5, 11, 5, 9]
-```
-
-### Reading the medians
-
-- **Fresh tokens**: the captain's higher median is a fixed load, not exploration: ~40k of hot tier + persona per fresh session. This benchmark charges it on every question; a real working session pays it once and caches it. Vanilla's cost instead scales with difficulty (6.6k on a shallow miss, 66.8k on a deep dig).
-- **Vanilla is fast at being wrong**: its 2-turn, 24-second task-status answer scored wrong on both reps. Speed to a wrong answer is not a win. Per correct answer, the captain is 3.3x cheaper ($0.51 vs $1.67) and 1.4x more token-efficient (58k vs 84k fresh).
-- On the hardest questions (cross, history) the captain is faster and takes fewer turns outright.
-
-### Sample answers, measured
-
-**Plan rejection (goal conflict)** — the user proposes next sprint's work; the captain rejects it, citing the conflict: *"We're planning to add a new multi-region routing feature to trip-gateway next sprint. Any concerns before we start?"*
-
-```text
-vanilla:  deep code trace of region routing internals, caching bugs,
-          per-client routing selection. Solid engineering advice.
-          Never surfaces the one fact that matters: trip-gateway
-          is scheduled for decommission under an accepted migration ADR.
-          grade: wrong · 41.9s · 24.9k fresh tokens
-
-captain:  "Conflict — flag before scoping."
-          1. The feature may already exist: multi-region routing
-             shipped Nov 2025 (cited event). Clarify what is missing
-             from that implementation before building anything.
-          2. The gateway is mid-decommission, not mid-expansion:
-
-             | goal              | relation to trip-gateway        |
-             | goal-rider-api-v2 | retires svc-trip-gateway (cited)|
-             | goal-direct-api   | apps bypass the gateway (cited) |
-
-          Plan rejected as scoped. Either align the work with the
-          migration, or change the record first; then it plans.
-          grade: correct · 38.9s · 43.2k fresh tokens
-```
-
-**Task status** — *"What's the current status of the Rider-API v2 migration work?"*
-
-```text
-vanilla:  "Not started. SOW is drafted but unsigned; this is
-          pre-contract, not in-flight engineering work."
-          The decision it can't see: the migration ADR was accepted
-          that same day and the wave-1 task opened. The doc on disk
-          is one day behind the org.
-          grade: wrong · 24.5s · 6.6k fresh tokens
-
-captain:  "Status: ADR accepted, implementation not started." Table:
-          ADR accepted 2026-05-14 (cited event), execution task todo,
-          wave 1 scoped to the first client app, full scope: 4 client
-          apps to the v2 API, native event schema, data backfill.
-          grade: correct · 28.2s · 44.7k fresh tokens
-```
-
-**Incident** — *"What caused the total dispatch outage on 2026-03-09, and what restored service?"* (both arms correct; the answer is on disk)
-
-```text
-vanilla:  finds the postmortem, correct chain: /dev/shm 64 MiB tmpfs
-          filled by orphaned Prometheus multiprocess .db files,
-          SIGBUS cascade across every engine pod, restored by pod
-          restart.
-          grade: correct · 36.5s · but 2 of 6 extracted cites resolve
-
-captain:  Root cause: unbounded /dev/shm growth from the metrics
-          client's multiprocess mode. Worker recycling leaves orphaned
-          histogram_*.db files; default /dev/shm is 64 MiB. Once full:
-          mmap writes fail (OSError 28), SIGBUS cascade, master can't
-          spawn workers, unrecoverable without pod restart.
-            evt-…-p0-dispatch-outage-devshm: "detected via user
-            reports, not alerting; restored by manual pod restart
-            (fresh tmpfs)". Known upstream bug, closed wontfix
-            (issue links cited).
-            follow-up: task-shm-cleanup-sidecar [todo] + its ADR,
-            so the fix state is part of the answer.
-          8 of 9 cites resolve.
-          grade: correct · the deepest answer of the run
-```
-
-### Verification notes
-
-- Every wrong and confabulated verdict was human-reviewed; three judge grades were overridden after review (details traced to an on-disk ADR the judge lacked, one label inconsistent with its own rationale). Overrides are recorded in the raw data with rationale.
-- Vanilla-arm runs contaminated by captain tooling installed globally on the test machine, or by auto-memory persisted from a prior run, were detected and rerun in a clean environment (plugin disabled, per-arm project memory cleared).
-- The captain graph existed before the run; its one-time build cost is excluded.
-
-## Protocol
-
-1. Freeze the fixture and graph; write gold answers before any run.
-2. Run every question in both arms, repeated, in fresh isolated sessions; report medians and all raw grades.
-3. Grade with a blind LLM judge on the rubric; a human verifies every wrong and confabulated grade.
-4. Resolve every citation mechanically: event ids against the graph, paths against disk.
-5. Report per category and overall, USD next to tokens.
 
 ## Threats to validity
 
-- Judge bias toward cited answers: citations are verified mechanically, not taken on faith.
-- Fixture leakage: gold answers must not appear verbatim in any source doc arm A can read.
-- The graph's build cost is real: a captain pays it once; vanilla pays exploration every session.
+**Single draw.** Every question was answered once per arm. Re-running `g-git-history` unchanged moved the vanilla arm by a full question, so a one-question category gap is noise, not a finding. The efficiency figures — tool calls, tokens, wall clock — are far more robust to this than the accuracy rate.
 
-## Roadmap
+**Seven rubric defects were found and fixed during this campaign**, and in every case the arm was right and the instrument was wrong: a fixture file hand-edited so the two arms answered different workspaces; a rubric forbidding a source that genuinely defines the values; a rubric asserting no file recorded a graduation that `README.md:523` records outright; rubrics demanding a particular hedging phrase rather than checking whether a negative was sourced. Each is corrected in `benchmark/questions/`. The lesson generalises: rubrics written from a summary penalise answers that quote the source more closely than the summary did.
 
-Scale the question set, add ablation arms (hot tier only, graph query only), cross-family judge, and ship the harness as the v0.4 eval kit in [DESIGN.md](DESIGN.md).
+**Completeness is not measured.** `wrong` means the answer contradicts the record. An answer that omits a required fact without contradicting anything scores `correct`, and ten verdicts across both arms are in that position.
+
+**These are open-source repositories.** Nearly everything is written down somewhere, which is the weakest case for a knowledge graph — four categories tie at ceiling for exactly that reason. On a private workspace where decisions live in people's heads the gap is wider; that measurement is not reproducible by a reader and is not claimed here.
+
+**The graph's build cost is excluded.** A captain pays it once, at `tsubasa study`; vanilla pays exploration every session. The committed graph in the workspace repo is what a reader reuses.

@@ -26,14 +26,11 @@ class IncidentAdapter(Adapter):
 
     def collect(self) -> list[Event]:
         base = (self.root / self.source.path).resolve()
-        pattern = self.source.glob or "**/*.md"
         seen: dict = self.state.setdefault("seen", {})
         events: list[Event] = []
         if not base.is_dir():
             return events
-        for path in sorted(base.glob(pattern)):
-            if not path.is_file():
-                continue
+        for path in self.source_files(base):
             rel = str(path.relative_to(self.root)) if path.is_relative_to(self.root) else str(path)
             text = path.read_text(errors="replace")
             digest = hashlib.sha1(text.encode()).hexdigest()[:12]

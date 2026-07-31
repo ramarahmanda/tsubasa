@@ -1,0 +1,20 @@
+{
+  "qid": "E1",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the 2024-01-01 status as `implementable` (citing commit b9159cf8) and explicitly distinguishes today's graph-recorded status as `withdrawn`, satisfying both required facts without contradicting the record. The `alpha` mentioned is correctly labeled as the `stage:` field, not the status, so it does not trip the forbidden-claim rule.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0496507,
+  "blind": true,
+  "task_sha256": "f39a575350af798078daa6b126664eb8fe6abb67b4c94465b050b93fa78721c1",
+  "stub": false,
+  "arm": "B"
+}

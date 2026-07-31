@@ -1,0 +1,20 @@
+{
+  "qid": "X1",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly says no KEP addresses StatefulSet PVC resize, quotes cnpg's controller.md:32-34 limitation verbatim, and names KEP-1847 while correctly distinguishing it as covering PVC auto-deletion/orphan-cleanup rather than resizing — satisfying all three required facts without triggering any forbidden claim. All citations that appear in the resolution block (controller.md:32-34, kep.yaml:10,21-27, the graph id, and KEP-1847) are RESOLVED and match the quoted content, so no fabrication is provable; the bare 'controller.md:75-92' reference lacks a slash and is absent from the resolution block, which per the rules is not evidence of invention.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0688087,
+  "blind": true,
+  "task_sha256": "f187aa50dbf6c8f289f4b57a07e9e698c0f69ce3a7061abe99704198bff04b6a",
+  "stub": false,
+  "arm": "B"
+}

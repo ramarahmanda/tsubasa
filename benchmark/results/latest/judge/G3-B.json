@@ -1,0 +1,29 @@
+{
+  "qid": "G3",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The record shows Postgres actually implemented redo-LSN stamping in pgstats (commit b860848232aa, Aug 2024) and then reverted it (commit 5721e5453e, Mar 2025) due to pg_upgrade/control-file interactions, but the candidate flatly states 'No... hasn't built it' and frames it as an unimplemented TODO, contradicting the required fact that it was built and reverted. This matches the forbidden claim of presenting the idea as never attempted / rejected outright rather than tried-and-reverted.",
+  "required_missing": [
+    "that Postgres added a redo LSN to pgstats and then reverted it (commit b860848232aa added, 5721e5453e reverted)",
+    "that the revert was due to pg_upgrade/control-file rewriting interactions"
+  ],
+  "contradictions": [
+    "'No. Postgres knows about this idea but hasn't built it.' contradicts the record showing it was built (b860848232aa) and then reverted (5721e5453e)",
+    "Presents the idea as pure future work/TODO rather than something implemented and later reverted, matching forbidden claim of presenting it as rejected/never attempted"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "that Postgres added a redo LSN to pgstats and then reverted it (commit b860848232aa added, 5721e5453e reverted)",
+    "that the revert was due to pg_upgrade/control-file rewriting interactions"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0415397,
+  "blind": true,
+  "task_sha256": "20c019a9192553258a11541da26f179b53b56af0c92570b1e966e8bd08816465",
+  "stub": false,
+  "arm": "B"
+}

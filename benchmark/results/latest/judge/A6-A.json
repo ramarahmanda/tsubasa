@@ -1,0 +1,20 @@
+{
+  "qid": "A6",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly identifies postgres/src/backend/storage/aio/README.md as the design document, matching the required fact exactly and citing no forbidden files. All four citations resolved, and the additional details (line numbers for unquoted sections, commit sha/message/date) are either unverifiable-but-not-contradicted or explicitly excluded from fabrication counting per the rules governing RESOLVED-but-unquoted commit details.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.05149669999999999,
+  "blind": true,
+  "task_sha256": "02bea64c03d85a92a0c218decd59e018236f0dd9f634db4b0dd8fe7724671aec",
+  "stub": false,
+  "arm": "A"
+}

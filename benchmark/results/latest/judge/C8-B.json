@@ -1,0 +1,22 @@
+{
+  "qid": "C8",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states KEP-5573 status as implementable, targeting beta in v1.35, matching the required fact exactly, and correctly notes no removal timeline before v1.38. KEP-4569 is properly framed as a prerequisite already implemented, not as the removal status itself. All citations resolved and are supported by quoted text.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.036416699999999996,
+  "blind": true,
+  "task_sha256": "d9e7a5ceab086907422c9d75163ebde699ffda24abcf9784a14da7486376b99b",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

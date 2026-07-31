@@ -1,0 +1,22 @@
+{
+  "qid": "E1",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the 2024-01-01 status as `implementable` and correctly distinguishes it from the current `withdrawn` status, matching both required facts with no forbidden claims. The extra milestone/date details (v1.26/v1.29/v1.31, KEP-4381 date) are unverifiable specifics but were not resolved as citations in the resolution block, so per the rules they cannot be proven fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0628037,
+  "blind": true,
+  "task_sha256": "608c7607652705ea28ecbfbadc1fa9bdceebd5adf314ffce0eb90f75b5b4a8a1",
+  "stub": false,
+  "arm": "B",
+  "graded_turn": "final",
+  "turns_used": 2
+}

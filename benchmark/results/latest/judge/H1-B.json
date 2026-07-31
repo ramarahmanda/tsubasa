@@ -1,0 +1,20 @@
+{
+  "qid": "H1",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly names the intermediate state as half-dead (BTP_HALF_DEAD) and explains the two-stage process: stage one removes the parent's downlink and marks the leaf half-dead (matching the quoted README:247-259 text about downlink removal and key-space transfer), stage two unlinks the siblings, satisfying required fact 2 via both the staged-work and search-safety framing. No forbidden claims (wrong marker name, deletion of partly-full pages, or rightmost-page deletion) appear.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.08388570000000001,
+  "blind": true,
+  "task_sha256": "dc70dcb0a23c0ca62350183b35d4442bb0211bb4838d3bd6f838dc0c192bf62c",
+  "stub": false,
+  "arm": "B"
+}

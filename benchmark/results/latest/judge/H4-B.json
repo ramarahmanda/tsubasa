@@ -1,0 +1,20 @@
+{
+  "qid": "H4",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states clearly that CloudNativePG does NOT fail over when WAL volume fills, that this avoidance is deliberate (to prevent complicating recovery), and that it leaves the issue for a human administrator to fix — matching both required facts via the quoted instance_manager.md excerpt. The remedy given (expand PVC, then Cluster resource) matches the documented sequence, and all three citations resolved with quoted text supporting the claims made.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0434417,
+  "blind": true,
+  "task_sha256": "3a01fd1f12cf396a6977e0034995a0d14c276f19019171daa8afd03b1052119a",
+  "stub": false,
+  "arm": "B"
+}

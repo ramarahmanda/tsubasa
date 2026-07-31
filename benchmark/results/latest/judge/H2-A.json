@@ -1,0 +1,20 @@
+{
+  "qid": "H2",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly identifies the buffer ring (BAS_BULKWRITE) strategy as protecting shared_buffers during COPY and CREATE TABLE AS SELECT, and states the 16MB size capped at 1/8th of shared_buffers, matching the README quote exactly. It avoids all forbidden claims (does not claim UPDATE/DELETE coverage, does not cite 256KB or vacuum_buffer_usage_limit as the bulk-write size, and does not claim Postgres lacks protection).",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0601817,
+  "blind": true,
+  "task_sha256": "75a9281393edea1a51922e2e1583ef4a7a656be81f2a710c5b68a257c050d14e",
+  "stub": false,
+  "arm": "A"
+}

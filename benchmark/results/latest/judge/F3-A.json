@@ -1,0 +1,20 @@
+{
+  "qid": "F3",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer explicitly states no KEP in the workspace tracks PVC resizing for StatefulSets and names near-miss KEPs (961, 1847, 2599, 3335, 3541) explaining why none touch volumeClaimTemplates resizing, satisfying both required facts without naming any KEP/release as the actual tracker and without misattributing KEP-3751 as the resize mechanism. All five resolved citations are quoted accurately and consistent with the cited source text.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0657897,
+  "blind": true,
+  "task_sha256": "3aa7db198964d626b1d11183d47cb275210e29374c04565050d9c8878ae8a51f",
+  "stub": false,
+  "arm": "A"
+}

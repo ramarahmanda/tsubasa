@@ -1,0 +1,24 @@
+{
+  "qid": "D2",
+  "category": "d-supersession",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer names the successor as the sig-node KEP 'Kubelet Credential Providers' with status=implemented, matching the required fact and avoiding all forbidden claims. However, it cites the graph id 'adr-20191004-out-of-tree-credential-providers' in its supersedes claim, which the resolution block marks UNRESOLVED, counting as one fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "'(adr-kubelet-credential-providers) --[supersedes]--> (adr-20191004-out-of-tree-credential-providers)' cites graph_id adr-20191004-out-of-tree-credential-providers, marked UNRESOLVED (rule 1)"
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "'(adr-kubelet-credential-providers) --[supersedes]--> (adr-20191004-out-of-tree-credential-providers)' cites graph_id adr-20191004-out-of-tree-credential-providers, marked UNRESOLVED (rule 1)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0393167,
+  "blind": true,
+  "task_sha256": "937a5cec6461eae88df01e18a8b5a79b7722894a9d17c674b0abf77019bd2df4",
+  "stub": false,
+  "arm": "B"
+}

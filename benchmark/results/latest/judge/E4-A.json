@@ -1,0 +1,27 @@
+{
+  "qid": "E4",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 1,
+  "rationale": "The answer's headline and closing summary answer the status question with 'Beta' ('Status of KEP-1287 ... as of 2025-06-01: **Stage: Beta**' and 'as of 2025-06-01, in-place pod resource updates were in **Beta**'), which is an explicitly forbidden claim even though the embedded yaml block also happens to show 'status: implementable'. The forbidden-claim violation makes the answer wrong regardless of the buried correct value. Separately, the README.md:1622-1628 citation is quoted as supporting a list of 'Implementation History' items (ResizeStatus->conditions, memory-limit downsize handling, ResizeRestartPolicy rename, AllocatedResources re-add, Actuated resources), but the actual quoted lines are about observability/metrics questions and do not contain any of that content, so this is a fabricated attribution.",
+  "required_missing": [],
+  "contradictions": [
+    "'**Stage: Beta**' presented as the answer to 'Status of KEP-1287 ... as of 2025-06-01'",
+    "'as of 2025-06-01, in-place pod resource updates were in **Beta** (since v1.33)'"
+  ],
+  "fabrications": [
+    "Citing README.md:1622-1628 to support 'the v1.33 beta cycle work included: replacing ResizeStatus with conditions, improving memory-limit downsize handling, renaming ResizeRestartPolicy NotRequired -> PreferNoRestart ..., re-adding AllocatedResources ..., and introducing Actuated resources' when the quoted lines at 1620-1628 are actually about resize-request/metric observability questions, not this implementation history list (rule 2)."
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "Citing README.md:1622-1628 to support 'the v1.33 beta cycle work included: replacing ResizeStatus with conditions, improving memory-limit downsize handling, renaming ResizeRestartPolicy NotRequired -> PreferNoRestart ..., re-adding AllocatedResources ..., and introducing Actuated resources' when the quoted lines at 1620-1628 are actually about resize-request/metric observability questions, not this implementation history list (rule 2)."
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1157207,
+  "blind": true,
+  "task_sha256": "47b67f0be656453386d2d2c9252d0acfd8987b52d319b7d5220ea45326840e05",
+  "stub": false,
+  "arm": "A"
+}

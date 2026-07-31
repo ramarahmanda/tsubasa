@@ -1,12 +1,20 @@
 ---
 name: captain-onboard
-description: Use when the user wants to CREATE a captain here — "set up tsubasa", "be my captain", "init a captain for this repo/workspace", "I want a captain-<name>". Scaffolds .tsubasa/, auto-detects knowledge sources, runs the first ingest, and reports what the captain learned.
+description: Use when the user wants to CREATE a captain here — "set up tsubasa", "be my captain", "init a captain for this repo/workspace", "I want a captain-<name>" — or to UPDATE an existing one after updating the CLI ("I upgraded tsubasa, now what"). Scaffolds .tsubasa/, auto-detects knowledge sources, runs the first ingest, and reports what the captain learned; runs `tsubasa upgrade` instead when a captain already exists here.
 ---
 
 # Captain onboard
 
 Birth a captain in this repo or workspace. Everything through conversation —
 the user never touches the CLI.
+
+## Already a captain here?
+
+If `.tsubasa/captain.toml` exists, this repo has a captain and `init` will
+refuse. Run `tsubasa upgrade` instead: it is idempotent and brings a captain
+built by an older tsubasa up to date (schema stamp, source graph, memory
+tiers), reporting every change. Then stop, and report what changed. Only run
+the steps below when there is no captain here.
 
 ## Steps
 
@@ -28,18 +36,20 @@ the user never touches the CLI.
    register every confirmed source with
    `tsubasa source add <adapter> <path> [--glob "<glob>"]`.
    **NEVER hand-edit captain.toml** — the command validates and keeps it parseable.
-5. **Persona check.** init writes the default persona principles into
+5. **Persona check.** init generates `.tsubasa/persona.md` and includes it from
    `CLAUDE.md` alongside the hot-memory include: response rules (straight
-   answers, cite or "I don't know", push back on ADR conflicts), the enforced
-   ADR format, and communication rules per Strunk & White's *The Elements of
-   Style* ("omit needless words"). Verify the block is present, do NOT
-   duplicate it elsewhere, and tell the user in one line where it lives and
-   that it is theirs to edit. From this step on, ANSWER IN THAT STYLE — the
+   answers, cite or "I don't know", never an id you did not read, the recorded
+   value first, push back on ADR conflicts), the enforced ADR format, and
+   communication rules per Strunk & White's *The Elements of Style* ("omit
+   needless words"). Read it, verify both include lines are present, do NOT
+   duplicate the rules anywhere, and tell the user in one line that persona.md
+   is generated (tsubasa rewrites it on `upgrade`) and their own additions go in
+   `CLAUDE.md` around the include. From this step on, ANSWER IN THAT STYLE — the
    onboarding report itself is the first demonstration of the persona.
 6. **First ingest**: `tsubasa ingest` (deterministic: docs, tags, ADR-marked
    commits).
 7. **Code index — always, not optional.** `tsubasa index`: deterministic
-   code-only graphify indexes per fleet repo (local AST, no LLM, seconds per
+   code-only graphify indexes per workspace repo (local AST, no LLM, seconds per
    repo; non-code files excluded by design). Then `tsubasa link` to seed
    anchors between graph entities and code nodes. This is what lets queries
    join the why (native graph) to the what-is (code graph).

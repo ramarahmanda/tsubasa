@@ -1,0 +1,20 @@
+{
+  "qid": "H3",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer gives the required 'No' with the correct reasoning: walsenders are told to finish sending WAL (including the shutdown checkpoint) and exit only after regular backends have died and the checkpointer has written the shutdown checkpoint, matching required facts 1 and 2 via the quoted postmaster.c and walsender.c evidence. All three resolved citations match their quoted content, and no citation is marked UNRESOLVED, so no fabrication is provable; the unquoted commit-message detail for a8f45dee91 is uncheckable and excluded per the rules.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.10703069999999999,
+  "blind": true,
+  "task_sha256": "c789fac9fc3bdc7f0baeb7f408803b1876430a67957192545ea592bf9844eb09",
+  "stub": false,
+  "arm": "A"
+}

@@ -1,0 +1,20 @@
+{
+  "qid": "X6",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required range '40 to 55 seconds' and correctly attributes it to the change in `--node-monitor-grace-period` from 40s (1.29-1.31) to 50s (1.32+), matching failover.md:243-250. It cites KEP-589 only to explicitly flag it as stale/unusable for cross-verification rather than sourcing the 50s figure from it, and frames pod-eviction tolerationSeconds and failoverDelay correctly as separate/additive rather than part of the detection window, avoiding all forbidden claims.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0693957,
+  "blind": true,
+  "task_sha256": "e677417e3aefabb9093f6f43c014d3c36ebddb3c7acef13e65eb9e4c3a5d9ddf",
+  "stub": false,
+  "arm": "A"
+}

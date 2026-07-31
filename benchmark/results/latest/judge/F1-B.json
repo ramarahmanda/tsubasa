@@ -1,0 +1,20 @@
+{
+  "qid": "F1",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states plainly that no ADR, event, or commit records a choice of CloudNativePG over Zalando (required fact 1), and cites the cnpg FAQ's list of other operators including Zalando as the closest thing the workspace has, quoting the actual list language (required fact 2). It mentions the Patroin/StatefulSets line as applying to 'most of these operators' (matching the quoted text, not singling out Zalando) and explicitly labels the architecture contrast as 'not a rationale for a choice,' so it does not cross into the forbidden decision-narrative territory.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0477127,
+  "blind": true,
+  "task_sha256": "9f7488d2a8bc8a3d367a2b477e0d1ef06a849de1de525cb818cfb9867d2780cf",
+  "stub": false,
+  "arm": "B"
+}

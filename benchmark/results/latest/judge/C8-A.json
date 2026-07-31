@@ -1,0 +1,20 @@
+{
+  "qid": "C8",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required fact directly: 'status: implementable', 'stage: beta', targeted for v1.35, from kep.yaml. It correctly names KEP-4569 only as the predecessor/foundation, not as the removal status, and correctly states removal has no committed timeline and won't happen before v1.38, matching the record.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.036867699999999996,
+  "blind": true,
+  "task_sha256": "1ef888772aeaf929eda2e37a3dd5adc33dbc14722e2c3fb5690eba4a495867b1",
+  "stub": false,
+  "arm": "A"
+}

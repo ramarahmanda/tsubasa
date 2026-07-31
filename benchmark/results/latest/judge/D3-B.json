@@ -1,0 +1,20 @@
+{
+  "qid": "D3",
+  "category": "d-supersession",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states both required facts: KEP-3299 'KMS v2 Improvements' as the successor, and KEP-3130's own status as `replaced` (matching the quoted kep.yaml:8 line). All seven citations resolved, and the graph edge (kms-v2-improvements supersedes kms-observability) matches the required superseded_by relation just stated from the other direction; the unverified 'status: implemented' claim for 3299 is uncheckable but not contradicted by any quoted source, so it is not a fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0503857,
+  "blind": true,
+  "task_sha256": "c3eee3d51d1af89c3454236c7f96caa80ea345adff3bdbd005c9c82b1a271ed8",
+  "stub": false,
+  "arm": "B"
+}

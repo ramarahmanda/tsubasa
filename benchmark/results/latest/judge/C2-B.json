@@ -1,0 +1,30 @@
+{
+  "qid": "C2",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 3,
+  "rationale": "The answer explicitly states KEP-3063's status as 'withdrawn' backed by resolved sources (kep.yaml/README/graph), satisfying the required fact without stating any forbidden status. However, three timeline claims rest on graph_ids marked UNRESOLVED in the resolution block (evt-20240902, evt-20241004, evt-20250813), each attaching specific asserted content (API maturation details, the withdrawal date/commit pairing, and extended-resources KEP details) to invented citations.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "'2024-09-02: API maturation for v1.31 (kubelet plugin perms, ResourceQuota) [evt-20240902-...]' rests on UNRESOLVED graph_id evt-20240902 (rule 1)",
+    "'2024-10-04: classic DRA (KEP-3063) formally withdrawn, commit be482d3e; focus shifts to KEP-4381/4817 [evt-20241004-...]' rests on UNRESOLVED graph_id evt-20241004 (rule 1)",
+    "'2025-08-13: extended resources (KEP-5004/5339) and consumable capacity (KEP-5075) [evt-20250813-...]' rests on UNRESOLVED graph_id evt-20250813 (rule 1)"
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "'2024-09-02: API maturation for v1.31 (kubelet plugin perms, ResourceQuota) [evt-20240902-...]' rests on UNRESOLVED graph_id evt-20240902 (rule 1)",
+    "'2024-10-04: classic DRA (KEP-3063) formally withdrawn, commit be482d3e; focus shifts to KEP-4381/4817 [evt-20241004-...]' rests on UNRESOLVED graph_id evt-20241004 (rule 1)",
+    "'2025-08-13: extended resources (KEP-5004/5339) and consumable capacity (KEP-5075) [evt-20250813-...]' rests on UNRESOLVED graph_id evt-20250813 (rule 1)"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0585127,
+  "blind": true,
+  "task_sha256": "69c282c4bd482e8fdb4077083726cb157de7e59ff8fa1a110b3390cee5d853ca",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

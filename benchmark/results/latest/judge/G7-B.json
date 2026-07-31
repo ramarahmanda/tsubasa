@@ -1,0 +1,24 @@
+{
+  "qid": "G7",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer states the required facts precisely: sequence decoding was implemented (0da92dc530) and reverted (2c7ea57e56), quoting the verbatim transactional/non-transactional diagnosis. No forbidden claims are made — it does not claim decoding shipped in v15, does not attribute the revert to another cause, and the 'current state' sequencesync.c material is presented as a distinct pull-based mechanism (a resolved but unquoted citation), not a re-landing plan for decoding. However, the answer twice cites 'decode.c/reorderbuffer.c' as evidence there's no live sequence-decoding path, and that citation is marked UNRESOLVED.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "\"decode.c/reorderbuffer.c today have no live sequence-decoding path\" and the repeated \"`git log` confirms `decode.c`/`reorderbuffer.c` have had no sequence-decoding hook\" — citation UNRESOLVED, rule 1"
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "\"decode.c/reorderbuffer.c today have no live sequence-decoding path\" and the repeated \"`git log` confirms `decode.c`/`reorderbuffer.c` have had no sequence-decoding hook\" — citation UNRESOLVED, rule 1"
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0644907,
+  "blind": true,
+  "task_sha256": "97011da3f8d9c7f52f81f0d3da62492ced67b36509aa3e8e0d2a7c8d6f5f8ada",
+  "stub": false,
+  "arm": "B"
+}

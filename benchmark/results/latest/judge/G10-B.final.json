@@ -1,0 +1,22 @@
+{
+  "qid": "G10",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the fast path was implemented (commit 2aa6e331ea) and reverted a year later (commit dd9ac7d5d8, backpatched through 12), satisfying required fact 1, and correctly describes the livelock hazard (workers repeatedly retrying skipped jobs on the same relations) with the manual VACUUM FREEZE escape hatch, satisfying required fact 2. It avoids all forbidden claims: it does not say the fast path is currently supported, does not deny the attempt existed, explicitly notes the root cause was never fully identified, and attributes the revert to the lockdown behavior on shared catalogs rather than wraparound-safety or data loss.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0901227,
+  "blind": true,
+  "task_sha256": "5c939c9bc4751fa86ca7a206401850f11edaa285b5486563e3273c8998554fbc",
+  "stub": false,
+  "arm": "B",
+  "graded_turn": "final",
+  "turns_used": 2
+}

@@ -30,7 +30,6 @@ class DocAdapter(Adapter):
 
     def collect(self) -> list[Event]:
         base = (self.root / self.source.path).resolve()
-        pattern = self.source.glob or "**/*.md"
         kind = slugify(str(self.source.options.get("kind", "doc"))) or "doc"
         impact = self.source.options.get("impact", "medium")
         impact = impact if impact in ("high", "medium", "low") else "medium"
@@ -38,15 +37,13 @@ class DocAdapter(Adapter):
         events: list[Event] = []
         if not base.is_dir():
             return events
-        for path in sorted(base.glob(pattern)):
-            if not path.is_file():
-                continue
+        for path in self.source_files(base):
             rel = str(path.relative_to(self.root)) if path.is_relative_to(self.root) else str(path)
             text = path.read_text(errors="replace")
             digest = hashlib.sha1(text.encode()).hexdigest()[:12]
             if seen.get(rel) == digest:
                 continue
-            if path.suffix == ".toon":
+            if path.suffix.lower() == ".toon":
                 ev = self._structured_event(text, rel, kind, impact, digest)
             else:
                 ev = self._prose_event(text, rel, kind, impact, digest)

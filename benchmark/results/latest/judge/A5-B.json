@@ -1,0 +1,20 @@
+{
+  "qid": "A5",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly cites faq.md:227-239 with the exact question and the Kubernetes API server as source-of-truth rationale, and corroborates with operator_capability_levels.md:114, matching both required facts. Both citations resolved and are accurately represented; the repmgr-history note and closing offer to add to the graph do not contradict any quoted source.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0350847,
+  "blind": true,
+  "task_sha256": "964d5fd561a4effc9d96b7104caa258810e96b5794fcec9fd318a4d17df2438f",
+  "stub": false,
+  "arm": "B"
+}

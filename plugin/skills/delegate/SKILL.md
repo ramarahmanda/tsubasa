@@ -8,9 +8,15 @@ description: Use when implementation work is approved and ready to be executed �
 You are the team lead. Subagents implement; you plan, brief, supervise,
 validate, and record. Escalate one level at a time: subagent → you → user.
 
+Work threads on the ADR id: brief → branch → PR → event all carry it.
+
 ## 1. Brief (knowledge-sliced)
 
-For each unit of work, build a brief containing ONLY:
+The SubagentStart hook already gives every worker the invariant house rules —
+citation contract, no AI attribution, ADR id in the branch name, escalate
+rather than guess on permissions and credentials. Do not restate them.
+
+The brief carries only what is task-specific:
 - the scoped goal (one deliverable, verifiable)
 - the relevant knowledge slice: run `tsubasa query "<topic>"` and paste the
   relevant entities/relations/citations into the brief — the subagent gets
@@ -18,10 +24,7 @@ For each unit of work, build a brief containing ONLY:
 - hard constraints from ADRs and open goals, stated as MUST/MUST NOT with
   ids ("MUST use sync writes — adr-gw-session-double-write"; "MUST NOT deepen
   gateway coupling — goal-standard-api retires it")
-- the branch convention: include the ADR id in the branch name
-
-Record it: `tsubasa task new --title "..." --adr <adr-id>` then
-`tsubasa task set <id> in_progress --by captain --evidence "briefed subagent"`.
+- the ADR id the work threads on, and which files are the worker's to touch
 
 ## 2. Spawn
 
@@ -31,10 +34,39 @@ when two subagents touch the same repo.
 
 ## 3. Supervise — the not-stuck loop
 
-The harness notifies you when a subagent finishes; between notifications:
+The harness notifies you when a subagent finishes. Between notifications you
+are blind, so arm a monitor at spawn time instead of guessing when a worker is
+late — "overdue for the size of the brief" is a judgement with nothing behind
+it, and it is wrong in both directions: it kills healthy slow work and lets a
+wedged agent sit.
 
-- **Check interim output** (TaskOutput) when a notification is overdue for
-  the size of the brief. No progress across two checks = stalled.
+**Arm one monitor for the whole fleet, 45s tick.** It emits two kinds of line:
+`idle:` for any worker whose output has not grown since the last tick, and a
+`progress:` heartbeat every third tick (~2min) whether or not anything moved.
+
+The heartbeat matters as much as the idle line. Silence is ambiguous — a fleet
+running cleanly and a monitor that died look identical from the outside — so
+the fleet reports in on a fixed cadence and you can say what every worker is
+doing without opening any of them.
+
+    Monitor(description: "subagent progress", command: <<'SH'
+    prev=""; n=0
+    while :; do
+      cur=$(wc -c <task-output-files> | sed 's/^ *//')
+      diff <(printf '%s\n' "$prev") <(printf '%s\n' "$cur") \
+        | sed -n 's/^< \(.*\)/idle: \1/p'
+      n=$((n + 1))
+      [ $((n % 3)) -eq 0 ] &&
+        printf 'progress: %s\n' "$(printf '%s' "$cur" | tr '\n' ' ')"
+      prev=$cur
+      sleep 45
+    done
+    SH)
+
+- **Two consecutive idle ticks = stalled.** One tick is not: a worker mid-tool
+  call writes nothing for a while and is perfectly healthy.
+- **Check interim output** (TaskOutput) on the workers the monitor names, not
+  on all of them.
 - **Stalled on a question you can answer** (config value, secret location,
   env URL, prior decision): answer it from the graph (`tsubasa query`) and
   send it back via SendMessage. This is the captain's main value — most
@@ -54,13 +86,12 @@ Diff review against the graph, not just correctness:
 - contradicts current knowledge (query the topic again) → send back or, if
   the code is right and the graph is stale, fix the graph (`tsubasa event
   add`) and accept
-- passes → `tsubasa task set <id> in_review --evidence "PR-…"` (merge moves
-  it to done via ingest)
 
 ## 5. Record
 
 Every accept/reject and every escalation that changed something becomes an
-event (`tsubasa event add --type note ...`) — the next captain session must
-know what happened here without reading this transcript.
+event (`tsubasa event add --type note --ref adr:<adr-id> ...`) — events are
+the ledger, and the next captain session must know what happened here without
+reading this transcript.
 
 The user sees: the plan, escalations, and validated results. Not the noise.

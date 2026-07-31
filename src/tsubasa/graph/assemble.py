@@ -15,8 +15,12 @@ from ..storage import Store
 from .reconcile import reconcile_event
 
 IMPACT_RANK = {"low": 0, "medium": 1, "high": 2}
+# `task-` is retired: nothing mints it any more. It stays in the tolerated set
+# because replaying an old log must reproduce that log's relations, not quietly
+# demote them to key facts.
 _ID_PREFIX_RE = re.compile(
-    r"^(svc-|feat-|ext-|env-|team-|secret-|goal-|adr-|task-|inc-|evt-|doc-|principle-|module-|person-|PR-)"
+    r"^(svc-|feat-|ext-|env-|team-|secret-|goal-|adr-|inc-|evt-|doc-|principle-|module-|person-|PR-"
+    r"|task-)"
 )
 
 

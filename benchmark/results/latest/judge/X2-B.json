@@ -1,0 +1,29 @@
+{
+  "qid": "X2",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer collapses to a flat 'Yes' and describes kubeadm's join process as actively adding etcd members as learners today, when the KEP status is 'provisional' with no shipped milestone; it also never engages etcd's own API (isLearner/MemberPromote) and answers entirely from the kubeadm side, matching the forbidden 'single repository' and 'treating an unshipped feature as functioning' patterns. All six citations resolved and none contradicted quoted lines directly, so no fabrications are countable under the strict rules (the contradiction is charged to accuracy per the no-double-count instruction).",
+  "required_missing": [
+    "etcd's own learner-mode API (isLearner, MemberPromote) is never cited or stated",
+    "the split framing (yes via etcd directly, no via kubeadm join) is absent — the answer gives a flat 'Yes' and portrays kubeadm as already performing the behavior"
+  ],
+  "contradictions": [
+    "'Yes — supported via KEP-3614' and 'New control-plane join adds the etcd member as a learner first' presented as current kubeadm behavior, despite the KEP being status: provisional with latest-milestone '0.0' (nothing shipped)",
+    "Answer is built entirely from the kubeadm-enhancements KEP and README.md (kubeadm repo), never citing etcd's own API/docs — matches the forbidden 'answering from only one repository'"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "etcd's own learner-mode API (isLearner, MemberPromote) is never cited or stated",
+    "the split framing (yes via etcd directly, no via kubeadm join) is absent — the answer gives a flat 'Yes' and portrays kubeadm as already performing the behavior"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1010257,
+  "blind": true,
+  "task_sha256": "adc3bba8337099b0f260d9094c117081621a76554ac55230b2336a3bfb25aba2",
+  "stub": false,
+  "arm": "B"
+}

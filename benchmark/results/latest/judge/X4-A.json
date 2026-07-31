@@ -1,0 +1,26 @@
+{
+  "qid": "X4",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer explicitly claims 'even etcd's own \"fix\" leaves corruption detection off unless an operator explicitly enables --feature-gates=InitialCorruptCheck=true', asserting etcd left the gap unremediated despite the postmortem's DONE-marked action item — this is the forbidden 'claiming etcd left it unfixed' claim, so accuracy is wrong. No additional fabrications are countable: the cited etcd_features.go and cnpg citations are either quoted-and-matching or resolved-but-unquoted (uncheckable, not fabrication), and the forbidden claim itself is scored only on accuracy per the rules.",
+  "required_missing": [
+    "Required fact 2 (reversibility): the answer never states that checksums can be enabled on an existing cluster at runtime via pg_enable_data_checksums() or offline via pg_checksums — it omits any discussion of whether the gap is reversible."
+  ],
+  "contradictions": [
+    "\"even etcd's own 'fix' leaves corruption detection off unless an operator explicitly enables --feature-gates=InitialCorruptCheck=true (or the older --experimental-initial-corrupt-check flag)\" — contradicts the record's remediation status (action item marked DONE at line 121) by asserting etcd left the issue unfixed."
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "Required fact 2 (reversibility): the answer never states that checksums can be enabled on an existing cluster at runtime via pg_enable_data_checksums() or offline via pg_checksums — it omits any discussion of whether the gap is reversible."
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.12848869999999998,
+  "blind": true,
+  "task_sha256": "cc3e1f3d917313231165872ede0b75446809165611f1fd3f30f1cef683f88b08",
+  "stub": false,
+  "arm": "A"
+}

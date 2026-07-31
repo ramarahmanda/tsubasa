@@ -1,0 +1,26 @@
+{
+  "qid": "A4",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer never cites `keps/sig-architecture/0000-kep-process/README.md`, instead naming `api/proposal.go` as the sole definition site for the legal status values, which is an explicitly forbidden claim (derived location as definition site with the README never cited). Fact 1 (status recorded in kep.yaml's `status` field, with a concrete example) is stated correctly. The specific line-range claims about proposal.go (Status enum, ValidStatuses, IsValid, KEPHandler.Validate) rest on a path-only resolution with no quoted content, so they are uncheckable rather than provably fabricated.",
+  "required_missing": [
+    "The legal values (`provisional`, `implementable`, `implemented`, `deferred`, `rejected`, `withdrawn`, `replaced`) as defined in `keps/sig-architecture/0000-kep-process/README.md` are never cited"
+  ],
+  "contradictions": [
+    "Naming `api/proposal.go` as the definition site for the legal status values without ever citing `0000-kep-process/README.md`, which is explicitly forbidden"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "The legal values (`provisional`, `implementable`, `implemented`, `deferred`, `rejected`, `withdrawn`, `replaced`) as defined in `keps/sig-architecture/0000-kep-process/README.md` are never cited"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.058596699999999995,
+  "blind": true,
+  "task_sha256": "db4c9993a3717851636dc9e67b59b4c213be10af640ae0a643f2d1a7a78fb55f",
+  "stub": false,
+  "arm": "A"
+}

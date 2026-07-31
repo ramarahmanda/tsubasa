@@ -1,0 +1,20 @@
+{
+  "qid": "D4",
+  "category": "d-supersession",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly identifies KEP-1205 'Bound Service Account Tokens' as replacing KEP-2451, and correctly attributes ownership to sig-auth, matching all required facts. All cited sources resolved and the quoted README line supports the replacement claim; the kep.yaml details (status: implemented, stage: stable) are unquoted but the resolver confirms the file exists, so they are uncheckable but not fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0346617,
+  "blind": true,
+  "task_sha256": "cd8e8ea3be80d02cba9dd070f6d179ddd54f3fe407bec94c93d0214df8aca028",
+  "stub": false,
+  "arm": "A"
+}

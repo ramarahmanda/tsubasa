@@ -1,0 +1,22 @@
+{
+  "qid": "B3",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states both halves of fact 1 (no, CNPG uses the Kubernetes API server as source of truth) with a direct quote from faq.md:230-234, and explains fact 2's indirection precisely (etcd underlies the API server but is not a direct cnpg dependency, transitive not absent). No forbidden claims are made; the answer explicitly rejects a direct etcd/Patroni-shaped dependency.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0365677,
+  "blind": true,
+  "task_sha256": "2ec6d8985b67b2ace3ca632b3ef0a33180e3aa4e733d8408522ef6988bcae9de",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 2
+}

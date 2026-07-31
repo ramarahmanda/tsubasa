@@ -1,0 +1,22 @@
+{
+  "qid": "E3",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer's headline states 'As of 2022-01-01: implemented (beta), deprecated' as the reported status, appending 'deprecated' onto the required status string; this is the explicitly forbidden pattern of treating the milestone.deprecated key as part of the status field, even though the body separately and correctly quotes `status: implemented (beta)`. Because the forbidden claim is present (however hedged/clarified later), the answer must be scored wrong on accuracy. All five citations resolved and the quoted status/removed values match the record, so no fabrication is provable.",
+  "required_missing": [],
+  "contradictions": [
+    "Headline framing 'implemented (beta), deprecated' as the 2022-01-01 status value, conflating the milestone.deprecated key with the status field"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0778857,
+  "blind": true,
+  "task_sha256": "32373ba1ad47b8fe7a46f59a26c586c68c69dc4909a1e43cb89139b58ac8c5ec",
+  "stub": false,
+  "arm": "B"
+}

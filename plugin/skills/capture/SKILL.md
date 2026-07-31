@@ -1,6 +1,6 @@
 ---
 name: captain-capture
-description: Use at DECISION MOMENTS — the user accepts a proposed design/approach after discussion, approves a plan, or concludes "let's do X". Persists the decision as an ADR + task + event in the tsubasa knowledge graph so it is never lost.
+description: Use at DECISION MOMENTS — the user accepts a proposed design/approach after discussion, approves a plan, or concludes "let's do X". Persists the decision as an ADR + event in the tsubasa knowledge graph so it is never lost.
 ---
 
 # Captain capture
@@ -18,7 +18,7 @@ that makes the Captain the one who "remembers everything".
    goal-decommission-legacy-sso" / "⚠ conflicts with goal-x because…"). Link
    supporting work with a `--relation <adr>:works_toward:<goal-id>`.
 2. **Validation gate** — one line, before writing anything:
-   `Saving: adr-<slug>, task[todo], links to <entities>[, supersedes <old>]. OK?`
+   `Saving: adr-<slug>, links to <entities>[, supersedes <old>]. OK?`
    If it supersedes something recent or load-bearing, ask the one question that
    captures the WHY (e.g. "that ADR chose Kafka for ordering — has that
    requirement changed?") and put the answer in the event body.
@@ -28,13 +28,12 @@ that makes the Captain the one who "remembers everything".
    - `tsubasa event add --type decision --title "..." --impact <i> --domains <d> \
         --ref adr:adr-<slug> [--supersedes <old-entity-id>] \
         --entity adr-<slug>:adr:"<title>":"<one-line>" --body "..."`
-   - `tsubasa task new --title "..." --adr adr-<slug> --domains <d>`
 4. Tell the user the branch convention: include `adr-<slug>` in the branch or
-   PR name and the task tracks itself from there.
+   PR name so the work threads back to this decision.
 
 ## Rules
 
 - ADR ids: `adr-<kebab-slug>`, stable forever, they are the thread that links
-  task → branch → PR → code.
+  decision → branch → PR → code.
 - Never store secret values; secret-refs only (name/location).
 - One decision = one event. Do not batch.

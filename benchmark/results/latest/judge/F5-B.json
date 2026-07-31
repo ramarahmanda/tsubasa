@@ -1,0 +1,20 @@
+{
+  "qid": "F5",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states 'No GA' explicitly scoped to the KEP record (kep.yaml status: provisional, stage: beta, and absence from Implementation History), matching the required non-verdict on GA. It correctly names v1.29 as the beta milestone via README.md:523 without conflating it with GA, satisfying required fact 2 and avoiding all forbidden claims.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.055018700000000004,
+  "blind": true,
+  "task_sha256": "ec3bbc3b906791dc721b2131b35328cc3083a08b1708ea52d4cc182ef97e838f",
+  "stub": false,
+  "arm": "B"
+}

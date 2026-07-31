@@ -1,0 +1,26 @@
+{
+  "qid": "G4",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer correctly says the idea is unsafe and correctly names the failure mode (silently missing tuples/corrupt index), but it never mentions that 'ignore CIC in vacuum's horizon' was actually implemented (commit d9d076222f, shipped in PG14) and later reverted (e28bb88519) after causing exactly that corruption in production. Instead it frames the current narrow scope of PROC_IN_SAFE_IC as settled, deliberate design ('current Postgres deliberately doesn't do it'), which matches the forbidden claim of presenting the reversal as permanent by design rather than a walked-back experiment that the revert message says might be retried later. No fabrications are provable: the two SHA/attribution citations that aren't independently quoted are uncheckable per the resolution rules, and the bare (slash-less) indexcmds.c line citations were never extracted into the resolution block, so absence there is not evidence of invention.",
+  "required_missing": [
+    "That the ignore-indexing-sessions-in-vacuum's-horizon change was actually implemented and shipped in PG14 (commit d9d076222f) and later reverted (commit e28bb88519) in 2022 after being found unsafe in production"
+  ],
+  "contradictions": [
+    "Frames the current narrow scoping of PROC_IN_SAFE_IC and vacuum's horizon exclusion ('current Postgres deliberately doesn't do it') as settled, principled design without ever acknowledging that a broader ignore-CIC exclusion was tried, shipped, and reverted — presenting the reversal as permanent by design, which is explicitly forbidden."
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "That the ignore-indexing-sessions-in-vacuum's-horizon change was actually implemented and shipped in PG14 (commit d9d076222f) and later reverted (commit e28bb88519) in 2022 after being found unsafe in production"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.1949797,
+  "blind": true,
+  "task_sha256": "cf737e23547bd4e4fa8af4b438c82839fa04a3447e3fa0a7e49bc5cc5d4feaa5",
+  "stub": false,
+  "arm": "A"
+}

@@ -1,0 +1,20 @@
+{
+  "qid": "D1",
+  "category": "d-supersession",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states both required facts: KEP 536 was replaced by KEP 2433 'Topology Aware Hints', and KEP 536's status is 'replaced', both supported by resolved citations with quoted text matching exactly. The extra claim about KEP 2433's stage/milestone (kep.yaml:30-35) points to unquoted lines of an already-resolved file, which counts as uncheckable detail rather than fabrication.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.042712700000000006,
+  "blind": true,
+  "task_sha256": "12d267969ad79fd70d3bd054455c5224e1125efb5977be1c621c4c3a94dff461",
+  "stub": false,
+  "arm": "A"
+}

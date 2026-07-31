@@ -1,0 +1,20 @@
+{
+  "qid": "A5",
+  "category": "a-where",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer cites faq.md:227-239 and quotes the exact FAQ question and answer, which states both required facts: the Q&A entry naming Patroni/repmgr/Stolon (faq.md), and the reason that CloudNativePG extends the Kubernetes controller and uses the Kubernetes API server as the single source of truth. No forbidden claims are made. The additional citation to technical-architecture.md:17-27 resolved but was not quoted by the resolver, so its content cannot be checked and is not counted as fabrication under the stated rules.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.05002469999999999,
+  "blind": true,
+  "task_sha256": "9341e116663df3394ac3815d55c9fe5eecd46b5ad897f22ba85c8e9d1e86ba3e",
+  "stub": false,
+  "arm": "A"
+}

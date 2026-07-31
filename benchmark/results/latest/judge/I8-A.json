@@ -1,0 +1,29 @@
+{
+  "qid": "I8",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The candidate claims kubernetes-enhancements has no matching KEP or design doc content and that no file mentions kubeadm at all, but the workspace explicitly contains the kep.yaml and README.md at kubernetes-enhancements/keps/sig-cluster-lifecycle/kubeadm/2506-Remove-ClusterStatus-from-kubeadm-config/ describing exactly this ClusterStatus removal. This directly contradicts the record, so accuracy is wrong; the required facts (identifying the conflict and citing the KEP) are entirely missing.",
+  "required_missing": [
+    "ClusterStatus was removed from kubeadm-config and why (staleness)",
+    "citation of the KEP by path or number/status"
+  ],
+  "contradictions": [
+    "'No file in any repo mentions `kubeadm` at all (case-insensitive search across all four repos returned zero matches).'",
+    "'`kubernetes-enhancements` ... has no matching KEP or design doc content for this either.'"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "ClusterStatus was removed from kubeadm-config and why (staleness)",
+    "citation of the KEP by path or number/status"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0338147,
+  "blind": true,
+  "task_sha256": "b0d050e89d11a67c14bcbd2321c393ad8e5cdcbb7f2c7bd095e0f5caf1b0f892",
+  "stub": false,
+  "arm": "A"
+}

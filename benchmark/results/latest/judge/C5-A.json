@@ -1,0 +1,20 @@
+{
+  "qid": "C5",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required fact (status: withdrawn, kep.yaml:17, last-updated 2023-05-28) consistently with a 'no' answer, and does not make any forbidden claims (explicitly limits progress to alpha only). Commit sha 40a9f8e5 resolved but its author/message/diff details are uncheckable per rules and thus not fabrication; all other citations resolved with quoted content supporting the claims made.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0423517,
+  "blind": true,
+  "task_sha256": "0d4c04260a7f4df402f97148cd67cb208431a0cfa7bf84d1a27e0a8209493ceb",
+  "stub": false,
+  "arm": "A"
+}

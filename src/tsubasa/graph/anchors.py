@@ -6,7 +6,7 @@ node NAME, not internal id, so graphify rebuilds don't break links.
 
 Link kinds (`by`):
     seed   deterministic: repo-level + strong name matches
-    xrepo  cross-repo: fleet service names found in another repo's nodes
+    xrepo  cross-repo: workspace service names found in another repo's nodes
     link   proposed by the LLM pass (tsubasa link --llm)
     recall saved ambiently when the captain used both layers together
 """
@@ -22,7 +22,7 @@ from . import graphify_bridge
 
 
 def seed(store: Store, root: Path, cfg: CaptainConfig, log=print) -> int:
-    """Deterministic anchor seeding across all fleet graphify indexes."""
+    """Deterministic anchor seeding across all workspace graphify indexes."""
     entities = store.load_entities()
     anchors = store.load_anchors()
     graphs = graphify_bridge.load_graphs(root, cfg)
@@ -32,7 +32,7 @@ def seed(store: Store, root: Path, cfg: CaptainConfig, log=print) -> int:
     before = len(anchors)
 
     svc_by_repo = {slugify(repo_name): f"svc-{slugify(repo_name)}" for repo_name, _ in graphs}
-    fleet_names = _fleet_service_names(entities)
+    workspace_names = _workspace_service_names(entities)
 
     for repo_name, g in graphs:
         repo_before = len(anchors)
@@ -56,8 +56,8 @@ def seed(store: Store, root: Path, cfg: CaptainConfig, log=print) -> int:
                 if hit:
                     anchors.append({"entity": e.id, "repo": repo_name, "node": hit, "by": "seed"})
 
-        # 3. cross-repo: another fleet service's name inside THIS repo's nodes
-        for other_id, tokens in fleet_names.items():
+        # 3. cross-repo: another workspace service's name inside THIS repo's nodes
+        for other_id, tokens in workspace_names.items():
             if other_id == repo_svc:
                 continue
             for node_name in node_names:
@@ -74,7 +74,7 @@ def seed(store: Store, root: Path, cfg: CaptainConfig, log=print) -> int:
     return added
 
 
-def _fleet_service_names(entities: dict[str, Entity]) -> dict[str, list[str]]:
+def _workspace_service_names(entities: dict[str, Entity]) -> dict[str, list[str]]:
     """service entity id -> distinctive lowercase name tokens (len >= 5)."""
     out: dict[str, list[str]] = {}
     for e in entities.values():

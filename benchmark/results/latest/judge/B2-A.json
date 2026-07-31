@@ -1,0 +1,20 @@
+{
+  "qid": "B2",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states cnpg relies on Postgres's own native streaming replication/WAL replay and standby.signal mechanism rather than reimplementing it (fact 1), and frames cnpg as an operator that wraps/automates upstream PostgreSQL (the postgres repo), satisfying the operator-to-engine dependency direction (fact 2). No forbidden claims are made — the answer explicitly denies vendoring/forking and denies a reimplemented replication protocol. All cited files resolved but were not quoted in the resolution block, so specific claims about their contents (constants, function bodies) are uncheckable rather than proven wrong, yielding zero fabrications.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0591107,
+  "blind": true,
+  "task_sha256": "ccb79681c511f6e6f7248de83f941a3e5ef8a70543d8b8c0c59e893e5facd32f",
+  "stub": false,
+  "arm": "A"
+}

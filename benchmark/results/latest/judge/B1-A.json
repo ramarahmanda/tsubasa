@@ -1,0 +1,20 @@
+{
+  "qid": "B1",
+  "category": "b-topology",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "All four repositories are named and correctly identified: cloudnative-pg as a Kubernetes operator/platform for PostgreSQL, etcd as a distributed key-value store, kubernetes-enhancements as the KEP tracking repo (not a Kubernetes source tree/fork, avoiding the forbidden claim), and postgres as the upstream PostgreSQL source. No forbidden claims are made and all citations resolved, with commit-level details (shas, messages, dates) being uncheckable but not fabricated per the rules.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0430327,
+  "blind": true,
+  "task_sha256": "5f2fe52c80bbbe6397655364aa1f0502a984f844ffd8ec373c44ec30e5e3bf91",
+  "stub": false,
+  "arm": "A"
+}

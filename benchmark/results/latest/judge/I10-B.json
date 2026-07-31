@@ -1,0 +1,20 @@
+{
+  "qid": "I10",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the required mechanism accurately: spec.backup.retentionPolicy, the XXu format, the barmanObjectStore-only constraint, and cites api/v1/cluster_types.go:2392-2399 whose quoted text matches exactly. No forbidden claim (no deprecation assertion, no wrong format, no VolumeSnapshot claim) is made.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.04738970000000001,
+  "blind": true,
+  "task_sha256": "388088fef56ffe49d97baabbac6921093c70733134e14b19a065e84911aa82bb",
+  "stub": false,
+  "arm": "B"
+}

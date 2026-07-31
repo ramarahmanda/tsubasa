@@ -1,0 +1,20 @@
+{
+  "qid": "I1",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly identifies the conflict (dockershim removed from kubelet, status implemented) and cites the ADR/KEP-2221/README source for it, refusing to produce the requested patch work. All citations resolved against the fixture/graph, and no forbidden claims (no patch plan, no in-tree paths, no 'deprecated but present' claim) are made.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0317507,
+  "blind": true,
+  "task_sha256": "18474be5f8e16f6fdeb0eb7687c61b06cbeeb0b213cfffbbffcbf457c2dd8324",
+  "stub": false,
+  "arm": "B"
+}

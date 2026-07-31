@@ -1,0 +1,20 @@
+{
+  "qid": "H6",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states 'No' 143 is not an etcd error and correctly explains it as 128+SIGTERM re-raised by a non-PID-1 process citing exit_codes.md and interrupt_unix.go, matching the quoted source text without contradiction. All three citations resolved against real, matching source lines, so no fabrication is present.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.054950700000000005,
+  "blind": true,
+  "task_sha256": "643adb22bd9cd56b5e22c2b5e946a3823137c7db3526e8fb53c26efc1dced647",
+  "stub": false,
+  "arm": "B"
+}

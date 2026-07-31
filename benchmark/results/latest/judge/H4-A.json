@@ -1,0 +1,20 @@
+{
+  "qid": "H4",
+  "category": "h-routing",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states clearly that CloudNativePG does not fail over on WAL volume exhaustion and gives the deliberate reason (avoiding failover complicating recovery, leaving it to a human administrator), directly quoting instance_manager.md:454-459, and its recovery description (expand PVC, match Cluster spec size, pod restarts) matches the documented remedy with no forbidden claims present.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0760267,
+  "blind": true,
+  "task_sha256": "7f64670ebc0c51ecfde218128e1fa28468cb802a834abc90d4400cf799c63e40",
+  "stub": false,
+  "arm": "A"
+}

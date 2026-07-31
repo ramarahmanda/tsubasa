@@ -1,0 +1,20 @@
+{
+  "qid": "F5",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states the negative is scoped to the workspace ('based on this workspace... has not graduated to GA' and 'per the KEP's own status/history, GA hadn't happened as of its last update'), satisfying required fact 1, and correctly cites v1.29 beta promotion via kep.yaml stage/beta and README history, satisfying required fact 2 without misreading beta as GA. The git-log commit detail (07ca357d) is a RESOLVED-but-unquoted sha, and the README:519-523 citation is ELIDED, so neither counts as fabrication per the rules.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0525297,
+  "blind": true,
+  "task_sha256": "dc0a7310a71b52281437561864b4dc4f91c35e296d368b31de507e828d0f480e",
+  "stub": false,
+  "arm": "A"
+}

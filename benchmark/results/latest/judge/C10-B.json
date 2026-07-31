@@ -1,0 +1,22 @@
+{
+  "qid": "C10",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states status: implemented explicitly and cites kep.yaml:13 which quotes 'status: implemented', satisfying the required fact. All four citations resolved against the fixture/graph, and the milestone details (alpha v1.22, beta v1.30, creation date, latest-milestone v1.34) are consistent with or directly from the quoted kep.yaml lines.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0312917,
+  "blind": true,
+  "task_sha256": "e3042a8f7f1a4d11ccdac770bf2aa56d48b6921f5e70234ce3d5ea09d6e33934",
+  "stub": false,
+  "arm": "B",
+  "turn": 1,
+  "single_shot": true
+}

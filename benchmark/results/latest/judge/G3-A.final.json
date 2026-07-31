@@ -1,0 +1,30 @@
+{
+  "qid": "G3",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The record requires stating that Postgres did add a redo LSN to the pgstats file (commit b860848232aa) and then reverted it (commit 5721e5453e) due to pg_upgrade/control-file interaction, but the candidate flatly asserts no such mechanism exists in the current code, treats the TODO comment as proof this was 'not as something already done', and never mentions any add/revert history — this is the explicitly forbidden claim that no such attempt exists in the record. The resolution block states the answer contains no extractable citations, so per the rules none of its specific file/line/commit claims can be charged as fabrications (absence from the resolution block is not evidence of invention).",
+  "required_missing": [
+    "that a redo LSN was added to pgstats files and then reverted",
+    "the pg_upgrade/control-file staleness reason for the revert"
+  ],
+  "contradictions": [
+    "Implies/states that no such feature was ever implemented in Postgres ('upstream Postgres developers have flagged this exact idea as a known gap, not as something already done'), contradicting the fact that it was added (b860848232aa) and later reverted (5721e5453e)."
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "that a redo LSN was added to pgstats files and then reverted",
+    "the pg_upgrade/control-file staleness reason for the revert"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0497697,
+  "blind": true,
+  "task_sha256": "69228d2ada9ab79d235395795c1a01024e2955858a643f6f77aea7a69a747fb8",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 3
+}

@@ -1,0 +1,20 @@
+{
+  "qid": "C2",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer clearly states KEP-3063's status as withdrawn with the exact quoted line and citation, satisfying the required fact, and correctly separates KEP-4381's implemented/stable status as a distinct successor KEP rather than misattributing it to 3063. All citations, including commit shas, resolved successfully, and details like commit messages/authors hang off resolved-but-unquoted citations so are not fabrications.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0359087,
+  "blind": true,
+  "task_sha256": "fe0b8e1e52b76fa8730ef9e0ff35c6d8ced73316c5c5574ef9568cb6629cfb7a",
+  "stub": false,
+  "arm": "A"
+}

@@ -1,0 +1,20 @@
+{
+  "qid": "I4",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states this is a deliberate documented decision and names two of the recorded reasons (no PVC resize support; StatefulSet's single template can't distinguish primary vs replica Pods), citing controller.md, satisfying both required facts; it refuses the refactor rather than producing one, avoiding all forbidden claims.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0442647,
+  "blind": true,
+  "task_sha256": "101e31d699de97d2a5f8d29fb59cfa8e27a121bb8888c0d7b085b825f8479c62",
+  "stub": false,
+  "arm": "B"
+}

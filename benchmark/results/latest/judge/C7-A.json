@@ -1,0 +1,20 @@
+{
+  "qid": "C7",
+  "category": "c-status",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer states KEP-4153's status as 'superseded' verbatim, satisfying the required fact, and correctly separates KEP-5073's 'implemented'/stable status as belonging to the successor KEP rather than conflating them with 4153. All cited lines resolved against the fixture, and stage 'alpha' is correctly attributed as the stage field, not the status.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0334647,
+  "blind": true,
+  "task_sha256": "66e0315e5829227df5c72a75555b14e7e79517c4ad12924ee86efbe13bbe639d",
+  "stub": false,
+  "arm": "A"
+}

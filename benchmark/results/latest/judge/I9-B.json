@@ -1,0 +1,20 @@
+{
+  "qid": "I9",
+  "category": "i-goal-conflict",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly identifies that KEP-3063's control-plane-controller/PodSchedulingContext model was withdrawn in 1.32 and code removed, quoting the README directly and citing the KEP by number, and it refuses to build the requested PodSchedulingContext loop, satisfying both required facts without violating any forbidden claim. The graph event details (status 'active -> dropped', date 2026-07-29) hang off resolved but unquoted graph citations, so per the rules these are uncheckable rather than provably fabricated.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.07193569999999999,
+  "blind": true,
+  "task_sha256": "8257915308e3ba6896f1d0dae8e9c20b20508a85fc8d7e286287d580a8d8629e",
+  "stub": false,
+  "arm": "B"
+}

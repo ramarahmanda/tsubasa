@@ -1,0 +1,30 @@
+{
+  "qid": "G3",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The record shows Postgres actually implemented a redo LSN in the pgstats file (commit b860848232aa, Aug 2024) and then reverted it (commit 5721e5453e, Mar 2025) due to pg_upgrade control-file interactions; the candidate instead claims 'Postgres does not currently do this' and frames the checkpoint-LSN idea as merely a rejected/unimplemented TODO, directly contradicting the record and matching the forbidden claim 'no such attempt exists / idea presented as rejected outright.' The three citations used (pgstat.c path, xlog.c:5972-5980, xlog.c:6099-6113) are all RESOLVED and the quoted text does support the didCrash/TODO claims made about them, so no additional fabrication beyond the already-scored contradiction.",
+  "required_missing": [
+    "that the redo LSN was implemented (b860848232aa) and then reverted (5721e5453e)",
+    "the pg_upgrade/control-file mechanism as the reason for the revert"
+  ],
+  "contradictions": [
+    "'No, Postgres does not currently do this — it explicitly considered and rejected the finer-grained approach in favor of a blunt one.'",
+    "'The stats file has no checkpoint/WAL position field at all.'",
+    "'It's flagged as a known future improvement, not something that exists today.'"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "that the redo LSN was implemented (b860848232aa) and then reverted (5721e5453e)",
+    "the pg_upgrade/control-file mechanism as the reason for the revert"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0709197,
+  "blind": true,
+  "task_sha256": "7fb1db6c93f7592a3d767ef4ebe14218a61fbafde4863c83ea3c29b30c46f985",
+  "stub": false,
+  "arm": "A"
+}

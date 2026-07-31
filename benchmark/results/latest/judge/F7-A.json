@@ -1,0 +1,20 @@
+{
+  "qid": "F7",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer explicitly states the -hackers thread/archive is not present in this workspace and cannot be quoted, satisfying required fact 1, and it quotes the README:6-10 passage verbatim matching the resolved source, satisfying required fact 2. It does not present ECC or other objections as content of the -hackers thread itself, instead attributing that material to a separate cited document (wal.sgml), so no forbidden claim is made.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.052375700000000004,
+  "blind": true,
+  "task_sha256": "c57c6aaf7623c7540844e7ac137b0668ddcf14e4ec4c807a227e4c1bfb98da96",
+  "stub": false,
+  "arm": "A"
+}

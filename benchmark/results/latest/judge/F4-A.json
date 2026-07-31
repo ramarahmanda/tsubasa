@@ -1,0 +1,20 @@
+{
+  "qid": "F4",
+  "category": "f-negative",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer explicitly corrects the false premise (no `Restore` kind exists) and names the real path (`Cluster`'s `.spec.bootstrap.recovery.recoveryTarget`), satisfying both required facts without ever emitting a forbidden `kind: Restore` manifest. All 8 citations resolved against the fixture, and the quoted lines support the field names, descriptions, and YAML samples given, including the backupID default-selection logic and the RecoveryTarget struct definition.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0760527,
+  "blind": true,
+  "task_sha256": "b17a693aa7a50c58259e12880f412544d067795ce6dacabd60a6a1f2a0b3dfb9",
+  "stub": false,
+  "arm": "A"
+}

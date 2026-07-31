@@ -1,0 +1,30 @@
+{
+  "qid": "G9",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer never states that a blanket error-throwing wrapper was implemented and then reverted (commit 16304a0134 / 0c071936e9), nor mentions the EPIPE/pager failure or the one-size-fits-all judgement — both required facts are missing. Instead it argues against the plan entirely and asks the user for more detail, so it contradicts the record's implicit fact that this exact plan was tried historically, making it wrong on accuracy.",
+  "required_missing": [
+    "It was done and then reverted, one day later (16304a0134 / 0c071936e9)",
+    "The EPIPE-in-psql-pager failure and/or the one-size-fits-all judgement"
+  ],
+  "contradictions": [
+    "The answer treats the blanket wrapper plan as a novel, never-before-attempted idea to be argued against on technical grounds, when in fact it was already tried and reverted in the historical record."
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "It was done and then reverted, one day later (16304a0134 / 0c071936e9)",
+    "The EPIPE-in-psql-pager failure and/or the one-size-fits-all judgement"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.043250699999999996,
+  "blind": true,
+  "task_sha256": "af9e95e12dcddd12241dcaf08d59fc0d2797131d806cb9e31dd4299083399766",
+  "stub": false,
+  "arm": "A",
+  "graded_turn": "final",
+  "turns_used": 2
+}

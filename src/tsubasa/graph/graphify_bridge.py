@@ -32,7 +32,7 @@ def _edge_ends(e: dict) -> tuple[str, str, str]:
 
 
 def load_graphs(root: Path, cfg: CaptainConfig) -> list[tuple[str, dict]]:
-    """[(repo_name, graph_dict)] for every fleet repo with an index.
+    """[(repo_name, graph_dict)] for every workspace repo with an index.
 
     Primary location: <root>/.tsubasa/code-index/<repo>/graph.toon (committed).
     Legacy fallback: <repo>/graphify-out/graph.json inside the repo."""

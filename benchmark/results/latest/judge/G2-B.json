@@ -1,0 +1,29 @@
+{
+  "qid": "G2",
+  "category": "g-git-history",
+  "scheme": "workspace",
+  "verdict": "wrong",
+  "accuracy": "wrong",
+  "fabrication": 0,
+  "rationale": "The answer asserts current Postgres behavior labels whole-row references with the base table's rowtype and explicitly states 'no ADR or event covers it' / 'this is a general PostgreSQL parser design question' — directly claiming no record of this ever having been different, which is a forbidden claim (the record shows it WAS implemented via commit bf7ca15875 and reverted via ec62cb0aac due to a data-durability defect). It also frames the current behavior as an intentional 'not a bug' design choice for type-identity stability rather than the actual documented reason (disk-written tuples unreadable by other sessions), contradicting required fact 2. All three code citations resolved and are quoted accurately, so no fabrication beyond the contradicted claims already scored as wrong.",
+  "required_missing": [
+    "it was tried and reverted (commit bf7ca15875 added it, ec62cb0aac reverted it)",
+    "the reason was a data-durability defect (disk-written tuples unreadable by other sessions)"
+  ],
+  "contradictions": [
+    "'Confirmed by code, not by anything in the graph — this is a general PostgreSQL parser design question, no ADR or event covers it.' (forbidden: claims no record exists / never tried)",
+    "'The reason it's not a bug' framed as deliberate type-identity design choice, contradicting the actual documented durability-bug reason for the revert"
+  ],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "it was tried and reverted (commit bf7ca15875 added it, ec62cb0aac reverted it)",
+    "the reason was a data-durability defect (disk-written tuples unreadable by other sessions)"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.06352469999999999,
+  "blind": true,
+  "task_sha256": "6c9341ddc69ccee3abc9ff53b71c2027c2f489cc6070d4e40346835a31878f3f",
+  "stub": false,
+  "arm": "B"
+}

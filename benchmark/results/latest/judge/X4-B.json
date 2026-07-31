@@ -1,0 +1,24 @@
+{
+  "qid": "X4",
+  "category": "x-cross-repo",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 0,
+  "rationale": "The answer correctly states that dataChecksums defaults to false, naming the field and quoting both cluster_types.go and bootstrap.md, and does not claim checksums are on by default or that enabling them requires a rebuild, nor does it misreport the etcd postmortem (correctly quotes the 'no users enable' finding). It never addresses reversibility (pg_enable_data_checksums or offline pg_checksums), so required fact 2 is missing, but this omission is not a contradiction. All four citations resolved and matched their quoted content, and additional uncited/unresolved-block file references (cluster-example-initdb.yaml etc.) are not proof of fabrication per the rules.",
+  "required_missing": [
+    "It is not irreversible: PostgreSQL can enable checksums on an existing cluster at runtime via pg_enable_data_checksums() or offline via pg_checksums — this remedy is never mentioned"
+  ],
+  "contradictions": [],
+  "fabrications": [],
+  "load_bearing_missing": [
+    "It is not irreversible: PostgreSQL can enable checksums on an existing cluster at runtime via pg_enable_data_checksums() or offline via pg_checksums — this remedy is never mentioned"
+  ],
+  "unsupported_claims": [],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.0727257,
+  "blind": true,
+  "task_sha256": "bec13ac62643f6efef673a5353ca1ba6e87b81d837f767de8cafe19cc4719228",
+  "stub": false,
+  "arm": "B"
+}

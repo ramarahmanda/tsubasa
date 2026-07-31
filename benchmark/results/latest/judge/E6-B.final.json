@@ -1,0 +1,26 @@
+{
+  "qid": "E6",
+  "category": "e-temporal",
+  "scheme": "workspace",
+  "verdict": "correct",
+  "accuracy": "correct",
+  "fabrication": 1,
+  "rationale": "The answer states the required historical value `implementable` for 2023-01-01 and pairs it with today's `withdrawn` value, satisfying both required facts without contradicting the record. However, the specific claims about v1.25 shipping the alpha implementation and a v1.27/v1.29 roadmap are not supported by any quoted source in the resolution block.",
+  "required_missing": [],
+  "contradictions": [],
+  "fabrications": [
+    "\"The `milestone.alpha: \\\"v1.25\\\"` field means the alpha implementation had already shipped in Kubernetes v1.25, released 2022-08-23\" and \"Next planned | Beta targeted for v1.27 (~March 2023); stable v1.29\" — asserts specific milestone/roadmap details not present in any quoted or resolved source (rule 3)."
+  ],
+  "load_bearing_missing": [],
+  "unsupported_claims": [
+    "\"The `milestone.alpha: \\\"v1.25\\\"` field means the alpha implementation had already shipped in Kubernetes v1.25, released 2022-08-23\" and \"Next planned | Beta targeted for v1.27 (~March 2023); stable v1.29\" — asserts specific milestone/roadmap details not present in any quoted or resolved source (rule 3)."
+  ],
+  "judge_model": "sonnet",
+  "judge_cost_usd": 0.034967700000000004,
+  "blind": true,
+  "task_sha256": "01778f20bf7f6a6f76a46d21d011efc628a86340de536aec7379a4a954e89ee5",
+  "stub": false,
+  "arm": "B",
+  "graded_turn": "final",
+  "turns_used": 2
+}
