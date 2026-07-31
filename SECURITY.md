@@ -24,3 +24,7 @@ tool with repo access:
   before committing it to a public repo.
 - Skills never require network access or credentials; a fork or modified
   version asking for either is a red flag.
+- One exception, disclosed here: `tsubasa index` (and `ingest`, unless run
+  with `--no-index`) installs the version-pinned graphify engine from PyPI
+  into an isolated `uv tool` environment on first run. That is the only
+  network install tsubasa performs.
