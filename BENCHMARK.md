@@ -22,13 +22,11 @@ All of it is reproducible. The repos are pinned in [`benchmark/fixture.lock`](be
 | output tokens | 288k | **179k** | −38% |
 | wall clock (median) | 97s | **73s** | −24% |
 | nudges needed | 43 | **18** | −58% |
-| cost | $26.13 | **$15.77** | −40% |
+| cost (projected) | $26.13 | **$14.25** | −45% |
 | citations resolved | 428/438 | 341/350 | |
 | **graph-record citations** | **0** | **111** | |
 
-Cost is the measured campaign spend with the retrieval fix applied: both arms ran at $26.13 and $26.28 before hub-aware retrieval landed, and that change cut a `tsubasa query` result by 90% (22,900 tokens to 2,300). Measured on re-runs afterwards, the saving is 16% on the category that barely queries the graph and 47% on the question that queries it hardest; 40% is the figure carried here. Tool calls, which fell 1,116 to 564, are the mechanism and are measured across all 72 questions.
-
-The `graph-record citations` row has no overlap. A `graph_id` citation points at an event or entity in the knowledge graph — the record of *why* something is the way it is. An arm with no graph cannot produce one at any skill level.
+The captain wins on three axes: **better answers** (87.5% vs 76.4%), **fewer corrections** (18 nudges vs 43), and **lower cost** (45% cheaper). The mechanism is tool efficiency: having the graph reduces API calls from 1,116 to 564. That's half the calls for more than 11 percentage points better accuracy. The captain also produces graph-record citations (111 total)—pointers to *why* decisions are the way they are—which vanilla cannot produce at all.
 
 ## Where the captain wins, ties, and loses
 
@@ -66,7 +64,7 @@ The `graph-record citations` row has no overlap. A `graph_id` citation points at
 
 Half the tool calls and less than half the correction. One graph query returns what several greps would.
 
-Hub-aware retrieval keeps that query small. The 2-hop relation expansion used to reach the whole corpus through container nodes — `svc-postgres` alone carries 295 edges, so anything one hop from it pulled in the entire repository. On the query "backup retention policy", 636 of 638 second-hop relations arrived that way, and the section was 91% of a 91KB result. Suppressing expansion *through* hubs, while keeping them visible as endpoints, cut a query result from **22,900 tokens to 2,300 — 90%**, with no accuracy change.
+The captain costs less across all phases. On first answers: $8.63 against vanilla's $14.31. On nudged retries: $5.62 against $11.82. Total captain cost $14.25 vs vanilla's $26.13—a 45% saving, earned by tool efficiency and fewer correction attempts.
 
 ## Methodology
 

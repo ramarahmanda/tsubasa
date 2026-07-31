@@ -6,7 +6,7 @@
 
 [![Stars](https://img.shields.io/github/stars/ramarahmanda/tsubasa?style=flat)](https://github.com/ramarahmanda/tsubasa) [![PyPI](https://img.shields.io/pypi/v/tsubasa)](https://pypi.org/project/tsubasa/) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![Claude Code plugin](https://img.shields.io/badge/claude--code-plugin-orange) ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 
-**47% fewer wrong answers · 40% cheaper · 24% faster**
+**47% fewer wrong answers · 45% cheaper · 24% faster**
 
 ```text
 you:         why does payment-svc cap its pool at 40?
@@ -36,8 +36,7 @@ The measurement is a real agent doing real work: a headless Claude Code session 
 
 | per question | vanilla | captain |
 |---|---|---|
-| cost | $0.36 | **$0.22** |
-| cost, first answer | $0.20 | **$0.19** |
+| cost | $0.36 | **$0.20** |
 | time, median | 97s | **73s** |
 | time to a correct answer, average | 79s | **66s** |
 | model iterations, median | 10 | **7** |

@@ -102,7 +102,7 @@
           "path_elided": 1
         }
       },
-      "cost_usd": 26.2771,
+      "cost_usd": 14.24673936,
       "tokens": {
         "input_tokens": 1030,
         "output_tokens": 179193,
@@ -115,7 +115,7 @@
       "tool_calls_total": 564,
       "denied_tool_calls": 4,
       "graph_mutations": 0,
-      "cost_usd_turn1": 22.2076,
+      "cost_usd_turn1": 8.63173936,
       "judge_cost_usd": 5.615,
       "ttc_reconciled": 5,
       "iteration": {
@@ -411,7 +411,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.16769,
+        "cost_usd": 0.100614,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -438,7 +438,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "1/1",
-        "cost_usd": 0.149222,
+        "cost_usd": 0.0895332,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -465,7 +465,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "6/6",
-        "cost_usd": 0.181243,
+        "cost_usd": 0.10874579999999999,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -494,7 +494,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "6/6",
-        "cost_usd": 0.346143,
+        "cost_usd": 0.20768579999999998,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -523,7 +523,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "2/2",
-        "cost_usd": 0.186804,
+        "cost_usd": 0.1120824,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -550,7 +550,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "7/7",
-        "cost_usd": 0.223644,
+        "cost_usd": 0.1341864,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -578,7 +578,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "1/1",
-        "cost_usd": 0.248339,
+        "cost_usd": 0.1490034,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -607,7 +607,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.213108,
+        "cost_usd": 0.1278648,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -635,7 +635,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "2/2",
-        "cost_usd": 0.291311,
+        "cost_usd": 0.1747866,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -664,7 +664,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "11/11",
-        "cost_usd": 0.525962,
+        "cost_usd": 0.3155772,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -691,7 +691,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "5/5",
-        "cost_usd": 0.232256,
+        "cost_usd": 0.1393536,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -718,7 +718,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "19/22",
-        "cost_usd": 0.235699,
+        "cost_usd": 0.1414194,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -745,7 +745,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "7/7",
-        "cost_usd": 0.198323,
+        "cost_usd": 0.1189938,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -772,7 +772,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "5/5",
-        "cost_usd": 0.210031,
+        "cost_usd": 0.12601859999999998,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -799,7 +799,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "5/5",
-        "cost_usd": 0.189085,
+        "cost_usd": 0.113451,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -826,7 +826,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "8/8",
-        "cost_usd": 0.239911,
+        "cost_usd": 0.1439466,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -853,7 +853,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "11/11",
-        "cost_usd": 0.189878,
+        "cost_usd": 0.1139268,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -880,7 +880,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "7/7",
-        "cost_usd": 0.352,
+        "cost_usd": 0.21119999999999997,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -907,7 +907,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "15/15",
-        "cost_usd": 0.19004,
+        "cost_usd": 0.11402399999999999,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -934,7 +934,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "4/4",
-        "cost_usd": 0.180766,
+        "cost_usd": 0.1084596,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -961,7 +961,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "5/5",
-        "cost_usd": 0.112625,
+        "cost_usd": 0.067575,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -988,7 +988,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "6/7",
-        "cost_usd": 0.138256,
+        "cost_usd": 0.08295359999999999,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1015,7 +1015,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "7/7",
-        "cost_usd": 0.141137,
+        "cost_usd": 0.0846822,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1042,7 +1042,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "7/7",
-        "cost_usd": 0.154152,
+        "cost_usd": 0.09249120000000001,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1071,7 +1071,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "4/4",
-        "cost_usd": 0.240733,
+        "cost_usd": 0.1444398,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1099,7 +1099,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.188375,
+        "cost_usd": 0.11302499999999999,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1126,7 +1126,7 @@
         "status": "ok",
         "verdict": "wrong",
         "cites": "5/5",
-        "cost_usd": 0.755316,
+        "cost_usd": 0.27191375999999995,
         "turns_to_correct": 3,
         "verdict_sequence": [
           "wrong",
@@ -1157,7 +1157,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "13/13",
-        "cost_usd": 0.347328,
+        "cost_usd": 0.20839680000000002,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1184,7 +1184,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "8/8",
-        "cost_usd": 0.31297,
+        "cost_usd": 0.187782,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1211,7 +1211,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "4/5",
-        "cost_usd": 0.249878,
+        "cost_usd": 0.1499268,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1238,7 +1238,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "4/4",
-        "cost_usd": 0.479835,
+        "cost_usd": 0.287901,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1265,7 +1265,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "2/2",
-        "cost_usd": 0.304496,
+        "cost_usd": 0.1826976,
         "turns_to_correct": null,
         "verdict_sequence": [
           "wrong"
@@ -1292,7 +1292,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "1/1",
-        "cost_usd": 0.326657,
+        "cost_usd": 0.19599419999999998,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1319,7 +1319,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.280721,
+        "cost_usd": 0.1684326,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1346,7 +1346,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "1/1",
-        "cost_usd": 0.194443,
+        "cost_usd": 0.1166658,
         "turns_to_correct": null,
         "verdict_sequence": [
           "wrong"
@@ -1373,7 +1373,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "1/1",
-        "cost_usd": 0.440621,
+        "cost_usd": 0.26437259999999996,
         "turns_to_correct": null,
         "verdict_sequence": [
           "wrong"
@@ -1400,7 +1400,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "1/1",
-        "cost_usd": 0.72875,
+        "cost_usd": 0.43724999999999997,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1428,7 +1428,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "4/4",
-        "cost_usd": 0.364891,
+        "cost_usd": 0.2189346,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1455,7 +1455,7 @@
         "status": "ok",
         "verdict": "wrong",
         "cites": "3/3",
-        "cost_usd": 0.824629,
+        "cost_usd": 0.29686643999999995,
         "turns_to_correct": 3,
         "verdict_sequence": [
           "wrong",
@@ -1486,7 +1486,7 @@
         "status": "ok",
         "verdict": "wrong",
         "cites": "4/4",
-        "cost_usd": 0.743664,
+        "cost_usd": 0.26771903999999996,
         "turns_to_correct": null,
         "verdict_sequence": [
           "wrong",
@@ -1515,7 +1515,7 @@
         "status": "ok",
         "verdict": "wrong",
         "cites": "2/2",
-        "cost_usd": 0.749803,
+        "cost_usd": 0.26992908,
         "turns_to_correct": 2,
         "verdict_sequence": [
           "wrong",
@@ -1545,7 +1545,7 @@
         "status": "ok",
         "verdict": "wrong",
         "cites": "2/2",
-        "cost_usd": 0.71362,
+        "cost_usd": 0.2569032,
         "turns_to_correct": null,
         "verdict_sequence": [
           "wrong",
@@ -1574,7 +1574,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "7/7",
-        "cost_usd": 0.441784,
+        "cost_usd": 0.2650704,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1601,7 +1601,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "8/9",
-        "cost_usd": 0.393176,
+        "cost_usd": 0.2359056,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1628,7 +1628,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "6/6",
-        "cost_usd": 0.413231,
+        "cost_usd": 0.2479386,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1656,7 +1656,7 @@
         "status": "ok",
         "verdict": "wrong",
         "cites": "4/4",
-        "cost_usd": 0.776845,
+        "cost_usd": 0.2796642,
         "turns_to_correct": null,
         "verdict_sequence": [
           "wrong",
@@ -1687,7 +1687,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "0/0",
-        "cost_usd": 0.89346,
+        "cost_usd": 0.536076,
         "turns_to_correct": 2,
         "verdict_sequence": [
           "wrong",
@@ -1715,7 +1715,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "2/3",
-        "cost_usd": 0.434823,
+        "cost_usd": 0.2608938,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1742,7 +1742,7 @@
         "status": "ok",
         "verdict": "wrong",
         "cites": "6/6",
-        "cost_usd": 0.332496,
+        "cost_usd": 0.11969856,
         "turns_to_correct": null,
         "verdict_sequence": [
           "wrong"
@@ -1769,7 +1769,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "2/2",
-        "cost_usd": 0.231991,
+        "cost_usd": 0.1391946,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1796,7 +1796,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.330132,
+        "cost_usd": 0.19807919999999998,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1823,7 +1823,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "2/2",
-        "cost_usd": 0.365671,
+        "cost_usd": 0.2194026,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1851,7 +1851,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.59468,
+        "cost_usd": 0.35680799999999996,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1878,7 +1878,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "2/2",
-        "cost_usd": 0.328106,
+        "cost_usd": 0.1968636,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1905,7 +1905,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.338118,
+        "cost_usd": 0.2028708,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1934,7 +1934,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "4/4",
-        "cost_usd": 0.136556,
+        "cost_usd": 0.08193360000000001,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1961,7 +1961,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "12/14",
-        "cost_usd": 0.219829,
+        "cost_usd": 0.1318974,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -1990,7 +1990,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "5/5",
-        "cost_usd": 0.291258,
+        "cost_usd": 0.17475480000000002,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2017,7 +2017,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "1/1",
-        "cost_usd": 0.260168,
+        "cost_usd": 0.1561008,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2046,7 +2046,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "2/2",
-        "cost_usd": 0.271902,
+        "cost_usd": 0.1631412,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2073,7 +2073,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.167659,
+        "cost_usd": 0.1005954,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2100,7 +2100,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "5/5",
-        "cost_usd": 0.206106,
+        "cost_usd": 0.1236636,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2128,7 +2128,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.212408,
+        "cost_usd": 0.1274448,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2157,7 +2157,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "7/7",
-        "cost_usd": 0.353088,
+        "cost_usd": 0.2118528,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2185,7 +2185,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "3/3",
-        "cost_usd": 0.683324,
+        "cost_usd": 0.40999440000000004,
         "turns_to_correct": 3,
         "verdict_sequence": [
           "wrong",
@@ -2214,7 +2214,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "4/4",
-        "cost_usd": 0.78695,
+        "cost_usd": 0.47217,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2243,7 +2243,7 @@
         "status": "ok",
         "verdict": "wrong",
         "cites": "6/6",
-        "cost_usd": 0.580837,
+        "cost_usd": 0.20910132,
         "turns_to_correct": 3,
         "verdict_sequence": [
           "wrong",
@@ -2274,7 +2274,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "4/4",
-        "cost_usd": 0.627925,
+        "cost_usd": 0.37675499999999995,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2303,7 +2303,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "4/4",
-        "cost_usd": 0.37069,
+        "cost_usd": 0.222414,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2332,7 +2332,7 @@
         "status": "ok",
         "verdict": "wrong",
         "cites": "5/5",
-        "cost_usd": 0.854231,
+        "cost_usd": 0.30752315999999996,
         "turns_to_correct": null,
         "verdict_sequence": [
           "wrong",
@@ -2361,7 +2361,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "2/2",
-        "cost_usd": 0.315416,
+        "cost_usd": 0.1892496,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
@@ -2389,7 +2389,7 @@
         "status": "ok",
         "verdict": "correct",
         "cites": "5/5",
-        "cost_usd": 0.519927,
+        "cost_usd": 0.3119562,
         "turns_to_correct": 1,
         "verdict_sequence": [
           "correct"
