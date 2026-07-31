@@ -573,13 +573,21 @@ print(f'{G.number_of_nodes()} nodes, {G.number_of_edges()} edges, {len(communiti
 """
 
 
+# The engine's PyPI name is graphifyy (double y); the import name is graphify.
+# Do NOT "fix" the spelling — the single-y name on PyPI is not this project.
+# The exact-version pin is the supply chain boundary: PyPI releases are
+# immutable, so a hostile future owner of the name can only publish new
+# versions, never alter this one. Invisible to dependabot — bump deliberately.
+GRAPHIFY_SPEC = "graphifyy==0.9.31"
+
+
 def graphify_python(log=print) -> str | None:
     """Resolve (installing if needed) the graphify engine's interpreter."""
     log("[index] resolving graphify engine (first run may install it)...")
     def probe() -> str | None:
         try:
             out = subprocess.run(
-                ["uv", "tool", "run", "--from", "graphifyy", "python", "-c",
+                ["uv", "tool", "run", "--from", GRAPHIFY_SPEC, "python", "-c",
                  "import graphify, sys; print(sys.executable)"],
                 capture_output=True, text=True, timeout=300)
             return out.stdout.strip() or None
@@ -587,7 +595,7 @@ def graphify_python(log=print) -> str | None:
             return None
     py = probe()
     if py is None:
-        log("[index] graphify engine not available (needs uv; tried graphifyy) — skipped")
+        log(f"[index] graphify engine not available (needs uv; tried {GRAPHIFY_SPEC}) — skipped")
     return py
 
 
