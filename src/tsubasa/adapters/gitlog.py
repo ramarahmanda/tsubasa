@@ -15,6 +15,7 @@ import subprocess
 from pathlib import Path
 from typing import NamedTuple
 
+from ..config import valid_ref, valid_sha
 from ..models import ADR_ID_RE, Event, Ref, slugify
 from .base import Adapter
 
@@ -75,6 +76,16 @@ FIELD_SEP = "\x1f"
 RECORD_SEP = "\x1e"
 
 
+def _safe_ref(name: str) -> str:
+    """A ref to pass git, or "" if it could be parsed as an option.
+
+    config.load rejects a bad `branch` at parse time; this is the second gate,
+    covering refs that arrive from state.toon or from git itself. Empty is
+    always safe here: every caller falls back to the default branch or HEAD.
+    """
+    return name if valid_ref(name) else ""
+
+
 def _git(repo: Path, *args: str) -> str:
     out = subprocess.run(
         ["git", "-C", str(repo), *args],
@@ -105,7 +116,7 @@ class GitAdapter(Adapter):
         """Fetch latest on the configured (or default) branch; return the rev
         to read history from. `pull = true` also fast-forwards the local
         branch (ff-only — never creates merge commits in a working tree)."""
-        branch = self.source.options.get("branch") or _default_branch(repo)
+        branch = _safe_ref(self.source.options.get("branch") or "") or _default_branch(repo)
         # `init` ingests with no git network I/O: a fetch per detected repo can
         # block for the full 120s timeout each when an SSH remote wants a
         # passphrase, and a fresh clone already has the history. `pull` and
@@ -163,7 +174,7 @@ class GitAdapter(Adapter):
         get an event: the reversal is the fact, the link is a bonus.
         """
         last = self.state.get("reverts_at", "")
-        rev_range = f"{last}..{rev}" if last else rev
+        rev_range = f"{last}..{rev}" if valid_sha(last) else rev
         try:
             raw = _git(repo, "log", rev_range, "--date=short", "--grep=^Revert",
                        f"--format=%H{FIELD_SEP}%ad{FIELD_SEP}%s{FIELD_SEP}%b{RECORD_SEP}")
@@ -205,7 +216,7 @@ class GitAdapter(Adapter):
 
     def _adr_commits(self, repo: Path, repo_name: str, svc_id: str, rev: str = "HEAD") -> list[Event]:
         last = self.state.get("last_commit", "")
-        rev_range = f"{last}..{rev}" if last else rev
+        rev_range = f"{last}..{rev}" if valid_sha(last) else rev
         try:
             raw = _git(repo, "log", rev_range, "--date=short",
                        f"--format=%H{FIELD_SEP}%ad{FIELD_SEP}%s{RECORD_SEP}")
@@ -245,7 +256,7 @@ def local_rev(repo: Path, branch: str = "") -> str:
     """The rev to read history from without fetching. A plain `pull` moves the
     remote-tracking ref but not the working tree, so prefer origin/<branch>:
     reading HEAD would miss everything that was just fetched."""
-    branch = branch or _default_branch(repo)
+    branch = _safe_ref(branch) or _default_branch(repo)
     if branch and _rev_exists(repo, f"origin/{branch}"):
         return f"origin/{branch}"
     return branch or "HEAD"
@@ -275,7 +286,7 @@ def fetch(repo: Path, branch: str = "", ff: bool = True) -> FetchResult:
     unreachable remote must not stop the other repos."""
     if not _has_remote(repo):
         return FetchResult()
-    branch = branch or _default_branch(repo)
+    branch = _safe_ref(branch) or _default_branch(repo)
     ref = f"origin/{branch}" if branch else "FETCH_HEAD"
     before_ref = _rev(repo, ref)
     tree_before = _rev(repo, "HEAD")[:7]

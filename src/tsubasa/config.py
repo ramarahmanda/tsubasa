@@ -62,6 +62,64 @@ def _as_list(value) -> list:
     return list(value) if isinstance(value, (list, tuple)) else [value]
 
 
+# captain.toml is committed and travels with a clone, so every value it carries
+# is untrusted input by the time it reaches a subprocess or the filesystem.
+_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*$")
+_SHA_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
+
+
+def valid_ref(name: str) -> bool:
+    """True if `name` is a ref git cannot mistake for an option.
+
+    git parses any argument starting with `-` as an option wherever it sits,
+    so a `branch` of `--upload-pack=...` is a command and `--output=...` is a
+    file write. The charset is git's own (check-ref-format); the leading
+    character rule is what closes that door.
+    """
+    name = name or ""
+    return bool(_REF_RE.match(name)) and ".." not in name and not name.endswith(".lock")
+
+
+def valid_sha(value: str) -> bool:
+    """True if `value` is a commit id, not an option in disguise.
+
+    Watermarks in state.toon are interpolated into `<sha>..<rev>` ranges.
+    """
+    return bool(_SHA_RE.match(value or ""))
+
+
+def _source(root: Path, raw: dict) -> SourceConfig:
+    """One [[sources]] entry, with the values that leave the process validated.
+
+    `path` is joined onto the captain root, and Path("/repo") / "/etc" is
+    "/etc" — an absolute path in a committed config would silently point an
+    adapter at the reader's filesystem and excerpt what it found into a graph
+    they then push. Containment is checked here, once, for every adapter.
+    """
+    path = str(raw.get("path", "."))
+    if not (root / path).resolve().is_relative_to(root.resolve()):
+        raise RuntimeError(
+            f"source path {path!r} resolves outside the captain root {root}. "
+            "Sources are workspace-relative; a path that escapes it is a "
+            "misconfiguration or a hostile config."
+        )
+    branch = raw.get("branch")
+    if branch is not None and not valid_ref(str(branch)):
+        raise RuntimeError(
+            f"source branch {branch!r} is not a valid ref name. "
+            "Refs match [A-Za-z0-9._/-] and may not start with '-'."
+        )
+    return SourceConfig(
+        adapter=raw["adapter"],
+        path=path,
+        glob=raw.get("glob", ""),
+        exclude=[str(x) for x in _as_list(raw.get("exclude"))],
+        since=None if raw.get("since") is None else str(raw["since"]),
+        options={k: v for k, v in raw.items()
+                 if k not in ("adapter", "path", "glob", "exclude", "since")},
+    )
+
+
 def find_root(start: Path | None = None) -> Path | None:
     """Walk up from `start` to find the directory containing .tsubasa/."""
     cur = (start or Path.cwd()).resolve()
@@ -95,18 +153,7 @@ def load(root: Path) -> CaptainConfig:
         hot_max_context=float(hot_max),
         context_window=int(mem.get("context_window", DEFAULT_CONTEXT_WINDOW)),
         half_life_days=float(mem.get("half_life_days", DEFAULT_HALF_LIFE_DAYS)),
-        sources=[
-            SourceConfig(
-                adapter=s["adapter"],
-                path=s.get("path", "."),
-                glob=s.get("glob", ""),
-                exclude=[str(x) for x in _as_list(s.get("exclude"))],
-                since=None if s.get("since") is None else str(s["since"]),
-                options={k: v for k, v in s.items()
-                         if k not in ("adapter", "path", "glob", "exclude", "since")},
-            )
-            for s in data.get("sources", [])
-        ],
+        sources=[_source(root, s) for s in data.get("sources", [])],
     )
 
 
