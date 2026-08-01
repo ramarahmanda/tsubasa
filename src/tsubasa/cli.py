@@ -50,6 +50,11 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_help()
         return 1
     try:
+        if args.func in _MUTATING:
+            root = cfg_mod.find_root()
+            if root is not None:  # no captain yet: the command's own error is clearer
+                with Store(root).write_lock():
+                    return args.func(args) or 0
         return args.func(args) or 0
     except Exception as e:  # surface a clean error, not a traceback
         print(f"error: {e}", file=sys.stderr)
@@ -926,6 +931,13 @@ def cmd_doctor(args) -> int:
 
 
 # ------------------------------------------------------------------ parser
+
+# every command that writes to .tsubasa/ serializes on the store lock; init is
+# excluded (nothing exists yet to protect) and read commands never take it
+_MUTATING = {cmd_upgrade, cmd_ingest, cmd_pull, cmd_event_add, cmd_goal_set,
+             cmd_source_add, cmd_study, cmd_link, cmd_index, cmd_resolve,
+             cmd_profile, cmd_rebuild, cmd_pack, cmd_tiers}
+
 
 def _learn_flags(sp) -> None:
     """Opt-outs for the learning pipeline. Opt-outs only: a stage nobody
