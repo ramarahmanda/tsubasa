@@ -85,6 +85,134 @@ def match_entities(entities: dict[str, Entity], text: str, limit: int = 5) -> li
     return [e for _, e in scored[:limit]]
 
 
+def vocabulary(entities: dict[str, Entity], events: dict[str, Event]) -> dict[str, int]:
+    """Token -> frequency over every name the matchers score against.
+
+    Built with the same `_tokens` as matching, so every listed token is one a
+    query can actually hit: `walbufmappinglock` stays whole here because it
+    stays whole in `match_entities`, and a camelCase split would advertise
+    tokens that match nothing. Covers entity ids/names/aliases (the
+    `match_entities` surface) and event titles (the `--timeline` title-match
+    surface).
+    """
+    counts: dict[str, int] = {}
+    for e in entities.values():
+        for name in [e.id] + e.all_names():
+            for t in _tokens(name):
+                if len(t) >= 3 and t not in STOPWORDS:
+                    counts[t] = counts.get(t, 0) + 1
+    for ev in events.values():
+        for t in _tokens(ev.title):
+            if len(t) >= 3 and t not in STOPWORDS:
+                counts[t] = counts.get(t, 0) + 1
+    return counts
+
+
+def vocab_hint(vocab: dict[str, int], text: str, token_cap: int = 20) -> str:
+    """Bridge for an empty entity match: graph tokens near the query's wording.
+
+    `match_entities` is lexical, so a question phrased in words the graph never
+    uses returns nothing; without this line the caller reads that as "the graph
+    is silent" about something it records. Takes the `vocabulary()` map, which
+    the query path computes once. Query tokens are matched as stems into
+    vocabulary tokens, the same relation `tsubasa vocab` uses, and rare tokens
+    lead because a frequency-1 token picks out one record. Returns "" when
+    nothing is near the wording.
+    """
+    qtokens = {t for t in _tokens(text) if len(t) >= 3 and t not in STOPWORDS}
+    if not qtokens:
+        return ""
+    hits = {t: c for t, c in vocab.items() if any(q in t for q in qtokens)}
+    if not hits:
+        return ""
+    shown = sorted(hits.items(), key=lambda p: (p[1], p[0]))[:token_cap]
+    return ("no direct entity match; graph tokens near your wording: "
+            + " ".join(f"{t}({c})" for t, c in shown))
+
+
+def title_events(events: dict[str, Event], text: str, freq: dict[str, int],
+                 exclude: set[str] = frozenset(), cap: int = 5) -> list[Event]:
+    """Events whose titles carry the query's wording, rarest overlap first.
+
+    Partial overlap by design, where the timeline's `_title_matches` is strict
+    AND: a deterministic adapter attaches an event only to its repo entity, so
+    entity walking cannot reach a revert however plainly its title answers the
+    question, and requiring every query word would miss it too. Query tokens
+    match as stems into title tokens, the same relation `vocab_hint` uses, so
+    a whole-identifier token like `walbufmappinglock` is reachable from its
+    parts. Two stem hits required whenever the query has two meaningful
+    tokens: one common word alone would drag unrelated titles into every
+    query. Ranking weights each hit by 1/frequency in `freq` (the
+    `vocabulary()` counts): a wide query carries common stems, and under raw
+    hit counts three hits on error/buffer/return outrank two on tokens that
+    each pick out one record, flooding the answer out of the cap.
+    """
+    scored = [(s, ev) for s, _, ev in _scored_titles(events, text, freq)
+              if ev.id not in exclude]
+    scored.sort(key=lambda p: (p[0], p[1].ts, p[1].id), reverse=True)
+    return [ev for _, ev in scored[:cap]]
+
+
+def _scored_titles(events: dict[str, Event], text: str,
+                   freq: dict[str, int]) -> list[tuple[float, bool, Event]]:
+    """(rarity score, has discriminating hit, event) for every event passing
+    the stem gate. The one title matcher; `title_events` (display),
+    `titles_discriminate` (escalation trigger) and `_title_matches` (timeline
+    seeds) all read from it rather than re-deciding what a match is.
+
+    Ranking rarity uses `freq` (the full vocabulary). The discriminating test
+    counts event TITLES only: a token five entities carry can still pick out
+    the one title that records the topic (the G3 repo-attached-revert shape),
+    while a stem spread across many titles discriminates nothing however rare
+    it is elsewhere in the graph.
+    """
+    qtokens = {t for t in _tokens(text) if len(t) >= 3 and t not in STOPWORDS}
+    if not qtokens:
+        return []
+    need = min(2, len(qtokens))
+    title_freq: dict[str, int] = {}
+    for ev in events.values():
+        for t in set(_tokens(ev.title)):
+            if len(t) >= 3 and t not in STOPWORDS:
+                title_freq[t] = title_freq.get(t, 0) + 1
+    out: list[tuple[float, bool, Event]] = []
+    for ev in events.values():
+        ttokens = _tokens(ev.title)
+        weights: list[float] = []
+        rare = False
+        for q in qtokens:
+            # per query token, the rarest title token it stems into
+            hit = [t for t in ttokens if q in t]
+            if hit:
+                weights.append(max(1 / freq.get(t, 1) for t in hit))
+                rare = rare or any(title_freq.get(t, 1) <= DISCRIMINATING_FREQ for t in hit)
+        if len(weights) >= need:
+            out.append((sum(weights), rare, ev))
+    return out
+
+
+# A title hit is evidence only if it discriminates: a token carried by at most
+# this many event TITLES picks the answer out of the record, while a stem
+# spread across many titles (error, buffer, return) is the flood class by
+# definition — it fires on nearly any wording, so such a hit says nothing
+# about whether the graph records the topic, and it must not stop the
+# escalation ladder or seed a timeline the way a real hit does. Counted over
+# titles, not the whole vocabulary: entities repeating a topic's name must not
+# make the one title that records it look common (the G3 shape).
+DISCRIMINATING_FREQ = 3
+
+
+def titles_discriminate(events: dict[str, Event], text: str, freq: dict[str, int]) -> bool:
+    """Does any title-matched event owe its match to a discriminating token?
+
+    Same gate as `title_events` (two stem hits when the query has two
+    meaningful tokens); strong means at least one hit title token appears in
+    at most DISCRIMINATING_FREQ titles. False also covers the no-match-at-all
+    case, so the caller has one weakness test.
+    """
+    return any(rare for _, rare, _ev in _scored_titles(events, text, freq))
+
+
 def _tokens(text: str) -> list[str]:
     out, buf = [], []
     for ch in text.lower():
@@ -160,14 +288,35 @@ def subgraph(relations: list[Relation], centers: set[str], hops: int = 2,
     return picked
 
 
+# Output budget: a query answer a reader pipes through `head -100` must keep
+# its verdict inside the pipe. Signal first, everything else capped and marked.
+MAX_RELATIONS = 12
+MAX_SOURCE_EVENTS = 5
+MAX_REFS = 3
+_REF_ORDER = {"commit": 0, "pr": 1, "file": 2}
+
+
 def serialize(
     entities: dict[str, Entity],
     relations: list[Relation],
     events: dict[str, Event],
     matched: list[Entity],
     hops: int = 2,
+    text: str = "",
+    vocab: dict[str, int] | None = None,
 ) -> str:
-    """Human/LLM-readable context block with citations."""
+    """Human/LLM-readable context block with citations.
+
+    `text` is the query itself; when given, events whose titles carry its
+    wording print right after the matched entities, because entity walking
+    cannot reach a repo-attached event (a revert, typically) that answers the
+    question, and a verdict below line ~100 is one a `| head` never sees.
+    Deduped against the source events shown below it. `vocab` is the
+    `vocabulary()` map when the caller already computed it; title ranking
+    needs its frequencies. Every section is hard-capped with an explicit
+    elision marker: silent truncation is how a reader concludes "the graph
+    does not have it" about something the graph has.
+    """
     lines: list[str] = []
     centers = {e.id for e in matched}
     sub = subgraph(relations, centers, hops)
@@ -182,15 +331,35 @@ def serialize(
         for fact in e.key_facts[:5]:
             lines.append(f"  fact: {fact}")
 
+    cited_events = _relevant_events(events, node_ids, matched)
+    shown_events = cited_events[:MAX_SOURCE_EVENTS]
+    titled = title_events(events, text, vocab if vocab is not None else vocabulary(entities, events),
+                          exclude={ev.id for ev in shown_events}) if text else []
+    if titled:
+        lines.append("")
+        lines.append("## Events matched by title (entity walking cannot reach "
+                     "these; `--timeline` shows the sequence)")
+        for ev in titled:
+            if _reverts(ev) is not None:
+                # verdict first, as the timeline states it: the reverted thing
+                # is absent, and a reader who stops at the title must know that.
+                # When the record carries no rationale, that absence is data the
+                # reader needs in-band: stated here, an unrecorded reason cannot
+                # be silently replaced by an invented one downstream
+                note = "" if _reason_recorded(ev) else " — reason: not recorded"
+                lines.append(f"- NOT PRESENT (reverted {ev.ts[:10]}): {ev.title}{note}  [{_cite(ev)}]")
+            else:
+                lines.append(f"- {ev.id} ({ev.type}, {ev.ts[:10]}): {ev.title}")
+
     if sub:
         lines.append("")
         lines.append(f"## Relations ({hops}-hop)")
-        for r in sorted(sub, key=lambda r: r.key()):
+        ordered = sorted(sub, key=lambda r: r.key())
+        for r in ordered[:MAX_RELATIONS]:
             cite = f"  [{r.provenance}]" if r.provenance else ""
             lines.append(f"({r.source}) --[{r.predicate}]--> ({r.target}){cite}")
-        # Say what was withheld and how to get it. Silent truncation is how a
-        # reader concludes "the graph does not have it" about something the
-        # graph has, which is the failure this whole surface exists to avoid.
+        if len(ordered) > MAX_RELATIONS:
+            lines.append(f"  ... +{len(ordered) - MAX_RELATIONS} more relations")
         held = len(subgraph(relations, centers, hops, through_hubs=True)) - len(sub)
         if held > 0:
             hubs = ", ".join(sorted(hub_nodes(relations) & node_ids)) or "hub nodes"
@@ -198,20 +367,25 @@ def serialize(
                          f"{hubs} (hub) not expanded; they connect the whole repo, "
                          f"not this topic")
 
-    cited_events = _relevant_events(events, node_ids, matched)
     if cited_events:
         lines.append("")
         lines.append("## Source events")
-        for ev in cited_events:
+        for ev in shown_events:
             flag = " [DISPUTED]" if ev.disputed else ""
             if ev.trust == "low":
                 flag += " [trust=low — doc-derived, verify in code]"
             lines.append(f"- {ev.id} ({ev.type}, {ev.ts[:10]}, impact={ev.impact}){flag}: {ev.title}")
             if ev.summary:
                 lines.append(f"  {ev.summary}")
-            for ref in ev.refs:
+            # commits first: they are the citations an answer can carry
+            refs = sorted(ev.refs, key=lambda r: _REF_ORDER.get(r.kind, 9))
+            for ref in refs[:MAX_REFS]:
                 lines.append(f"  ref {ref.kind}: {ref.id}")
-    if not sub and not cited_events and not matched:
+            if len(refs) > MAX_REFS:
+                lines.append(f"  ... +{len(refs) - MAX_REFS} more refs")
+        if len(cited_events) > MAX_SOURCE_EVENTS:
+            lines.append(f"  ... +{len(cited_events) - MAX_SOURCE_EVENTS} more source events")
+    if not sub and not cited_events and not matched and not titled:
         lines.append("(no knowledge found)")
     return "\n".join(lines)
 
@@ -251,11 +425,14 @@ def timeline(store, text: str, hops: int = 2, limit: int = 5, as_of: str = "") -
     State reconstruction is `assemble`'s, not a second implementation of it:
     `replay` gives the resulting state, and `apply_event` stepped one event at a
     time gives the transitions between, which a single snapshot cannot show.
+    Title seeding uses the plain path's discriminating standard
+    (`_title_matches`): partial stem overlap qualifies only when a hit rides a
+    rare token, so extra query words cannot unmatch the topic.
     """
     entities, relations, _ = assemble.replay(store, as_of=as_of)
     events = [ev for ev in store.load_events() if not (as_of and ev.ts[:10] > as_of)]
     matched = match_entities(entities, text, limit=limit)
-    titled = _title_matches(events, text)
+    titled = _title_matches(events, text, vocabulary(entities, {ev.id: ev for ev in events}))
     seq = _temporal_events(events, relations, matched, titled, hops)
     if not seq:
         return "(no knowledge found)"
@@ -329,13 +506,22 @@ def _touches(ev: Event, nodes: set[str]) -> bool:
     return any(t in nodes for t in ev.supersedes)
 
 
-def _title_matches(events: list[Event], text: str) -> list[Event]:
-    """Events whose title carries every meaningful query token. Strict AND: a
-    seed set built by partial overlap would be a different topic's timeline."""
-    words = {w for w in _tokens(text) if w not in STOPWORDS}
-    if not words:
-        return []
-    return [ev for ev in events if words <= set(_tokens(ev.title))]
+def _title_matches(events: list[Event], text: str, freq: dict[str, int],
+                   cap: int = 5) -> list[Event]:
+    """Timeline seeds: titles passing the discriminating standard, rarest first.
+
+    The same standard as the plain path (`_scored_titles`): at least two query
+    stems hit (one for a single-token query) AND at least one hit rides a
+    discriminating token. Strict AND over every query token was the old rule;
+    any extra query word then failed the whole match, so only single-token
+    queries ever seeded. The wrong-topic worry the AND guarded against is
+    carried by the discriminating requirement instead: overlap on common
+    stems alone seeds nothing.
+    """
+    scored = [(s, ev) for s, rare, ev in
+              _scored_titles({ev.id: ev for ev in events}, text, freq) if rare]
+    scored.sort(key=lambda p: (p[0], p[1].ts, p[1].id), reverse=True)
+    return [ev for _, ev in scored[:cap]]
 
 
 def _transitions(seq: list[Event], aliases: dict[str, str],
@@ -415,6 +601,22 @@ def _reverts(ev: Event) -> str | None:
 
 REVERT_BOILERPLATE = re.compile(r"^(?:Reverts|This reverts commit)\s+[0-9a-f]{7,40}[,.]?\s*",
                                 re.IGNORECASE)
+
+# Mechanical rule for "the record states why": body+summary, minus revert
+# boilerplate, minus words built purely from the title's own tokens, must
+# carry at least this many characters. Restating the title is not a reason,
+# and a sha is not a reason; anything shorter than a short clause is neither.
+NO_REASON_LEN = 40
+
+
+def _reason_recorded(ev: Event) -> bool:
+    """Does the event record a rationale beyond its own title?"""
+    text = f"{ev.summary}\n{ev.body}".strip()
+    while (m := REVERT_BOILERPLATE.match(text)):
+        text = text[m.end():]
+    title_words = set(_tokens(ev.title))
+    kept = [w for w in text.split() if set(_tokens(w)) - title_words]
+    return len(" ".join(kept)) >= NO_REASON_LEN
 
 
 def _reason(ev: Event, undone: str) -> str:

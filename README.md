@@ -305,7 +305,8 @@ Full mechanics: [DESIGN.md](DESIGN.md) §3.2 contract · §3.3 graphify joins ·
 |---|---|
 | `init` | scaffold · detect sources · first ingest, in one command (`--no-detect`, `--no-ingest` opt out) |
 | `source add` / `ingest` | register a source detection missed · pull knowledge again |
-| `query "…" [--as-of DATE]` | subgraph + citations, optionally as of a past date |
+| `query "…" [--as-of DATE]` | subgraph + citations, optionally as of a past date; bridges wording onto graph tokens automatically (one LLM hop auto-fires for zero-overlap phrasing; falls back to lexical without the claude CLI) |
+| `vocab [stems]` | the graph's searchable tokens, stem-filtered; what `query` can actually hit |
 | `event add` / `goal …` | the captain's write path |
 | `study` / `resolve` / `profile` | history distillation (headless Claude) |
 | `questions` / `rebuild` / `doctor` | open disputes · replay event log · hygiene lint |

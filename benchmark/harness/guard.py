@@ -35,6 +35,7 @@ from pathlib import Path
 QUERY_ONLY = {
     "query": None,
     "questions": None,
+    "vocab": None,
     "doctor": None,
     "task": {"list"},
     "goal": {"list"},

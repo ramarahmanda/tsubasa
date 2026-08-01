@@ -15,20 +15,41 @@ act only after the user says yes (that's onboard territory).
 
 ## Steps
 
-1. Run `tsubasa query "<the user's question>"`. It returns matched entities,
+1. **Bridge the question onto the graph's own words first.** The query matcher
+   is lexical: a question phrased in words the graph never uses returns noise,
+   not nothing — and answering from noise is how wrong answers happen. Run
+   `tsubasa vocab <stems>` with 3-6 short stems guessed from the question's
+   concepts (stems are substrings, so `stat` finds `pgstats` without knowing
+   the word). Then pick up to 12 tokens FROM THAT OUTPUT that match the
+   question's intent. Hard rules:
+   - Pick only tokens the vocab output actually lists. Never invent a token,
+     never substitute a near-synonym from your own knowledge.
+   - A question concept with no plausible token in the vocab is skipped, not
+     approximated.
+   - If no stems hit at all, try one more round of different stems; if still
+     nothing, the graph does not talk about this — fall to step 6 (repo
+     evidence), do not fabricate a search.
+   - Say what you did, in one line: `query terms (from graph vocab): ...` —
+     the expansion is part of the answer's audit trail.
+2. Run `tsubasa query "<the picked tokens>"`. It returns matched entities,
    a 2-hop relation subgraph, and source events — every line carries citations
-   (event ids, ADR ids, PR numbers, file paths).
-2. If the match is thin, check `.tsubasa/memory/index.md` for the entity's
+   (event ids, ADR ids, PR numbers, file paths). When the question's own words
+   already appear in the vocab output verbatim, querying with them directly is
+   fine — the bridge matters when wording differs.
+3. If the match is thin, check `.tsubasa/memory/index.md` for the entity's
    canonical id and query again with that id.
-3. If a matched entity still lacks detail (no key_facts, one-line
+4. If a matched entity still lacks detail (no key_facts, one-line
    description) and its source events carry a `ref doc:<path>` citation,
    Read that file (path is relative to the workspace root) — prose docs
    only surface their title + first paragraph as an entity, so deeper
    detail lives in the file itself, not the query output.
-4. Answer from the returned context, plus anything read in step 3, plus
+5. Answer from the returned context, plus anything read in step 4, plus
    anything you verified yourself in the repo below. What you may NOT add is
-   unsourced recollection.
-5. **The graph is a layer over the workspace, not a replacement for it.** If the
+   unsourced recollection. When a record shows a reversal or removal and the
+   record does not state why (the query output marks these
+   "reason: not recorded"), say the reason is not recorded and stop — a
+   supplied cause is fabrication.
+6. **The graph is a layer over the workspace, not a replacement for it.** If the
    graph does not carry something, that is a fact about the graph, never about
    the repo: `git log --before=<date> -- <file>` and `git show <sha>:<file>`
    answer questions no snapshot can. Evidence you gathered yourself is evidence.
@@ -39,6 +60,8 @@ act only after the user says yes (that's onboard territory).
 A plain query answers with the *current* state. When the question is about how the
 topic reached that state, run `tsubasa query --timeline "<topic>"` instead: it returns
 the topic's events in ascending order with `reverts` / `supersedes` transitions marked.
+The topic goes through the same vocab bridge as step 1 — timeline title-matching is
+just as lexical as entity matching.
 
 Use it for:
 

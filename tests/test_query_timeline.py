@@ -285,11 +285,39 @@ def test_a_reverted_commit_that_never_became_an_entity_still_has_a_timeline(tmp_
     assert body[1].startswith("2025-03-17  REVERTED")
 
 
-def test_the_title_fallback_needs_every_token(tmp_path):
-    add = added_event()
-    add.derived_entities = []
-    store = store_with(tmp_path, add, revert_event())
-    assert query_mod.timeline(store, "redo LSN in pg_stat_statements") == "(no knowledge found)"
+def test_extra_query_words_do_not_unmatch_the_title(tmp_path):
+    # benchmark G10: the query names the topic (skip, anti, wraparound) plus
+    # wording of its own (autovacuum, freeze, aggressive). Strict AND failed
+    # the whole match on the extra words; the discriminating standard must not.
+    rev = Event(
+        id="evt-20240730-postgres-revert-aaaa1111", type="decision", ts="2024-07-30",
+        title="postgres: reverted Skip redundant anti-wraparound vacuums",
+        summary="Reverts aaaa11112222. accidentally removed the freeze safety margin",
+        source="git",
+        refs=[Ref(kind="commit", id="bbbb33334444"), Ref(kind="commit", id="aaaa11112222")],
+        derived_relations=[{"source": "bbbb33334444", "predicate": "reverts",
+                            "target": "aaaa11112222"}],
+    )
+    out = query_mod.timeline(store_with(tmp_path, rev),
+                             "autovacuum freeze aggressive anti-wraparound skip")
+    assert out.splitlines()[1].startswith("NOT PRESENT (reverted 2024-07-30)")
+
+
+def test_common_stem_overlap_alone_does_not_seed_the_timeline(tmp_path):
+    # the strict-AND rule's legitimate worry, kept as the discriminating
+    # requirement instead of the AND: common stems fire on nearly any
+    # wording, so overlap on them alone is a different topic's timeline
+    evs = [Event(id=f"evt-noise-{i}", type="note", ts=f"2026-06-{i + 1:02d}",
+                 title=f"Fix buffer error return path {i}") for i in range(4)]
+    out = query_mod.timeline(store_with(tmp_path, *evs), "buffer error handling")
+    assert out == "(no knowledge found)"
+
+
+def test_single_discriminating_token_seeds(tmp_path):
+    ev = Event(id="evt-wal", type="note", ts="2026-07-01",
+               title="Get rid of WALBufMappingLock")
+    out = query_mod.timeline(store_with(tmp_path, ev), "walbufmappinglock")
+    assert "Get rid of WALBufMappingLock" in out
 
 
 def test_nothing_matched_is_stated_plainly(tmp_path):

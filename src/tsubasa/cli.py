@@ -658,9 +658,13 @@ def cmd_query(args) -> int:
         # The code snapshot is current-state only, so it is excluded.
         entities, relations, _ = assemble.replay(store, as_of=args.as_of)
         events = {e.id: e for e in store.load_events() if e.ts[:10] <= args.as_of}
-        matched = query_mod.match_entities(entities, args.text, limit=args.limit)
+        vocab = query_mod.vocabulary(entities, events)
+        text, matched = _semantic_match(root, args, entities, events, vocab)
         print(f"# knowledge as of {args.as_of} (code snapshot excluded — it is current-state only)")
-        print(query_mod.serialize(entities, relations, events, matched, hops=args.hops))
+        print(query_mod.serialize(entities, relations, events, matched, hops=args.hops,
+                                  text=text, vocab=vocab))
+        if not matched:
+            _print_vocab_hint(vocab, text)
         return 0
     entities = store.load_entities()
     relations = store.load_relations()
@@ -672,8 +676,12 @@ def cmd_query(args) -> int:
         if cid in entities and ce.description and ce.description not in entities[cid].description:
             merged[cid].key_facts = list(dict.fromkeys(entities[cid].key_facts + [f"[code] {ce.description}"]))
     events = {e.id: e for e in store.load_events()}
-    matched = query_mod.match_entities(merged, args.text, limit=args.limit)
-    print(query_mod.serialize(merged, relations + code_relations, events, matched, hops=args.hops))
+    vocab = query_mod.vocabulary(merged, events)
+    text, matched = _semantic_match(root, args, merged, events, vocab)
+    print(query_mod.serialize(merged, relations + code_relations, events, matched, hops=args.hops,
+                              text=text, vocab=vocab))
+    if not matched:
+        _print_vocab_hint(vocab, text)
     from .graph import anchors as anchors_mod, graphify_bridge
     anchor_rows = store.load_anchors()
     matched_ids = {e.id for e in matched}
@@ -690,6 +698,73 @@ def cmd_query(args) -> int:
     if code_graph:
         print("\n## Code anatomy (graphify)")
         print(code_graph)
+    return 0
+
+
+def _semantic_match(root, args, entities, events, vocab):
+    """(text, matched entities) after the semantic escalation ladder.
+
+    Trigger contract: lexical pass first; escalate unless the title match is
+    STRONG, i.e. at least one hit rides a discriminating token
+    (`titles_discriminate`). An empty title block and a block of common-stem
+    near-misses are the same weakness: both leave the verdict surface without
+    evidence, and entity-only matches count as weak too (generic entities
+    with zero real title hits are exactly the shape that must escalate). At
+    most one expansion per query; accepted vocab tokens are appended to the
+    match text, never replacing the original wording. Expansion failure is
+    one stderr line and the lexical result stands; the query never fails or
+    blocks on it.
+    """
+    from . import semantic
+    matched = query_mod.match_entities(entities, args.text, limit=args.limit)
+    if query_mod.titles_discriminate(events, args.text, vocab):
+        return args.text, matched
+    extra = semantic.expand(root, args.text, vocab)
+    if not extra:
+        return args.text, matched
+    text = f"{args.text} {' '.join(extra)}"
+    return text, query_mod.match_entities(entities, text, limit=args.limit)
+
+
+def _print_vocab_hint(vocab, text) -> None:
+    # automatic vocab bridge: the benchmark showed callers do not run
+    # `tsubasa vocab` on their own (0 of 12 sessions), so an empty match must
+    # carry the bridge itself or a recorded topic silently reads as unrecorded
+    hint = query_mod.vocab_hint(vocab, text)
+    if hint:
+        print(hint)
+
+
+def cmd_vocab(args) -> int:
+    """The graph's searchable tokens, filtered by stems.
+
+    `match_entities` is lexical: a question phrased in words the graph never
+    uses returns nothing. This is the bridge — the captain maps the question's
+    concepts onto tokens that verifiably exist, then queries with those. The
+    full list runs to thousands of tokens, so the default surface is a stem
+    lookup; rare tokens are the valuable ones (a frequency-1 token picks out
+    one record), which is why there is no frequency floor.
+    """
+    _, _, store = _ctx()
+    entities = store.load_entities()
+    code_entities, _ = store.load_code_graph()
+    events = {e.id: e for e in store.load_events()}
+    vocab = query_mod.vocabulary({**code_entities, **entities}, events)
+    if args.stems:
+        stems = [s.lower() for s in args.stems]
+        rows = {t: c for t, c in vocab.items() if any(s in t for s in stems)}
+        if not rows:
+            print(f"no graph tokens match stems: {' '.join(stems)} "
+                  f"({len(vocab)} tokens total). The graph does not talk about "
+                  "this in these words; try other stems before concluding it "
+                  "is unrecorded.")
+            return 0
+        print(f"# {len(rows)} of {len(vocab)} graph tokens matching: {' '.join(stems)}")
+    else:
+        rows = vocab
+        print(f"# all {len(vocab)} graph tokens (pass stems to filter; "
+              "output is large)")
+    print(" ".join(f"{t}({c})" for t, c in sorted(rows.items())))
     return 0
 
 
@@ -1076,6 +1151,13 @@ def build_parser() -> argparse.ArgumentParser:
                          "ascending time order with transitions marked and reverts/"
                          "supersessions walked in. Composes with --as-of")
     sp.set_defaults(func=cmd_query)
+
+    sp = sub.add_parser("vocab", help="searchable graph tokens, filtered by stems; "
+                        "bridge a question's wording onto words the graph uses")
+    sp.add_argument("stems", nargs="*",
+                    help="substrings to filter by, e.g. `tsubasa vocab stat lsn`; "
+                         "omit for the full list")
+    sp.set_defaults(func=cmd_vocab)
 
     for name, fn, extra in (
         ("study", cmd_study, "full learning pipeline: distil -> resolve -> index -> link -> profile"),
