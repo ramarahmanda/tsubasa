@@ -13,7 +13,7 @@ to raise with the user at the next natural moment (never as spam).
 from __future__ import annotations
 
 from ..models import Entity, Event, Relation
-from ..storage import Store
+from ..storage import Store, write_atomic
 from .. import toon
 
 TRUST_RANK = {"low": 0, "normal": 1, "high": 2}
@@ -99,5 +99,5 @@ def queue_questions(store: Store, notes: list[str], ts: str) -> int:
         if n not in seen:
             existing.append({"ts": ts, "text": n, "status": "open"})
             seen.add(n)
-    (store.base / "questions.toon").write_text(toon.encode({"questions": existing}))
+    write_atomic(store.base / "questions.toon", toon.encode({"questions": existing}))
     return len(open_notes)

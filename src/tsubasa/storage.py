@@ -11,12 +11,23 @@ Layout under <root>/.tsubasa/:
 
 from __future__ import annotations
 
+import os
+import time
+from contextlib import contextmanager
 from pathlib import Path
 
 from . import toon
 from .config import TSUBASA_DIR
-from .models import Entity, Event, Relation, parse_ts
+from .models import Entity, Event, Relation, now_iso, parse_ts
 from .redact import redact_event
+
+
+def write_atomic(path: Path, text: str) -> None:
+    """Write beside, then os.replace: a crash mid-write must never leave a
+    torn graph file behind."""
+    tmp = path.with_name(f".{path.name}.tmp{os.getpid()}")
+    tmp.write_text(text)
+    os.replace(tmp, path)
 
 
 class Store:
@@ -28,6 +39,43 @@ class Store:
         self.memory_dir = self.base / "memory"
         # schema 1 wrote task-*.toon here; `tsubasa upgrade` retires them
         self.legacy_tasks_dir = self.base / "tasks"
+
+    # ------------------------------------------------------------ lock
+
+    LOCK_STALE_SECONDS = 15 * 60
+
+    @contextmanager
+    def write_lock(self):
+        """One writer per captain. append_event is read-modify-write on a
+        monthly pack, so two concurrent writers silently lose events; every
+        mutating command serializes here. Reads never take the lock."""
+        self.base.mkdir(parents=True, exist_ok=True)
+        path = self.base / ".lock"
+        fd = None
+        for _ in (0, 1):
+            try:
+                fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+                break
+            except FileExistsError:
+                try:
+                    age = time.time() - path.stat().st_mtime
+                    holder = path.read_text().strip()
+                except OSError:
+                    continue  # released between the open and the stat: retry
+                if age > self.LOCK_STALE_SECONDS:
+                    path.unlink(missing_ok=True)  # a crashed writer never cleans up
+                    continue
+                raise RuntimeError(
+                    f"another tsubasa command is writing to this captain ({holder or 'unknown'}); "
+                    f"retry when it finishes, or delete {path} if it is stale")
+        if fd is None:
+            raise RuntimeError(f"could not acquire {path}")
+        try:
+            os.write(fd, f"pid {os.getpid()} since {now_iso()}".encode())
+            os.close(fd)
+            yield
+        finally:
+            path.unlink(missing_ok=True)
 
     # ------------------------------------------------------------ entities
 
@@ -42,7 +90,7 @@ class Store:
         self.graph_dir.mkdir(parents=True, exist_ok=True)
         ordered = sorted(entities.values(), key=lambda e: (e.type, e.id))
         doc = {"entities": [e.to_dict() for e in ordered]}
-        (self.graph_dir / "entities.toon").write_text(toon.encode(doc))
+        write_atomic(self.graph_dir / "entities.toon", toon.encode(doc))
 
     # ------------------------------------------------------------ relations
 
@@ -60,7 +108,7 @@ class Store:
             seen.setdefault(r.key(), r)
         ordered = sorted(seen.values(), key=lambda r: r.key())
         doc = {"relations": [r.to_dict() for r in ordered]}
-        (self.graph_dir / "relations.toon").write_text(toon.encode(doc))
+        write_atomic(self.graph_dir / "relations.toon", toon.encode(doc))
 
     # ------------------------------------------------------------ events
     #
@@ -93,7 +141,7 @@ class Store:
         records = self._load_pack(path)
         records = [r for r in records if r.get("id") != event.id] + [event.to_dict()]
         records.sort(key=lambda r: (str(r.get("ts", "")), str(r.get("id", ""))))
-        path.write_text(toon.encode({"events": records}))
+        write_atomic(path, toon.encode({"events": records}))
         self._events_cache = None
         return path
 
@@ -141,7 +189,7 @@ class Store:
         appended — it is only ever as true as the commit it was read from."""
         self.graph_dir.mkdir(parents=True, exist_ok=True)
         doc = {"snapshot": {"provenance": provenance, "entities": entities, "relations": relations}}
-        (self.graph_dir / "code.toon").write_text(toon.encode(doc))
+        write_atomic(self.graph_dir / "code.toon", toon.encode(doc))
 
     def load_code_graph(self) -> tuple[dict[str, Entity], list[Relation]]:
         path = self.graph_dir / "code.toon"
@@ -169,7 +217,7 @@ class Store:
             return x if nxt is None or nxt in seen else root(nxt, (*seen, x))
         flat = {a: root(c) for a, c in aliases.items() if a != root(c)}
         doc = {"aliases": [{"alias": a, "canonical": c} for a, c in sorted(flat.items())]}
-        (self.graph_dir / "aliases.toon").write_text(toon.encode(doc))
+        write_atomic(self.graph_dir / "aliases.toon", toon.encode(doc))
 
     def load_profiles(self) -> dict[str, dict]:
         """entity id -> {summary, key_facts} (from `tsubasa profile`)."""
@@ -181,7 +229,7 @@ class Store:
     def save_profiles(self, profiles: dict[str, dict]) -> None:
         self.graph_dir.mkdir(parents=True, exist_ok=True)
         doc = {"profiles": [profiles[k] for k in sorted(profiles)]}
-        (self.graph_dir / "profiles.toon").write_text(toon.encode(doc))
+        write_atomic(self.graph_dir / "profiles.toon", toon.encode(doc))
 
     # ------------------------------------------------------------ anchors
 
@@ -203,7 +251,7 @@ class Store:
                 out.append({"entity": a["entity"], "repo": a["repo"],
                             "node": a["node"], "by": a.get("by", "seed")})
         out.sort(key=lambda a: (a["entity"], a["repo"], a["node"]))
-        (self.graph_dir / "anchors.toon").write_text(toon.encode({"anchors": out}))
+        write_atomic(self.graph_dir / "anchors.toon", toon.encode({"anchors": out}))
 
     # ------------------------------------------------------------ state
 
@@ -213,4 +261,4 @@ class Store:
 
     def save_state(self, state: dict) -> None:
         self.base.mkdir(parents=True, exist_ok=True)
-        (self.base / "state.toon").write_text(toon.encode(state))
+        write_atomic(self.base / "state.toon", toon.encode(state))
