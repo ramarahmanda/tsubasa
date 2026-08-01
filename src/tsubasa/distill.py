@@ -486,7 +486,7 @@ def _study_doc_event(item: dict, kind: str, rel: str, digest: str) -> Event | No
         title=f"{kind}: {title}",
         summary=str(item.get("summary", ""))[:600],
         impact="low",
-        domains=[str(d) for d in item.get("domains", [])][:4],
+        domains=[s for s in (slugify(str(d)) for d in item.get("domains", [])) if s][:4],
         trust="low",  # doc-derived, verify in code — same hierarchy as adr.py's non-ADR docs
         refs=[Ref(kind="doc", id=rel)],
         source="study",
@@ -518,7 +518,7 @@ def _study_event(item: dict, repo_name: str, repo: Path,
         ts=date, title=f"{repo_name}: {title}",
         summary=str(item.get("summary", ""))[:600],
         impact=item.get("impact", "low") if item.get("impact") in ("high", "medium", "low") else "low",
-        domains=[str(d) for d in item.get("domains", [])][:4],
+        domains=[s for s in (slugify(str(d)) for d in item.get("domains", [])) if s][:4],
         refs=[Ref(kind="commit", id=c) for c in commit_shas]
             + [Ref(kind="file", id=f) for f in files[:10]],
         source="study",

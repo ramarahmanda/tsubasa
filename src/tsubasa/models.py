@@ -24,6 +24,8 @@ TRUST_LEVELS = {"high", "normal", "low"}
 
 ADR_ID_RE = re.compile(r"\badr-[a-z0-9][a-z0-9-]*[a-z0-9]\b")
 SLUG_RE = re.compile(r"[^a-z0-9]+")
+# domain labels become filenames under memory/domains/, so they stay slug-shaped
+DOMAIN_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 
 
 def slugify(text: str, max_len: int = 48) -> str:

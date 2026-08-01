@@ -21,7 +21,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from ..config import CaptainConfig
-from ..models import Entity, Event, Relation
+from ..models import Entity, Event, Relation, slugify
 
 from ..storage import Store
 from . import temperature as temp
@@ -251,7 +251,10 @@ def _build_domains(store: Store, cfg, scored_entities, events) -> dict[str, int]
     domains_dir.mkdir(parents=True, exist_ok=True)
     by_domain: dict[str, list] = {}
     for s, e in scored_entities:
-        for d in e.domains or ["general"]:
+        for raw in e.domains or ["general"]:
+            # the label becomes a filename; labels replayed from an existing
+            # log or minted by a model are not trusted to stay inside domains/
+            d = slugify(raw) or "general"
             by_domain.setdefault(d, []).append((s, e))
     counts = {}
     for domain, pairs in sorted(by_domain.items()):
