@@ -33,7 +33,7 @@ from .config import SCHEMA_VERSION, CaptainConfig, TSUBASA_DIR
 from .graph import assemble, query as query_mod, reconcile
 from .memory import tiers
 from .models import (
-    EVENT_TYPES, IMPACT_LEVELS, RETIRED_EVENT_TYPES, TRUST_LEVELS,
+    DOMAIN_RE, EVENT_TYPES, IMPACT_LEVELS, RETIRED_EVENT_TYPES, TRUST_LEVELS,
     Event, Ref, now_iso, slugify,
 )
 from .storage import Store
@@ -442,10 +442,16 @@ def cmd_event_add(args) -> int:
     if store.has_event(ev_id):
         raise RuntimeError(f"event id already exists: {ev_id}")
     body = sys.stdin.read() if args.body_stdin else (args.body or "")
+    domains = _csv(args.domains)
+    bad = next((d for d in domains if not DOMAIN_RE.match(d)), None)
+    if bad is not None:
+        raise RuntimeError(
+            f"--domains wants kebab-case labels (a-z, 0-9, hyphen), got {bad!r}: "
+            f"each label becomes memory/domains/<label>.md")
     event = Event(
         id=ev_id, type=args.type, ts=ts, title=args.title,
         summary=args.summary or "", impact=args.impact,
-        domains=_csv(args.domains), actors=_csv(args.actors), trust=args.trust,
+        domains=domains, actors=_csv(args.actors), trust=args.trust,
         refs=[_parse_ref(r) for r in args.ref or []],
         supersedes=_csv(args.supersedes), body=body, source="manual",
         derived_entities=[_parse_entity(e) for e in args.entity or []],
