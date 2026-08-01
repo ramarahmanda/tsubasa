@@ -320,6 +320,13 @@ def _retire_tasks(root: Path, store: Store) -> list[str]:
 
 # ------------------------------------------------------------------ ingest
 
+def _warn(key: str, adapter) -> bool:
+    """A source that broke must not read like a source that was quiet."""
+    for w in getattr(adapter, "warnings", []):
+        print(f"warning: [{key}] {w}", file=sys.stderr)
+    return bool(getattr(adapter, "warnings", []))
+
+
 def cmd_ingest(args) -> int:
     root, cfg, store = _ctx()
     state = store.load_state()
@@ -330,6 +337,7 @@ def cmd_ingest(args) -> int:
     snap_relations: list[dict] = []
     snap_prov: list[str] = []
     ran_snapshot = False
+    warned = False
     for i, src in enumerate(cfg.sources):
         if args.adapter and src.adapter != args.adapter:
             continue
@@ -344,6 +352,7 @@ def cmd_ingest(args) -> int:
             snap_prov.extend(prov)
             ran_snapshot = True
             print(f"[{key}] snapshot: {len(ents)} entities, {len(rels)} relations @ {', '.join(prov) or 'n/a'}")
+            warned = _warn(key, adapter) or warned
             continue
         collected = adapter.collect()
         fresh = [e for e in collected if not store.has_event(e.id)]
@@ -351,10 +360,13 @@ def cmd_ingest(args) -> int:
             store.append_event(ev)
         new_events.extend(fresh)
         print(f"[{key}] {len(fresh)} new event(s)")
+        warned = _warn(key, adapter) or warned
     store.save_state(state)
     if ran_snapshot:
         store.save_code_graph(snap_entities, snap_relations, snap_prov)
     _apply_and_regen(root, cfg, store, new_events)
+    if warned and getattr(args, "strict", False):
+        return 1
     return 0
 
 
@@ -989,6 +1001,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("ingest", help="run source adapters")
     sp.add_argument("adapter", nargs="?", help="only this adapter")
+    sp.add_argument("--strict", action="store_true",
+                    help="exit 1 if any source reported a warning")
     sp.set_defaults(func=cmd_ingest)
 
     sp = sub.add_parser("pull", help="fetch every git source, re-ingest, optionally study")
