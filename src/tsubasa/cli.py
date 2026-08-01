@@ -828,7 +828,8 @@ def cmd_link(args) -> int:
         from . import distill, llm
         if not llm.claude_available(args.claude_cmd):
             raise RuntimeError(f"'{args.claude_cmd}' not found — --llm needs the Claude CLI")
-        added = distill.link_llm(store, cfg, root, claude_cmd=args.claude_cmd, model=args.model)
+        added = distill.link_llm(store, cfg, root, claude_cmd=args.claude_cmd, model=args.model,
+                                 only=args.repo)
         print(f"semantic pass: {added} new anchor(s)")
     return 0
 
@@ -1100,6 +1101,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("link", help="seed anchors between the knowledge graph and code indexes")
     sp.add_argument("--llm", action="store_true",
                     help="also run the semantic pass: LLM ties entities to code nodes (node names only, few calls)")
+    sp.add_argument("--repo", default="",
+                    help="scope the semantic pass to one repo's code index (retry a failed repo alone)")
     sp.add_argument("--claude-cmd", default="claude")
     sp.add_argument("--model", default="")
     sp.set_defaults(func=cmd_link)

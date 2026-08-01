@@ -92,3 +92,27 @@ def test_link_llm_semantic_pass(repo, tmp_path):
     kinds = {(a["entity"], a["node"], a["by"]) for a in anchors}
     assert ("feat-fast-login", "TokenResource", "link") in kinds   # verbatim node accepted
     assert not any(a["node"] == "InventedNode" for a in anchors)   # invented node rejected
+
+
+def test_link_llm_repo_filter_scopes_the_semantic_pass(repo, tmp_path):
+    import stat
+    payload = '[{"entity": "feat-fast-login", "nodes": ["TokenResource"]}]'
+    stub = tmp_path / "claude-link-stub"
+    stub.write_text(f"#!/bin/sh\necho call >> {tmp_path}/llm-calls.txt\ncat <<'EOF'\n{payload}\nEOF\n")
+    stub.chmod(stub.stat().st_mode | stat.S_IEXEC)
+    assert cli.main(["link", "--llm", "--repo", "support", "--claude-cmd", str(stub)]) == 0
+    # one model call: the gateway index was never sent
+    assert (tmp_path / "llm-calls.txt").read_text().count("call") == 1
+    # the proposal named a gateway node, so the scoped pass anchored nothing
+    assert not any(a["by"] == "link" for a in Store(repo).load_anchors())
+
+
+def test_link_llm_repo_filter_unknown_name_lists_indexes(repo, tmp_path, capsys):
+    import stat
+    stub = tmp_path / "claude-link-stub"
+    stub.write_text("#!/bin/sh\necho '[]'\n")
+    stub.chmod(stub.stat().st_mode | stat.S_IEXEC)
+    assert cli.main(["link", "--llm", "--repo", "nope", "--claude-cmd", str(stub)]) == 0
+    out = capsys.readouterr().out
+    assert "no code index named 'nope'" in out
+    assert "gateway" in out and "support" in out
