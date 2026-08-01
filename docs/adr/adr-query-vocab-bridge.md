@@ -26,8 +26,9 @@ tsubasa query "<words>"
   |-- ALWAYS: event-title match, rarity-weighted (sum 1/freq, >=2 stems, cap 5)
   |       reverted events print outcome first: NOT PRESENT (reverted <date>)
   |-- empty entity match --> vocab hint: "graph tokens near your wording: ..."
-  '-- TSUBASA_SEMANTIC=1 --> haiku selects <=6 rare vocab tokens, appended
-          to the match text; audit line + cost log per call
+  '-- zero title hits --> haiku selects <=6 rare vocab tokens, appended to
+          the match text, match redone; audit line + cost log per call;
+          any failure falls back to the lexical result (no env gate)
 ```
 
 Pointers: src/tsubasa/graph/query.py (vocabulary, title_events, vocab_hint),
@@ -47,11 +48,15 @@ src/tsubasa/semantic.py, src/tsubasa/cli.py cmd_query, cmd_vocab.
 2. Auto lexical bridge (title match + hint): shipped, validated.
 3. Semantic expansion, env-gated: shipped, validated on zero-overlap questions.
 4. Rarity-weighted ranking, expansion cap 6: shipped, validated.
-5. Open: ladder default (semantic auto-fires only on weak lexical result); G9 turn-1 tail unexplained.
+5. Ladder default: semantic auto-fires only on zero title hits; env gate removed. Open: G9 turn-1 tail unexplained.
 
 ### BREAKING CHANGE
 
-None. Output is additive; semantic path is opt-in by env; timeline path unchanged.
+None. `TSUBASA_SEMANTIC` / `TSUBASA_SEMANTIC_MODEL` existed only on this
+branch, never in a release; no shipped contract changes. Behavior at the
+first release carrying this ADR: a weak lexical result attempts one haiku
+expansion, silent fallback without the claude CLI. `TSUBASA_SEMANTIC_LOG`
+kept (cost-log path only). Output is additive; timeline path unchanged.
 
 ## Consequences
 

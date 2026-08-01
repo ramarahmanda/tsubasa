@@ -71,7 +71,8 @@ def test_query_surfaces_anchors_and_xrepo_edges(repo, capsys):
     out = capsys.readouterr().out
     assert "feat-fast-login <=> FastLoginValidator" in out
     assert "Code anatomy (graphify)" in out
-    assert "calls" in out  # TokenResource --calls--> FastLoginValidator
+    # edges are a pointer now, not a dump: the expand command must be present
+    assert "graphify explain" in out
 
 
 def test_link_idempotent(repo):

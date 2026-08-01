@@ -53,6 +53,31 @@ def test_title_block_surfaces_revert_despite_entity_matches():
     assert "Revert changes in HOT handling of BRIN indexes" in out
 
 
+def test_revert_without_recorded_reason_gets_marker():
+    # no rationale beyond the title, mechanically: empty, sha boilerplate, or
+    # a body that only restates the title all mean the reason is not recorded
+    for body in ("", "This reverts commit e3fcca0d0d24.",
+                 "Changes in HOT handling of BRIN indexes"):
+        events = {"evt-rev": ev(
+            "evt-rev", "Revert changes in HOT handling of BRIN indexes",
+            ts="2026-06-20", body=body,
+            derived_relations=[{"predicate": "reverts", "target": "e3fcca0d0d24"}])}
+        out = serialize({}, [], events, [], text="BRIN HOT updates")
+        assert "— reason: not recorded" in out, repr(body)
+
+
+def test_revert_with_recorded_reason_is_unmarked():
+    events = {"evt-rev": ev(
+        "evt-rev", "Revert changes in HOT handling of BRIN indexes",
+        ts="2026-06-20",
+        summary="Reverted because the summarization callback crashed during "
+                "concurrent vacuum on partitioned tables.",
+        derived_relations=[{"predicate": "reverts", "target": "e3fcca0d0d24"}])}
+    out = serialize({}, [], events, [], text="BRIN HOT updates")
+    assert "NOT PRESENT (reverted 2026-06-20)" in out
+    assert "reason: not recorded" not in out
+
+
 def test_one_common_word_does_not_drag_titles_in():
     events = {"evt-1": ev("evt-1", "Session store replication lag")}
     # only "session" overlaps; a multi-word query needs two stem hits

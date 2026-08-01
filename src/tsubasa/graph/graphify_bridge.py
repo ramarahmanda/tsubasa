@@ -16,8 +16,10 @@ from pathlib import Path
 
 from ..config import CaptainConfig
 
-MAX_NODES = 12
-MAX_EDGES = 20
+# the whole section, across every repo: top node names plus one pointer. The
+# anatomy is re-derivable via `graphify explain`, so a pointer beats a dump,
+# and a dump here pushes the event graph's verdict past a reader's `| head`
+MAX_LINES = 8
 
 
 def _node_name(n: dict) -> str:
@@ -60,44 +62,46 @@ def load_graphs(root: Path, cfg: CaptainConfig) -> list[tuple[str, dict]]:
 
 
 def query(root: Path, cfg: CaptainConfig, text: str) -> str:
-    """Serialize graphify matches for the query text, '' if nothing."""
+    """Serialize graphify matches for the query text, '' if nothing.
+
+    At most MAX_LINES lines whatever the repo count: the best-matching node
+    names, then one pointer carrying the expand command and what was held
+    back, so elision is visible without the dump being paid for."""
     words = {w for w in _tokens(text) if len(w) > 2}
     if not words:
         return ""
-    lines: list[str] = []
+    scored: list[tuple[int, str, dict]] = []
+    touching = 0
     for repo_name, g in load_graphs(root, cfg):
         nodes = g.get("nodes", [])
         edges = g.get("edges") or g.get("links") or []
         by_id = {str(n.get("id", _node_name(n))): n for n in nodes if isinstance(n, dict)}
         matched_ids = set()
-        matched_nodes = []
         for nid, n in by_id.items():
-            name = _node_name(n)
-            hay = set(_tokens(name)) | set(_tokens(nid))
-            if words & hay:
+            hay = set(_tokens(_node_name(n))) | set(_tokens(nid))
+            hits = len(words & hay)
+            if hits:
                 matched_ids.add(nid)
-                matched_nodes.append((nid, n))
-        if not matched_ids:
-            continue
-        lines.append(f"### {repo_name} (graphify code graph)")
-        for nid, n in matched_nodes[:MAX_NODES]:
-            loc = n.get("file") or n.get("path") or n.get("loc") or ""
-            ntype = n.get("type") or n.get("kind") or "node"
-            lines.append(f"- {_node_name(n)} ({ntype})" + (f" — {loc}" if loc else ""))
-        shown = 0
+                scored.append((hits, repo_name, n))
         for e in edges:
-            if not isinstance(e, dict):
-                continue
-            src, tgt, label = _edge_ends(e)
-            if src in matched_ids or tgt in matched_ids:
-                sname = _node_name(by_id.get(src, {"id": src}))
-                tname = _node_name(by_id.get(tgt, {"id": tgt}))
-                lines.append(f"({sname}) --[{label}]--> ({tname})  [graphify:{repo_name}]")
-                shown += 1
-                if shown >= MAX_EDGES:
-                    lines.append(f"(+more edges — `graphify explain \"{_node_name(matched_nodes[0][1])}\" "
-                                 f"--graph {repo_name}/graphify-out/graph.json`)")
-                    break
+            if isinstance(e, dict):
+                src, tgt, _ = _edge_ends(e)
+                if src in matched_ids or tgt in matched_ids:
+                    touching += 1
+    if not scored:
+        return ""
+    scored.sort(key=lambda p: -p[0])
+    lines: list[str] = []
+    for _, repo_name, n in scored[:MAX_LINES - 1]:
+        loc = n.get("file") or n.get("path") or n.get("loc") or ""
+        ntype = n.get("type") or n.get("kind") or "node"
+        lines.append(f"- {_node_name(n)} ({ntype})"
+                     + (f" — {loc}" if loc else "") + f"  [graphify:{repo_name}]")
+    held = len(scored) - (MAX_LINES - 1)
+    top_repo, top = scored[0][1], scored[0][2]
+    more = (f"+{held} more nodes, " if held > 0 else "") + f"{touching} edges"
+    lines.append(f"({more} — `graphify explain \"{_node_name(top)}\" "
+                 f"--graph {top_repo}/graphify-out/graph.json`)")
     return "\n".join(lines)
 
 

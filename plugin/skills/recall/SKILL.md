@@ -45,7 +45,10 @@ act only after the user says yes (that's onboard territory).
    detail lives in the file itself, not the query output.
 5. Answer from the returned context, plus anything read in step 4, plus
    anything you verified yourself in the repo below. What you may NOT add is
-   unsourced recollection.
+   unsourced recollection. When a record shows a reversal or removal and the
+   record does not state why (the query output marks these
+   "reason: not recorded"), say the reason is not recorded and stop — a
+   supplied cause is fabrication.
 6. **The graph is a layer over the workspace, not a replacement for it.** If the
    graph does not carry something, that is a fact about the graph, never about
    the repo: `git log --before=<date> -- <file>` and `git show <sha>:<file>`

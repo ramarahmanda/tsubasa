@@ -1,16 +1,14 @@
-"""Opt-in semantic query expansion, graphify-style.
+"""Semantic query expansion, graphify-style: the query ladder's second rung.
 
 `match_entities` and `title_events` are lexical: a question whose wording
-shares no stems with the record's names returns nothing (benchmark G4 asked
-about "vacuum/oldest/horizon"; the gold title says "CONCURRENTLY/Xmin").
-With TSUBASA_SEMANTIC=1, one headless Claude call reads the FULL graph
-vocabulary and selects up to 6 tokens that semantically match the question;
-anything not verbatim in the vocabulary is discarded, so the expansion can
-widen recall but never invent a record. Off by default: the CLI stays
-deterministic unless asked, and any failure falls back to the lexical path.
-
-An env var, not a CLI flag, because in benchmark runs the calling model does
-not know our flags; the env rides through the query-only shim's exec.
+shares no stems with the record's names returns nothing. The caller
+(`tsubasa query`) escalates here exactly when its lexical pass finds no
+title-matched events, i.e. the verdict surface is empty. One headless Claude
+call reads the FULL graph vocabulary and selects up to 6 tokens that
+semantically match the question; anything not verbatim in the vocabulary is
+discarded, so the expansion can widen recall but never invent a record. Any
+failure falls back to the lexical path; a query never fails or blocks on the
+expansion.
 
 Each call appends one JSON line of cost accounting to $TSUBASA_SEMANTIC_LOG
 when set, else `.tsubasa/semantic-cost.jsonl` under the captain root. That
@@ -63,17 +61,13 @@ or [].
 """
 
 
-def enabled() -> bool:
-    return os.environ.get("TSUBASA_SEMANTIC", "") == "1"
-
-
 def expand(root: Path, question: str, vocab: dict[str, int]) -> list[str]:
     """Vocab tokens semantically near the question, [] when none or on failure.
 
     Prints one audit line so the expansion is visible in the query output;
     never raises — the lexical path must survive any model failure.
     """
-    model = os.environ.get("TSUBASA_SEMANTIC_MODEL", DEFAULT_MODEL)
+    model = DEFAULT_MODEL
     started = time.monotonic()
     try:
         picked, cost = _ask(question, vocab, model)

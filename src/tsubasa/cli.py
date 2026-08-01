@@ -653,8 +653,7 @@ def cmd_query(args) -> int:
         entities, relations, _ = assemble.replay(store, as_of=args.as_of)
         events = {e.id: e for e in store.load_events() if e.ts[:10] <= args.as_of}
         vocab = query_mod.vocabulary(entities, events)
-        text = _semantic_text(root, args.text, vocab)
-        matched = query_mod.match_entities(entities, text, limit=args.limit)
+        text, matched = _semantic_match(root, args, entities, events, vocab)
         print(f"# knowledge as of {args.as_of} (code snapshot excluded — it is current-state only)")
         print(query_mod.serialize(entities, relations, events, matched, hops=args.hops,
                                   text=text, vocab=vocab))
@@ -672,8 +671,7 @@ def cmd_query(args) -> int:
             merged[cid].key_facts = list(dict.fromkeys(entities[cid].key_facts + [f"[code] {ce.description}"]))
     events = {e.id: e for e in store.load_events()}
     vocab = query_mod.vocabulary(merged, events)
-    text = _semantic_text(root, args.text, vocab)
-    matched = query_mod.match_entities(merged, text, limit=args.limit)
+    text, matched = _semantic_match(root, args, merged, events, vocab)
     print(query_mod.serialize(merged, relations + code_relations, events, matched, hops=args.hops,
                               text=text, vocab=vocab))
     if not matched:
@@ -697,16 +695,29 @@ def cmd_query(args) -> int:
     return 0
 
 
-def _semantic_text(root, text, vocab) -> str:
-    # opt-in semantic bridge (TSUBASA_SEMANTIC=1): lexical matching misses a
-    # question whose wording shares no stems with the record's names. Accepted
-    # vocab tokens are appended to the match text, so entity matching and
-    # title matching both see them; the original wording is never replaced
+def _semantic_match(root, args, entities, events, vocab):
+    """(text, matched entities) after the semantic escalation ladder.
+
+    Trigger contract: lexical pass first; escalate unless the title match is
+    STRONG, i.e. at least one hit rides a discriminating token
+    (`titles_discriminate`). An empty title block and a block of common-stem
+    near-misses are the same weakness: both leave the verdict surface without
+    evidence, and entity-only matches count as weak too (generic entities
+    with zero real title hits are exactly the shape that must escalate). At
+    most one expansion per query; accepted vocab tokens are appended to the
+    match text, never replacing the original wording. Expansion failure is
+    one stderr line and the lexical result stands; the query never fails or
+    blocks on it.
+    """
     from . import semantic
-    if not semantic.enabled():
-        return text
-    extra = semantic.expand(root, text, vocab)
-    return f"{text} {' '.join(extra)}" if extra else text
+    matched = query_mod.match_entities(entities, args.text, limit=args.limit)
+    if query_mod.titles_discriminate(events, args.text, vocab):
+        return args.text, matched
+    extra = semantic.expand(root, args.text, vocab)
+    if not extra:
+        return args.text, matched
+    text = f"{args.text} {' '.join(extra)}"
+    return text, query_mod.match_entities(entities, text, limit=args.limit)
 
 
 def _print_vocab_hint(vocab, text) -> None:
