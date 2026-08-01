@@ -63,6 +63,9 @@ class Adapter:
         self.state = state  # adapter-scoped mutable cursor dict
         self.log = log
         self.offline = offline  # no network I/O in this adapter: local refs/files only
+        # non-fatal reasons a source came back short; `ingest` prints these so a
+        # broken source is distinguishable from a genuinely quiet one
+        self.warnings: list[str] = []
 
     def collect(self) -> list[Event]:
         """Return new events since the last cursor. Must be idempotent."""
