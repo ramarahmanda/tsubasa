@@ -85,6 +85,86 @@ def match_entities(entities: dict[str, Entity], text: str, limit: int = 5) -> li
     return [e for _, e in scored[:limit]]
 
 
+def vocabulary(entities: dict[str, Entity], events: dict[str, Event]) -> dict[str, int]:
+    """Token -> frequency over every name the matchers score against.
+
+    Built with the same `_tokens` as matching, so every listed token is one a
+    query can actually hit: `walbufmappinglock` stays whole here because it
+    stays whole in `match_entities`, and a camelCase split would advertise
+    tokens that match nothing. Covers entity ids/names/aliases (the
+    `match_entities` surface) and event titles (the `--timeline` title-match
+    surface).
+    """
+    counts: dict[str, int] = {}
+    for e in entities.values():
+        for name in [e.id] + e.all_names():
+            for t in _tokens(name):
+                if len(t) >= 3 and t not in STOPWORDS:
+                    counts[t] = counts.get(t, 0) + 1
+    for ev in events.values():
+        for t in _tokens(ev.title):
+            if len(t) >= 3 and t not in STOPWORDS:
+                counts[t] = counts.get(t, 0) + 1
+    return counts
+
+
+def vocab_hint(vocab: dict[str, int], text: str, token_cap: int = 20) -> str:
+    """Bridge for an empty entity match: graph tokens near the query's wording.
+
+    `match_entities` is lexical, so a question phrased in words the graph never
+    uses returns nothing; without this line the caller reads that as "the graph
+    is silent" about something it records. Takes the `vocabulary()` map, which
+    the query path computes once. Query tokens are matched as stems into
+    vocabulary tokens, the same relation `tsubasa vocab` uses, and rare tokens
+    lead because a frequency-1 token picks out one record. Returns "" when
+    nothing is near the wording.
+    """
+    qtokens = {t for t in _tokens(text) if len(t) >= 3 and t not in STOPWORDS}
+    if not qtokens:
+        return ""
+    hits = {t: c for t, c in vocab.items() if any(q in t for q in qtokens)}
+    if not hits:
+        return ""
+    shown = sorted(hits.items(), key=lambda p: (p[1], p[0]))[:token_cap]
+    return ("no direct entity match; graph tokens near your wording: "
+            + " ".join(f"{t}({c})" for t, c in shown))
+
+
+def title_events(events: dict[str, Event], text: str, freq: dict[str, int],
+                 exclude: set[str] = frozenset(), cap: int = 5) -> list[Event]:
+    """Events whose titles carry the query's wording, rarest overlap first.
+
+    Partial overlap by design, where the timeline's `_title_matches` is strict
+    AND: a deterministic adapter attaches an event only to its repo entity, so
+    entity walking cannot reach a revert however plainly its title answers the
+    question, and requiring every query word would miss it too. Query tokens
+    match as stems into title tokens, the same relation `vocab_hint` uses, so
+    a whole-identifier token like `walbufmappinglock` is reachable from its
+    parts. Two stem hits required whenever the query has two meaningful
+    tokens: one common word alone would drag unrelated titles into every
+    query. Ranking weights each hit by 1/frequency in `freq` (the
+    `vocabulary()` counts): a wide query carries common stems, and under raw
+    hit counts three hits on error/buffer/return outrank two on tokens that
+    each pick out one record, flooding the answer out of the cap.
+    """
+    qtokens = {t for t in _tokens(text) if len(t) >= 3 and t not in STOPWORDS}
+    if not qtokens:
+        return []
+    need = min(2, len(qtokens))
+    scored: list[tuple[float, str, Event]] = []
+    for ev in events.values():
+        if ev.id in exclude:
+            continue
+        ttokens = _tokens(ev.title)
+        # per query token, the rarest title token it stems into
+        weights = [max(1 / freq.get(t, 1) for t in ttokens if q in t)
+                   for q in qtokens if any(q in t for t in ttokens)]
+        if len(weights) >= need:
+            scored.append((sum(weights), ev.ts, ev))
+    scored.sort(key=lambda p: (p[0], p[1], p[2].id), reverse=True)
+    return [ev for _, _, ev in scored[:cap]]
+
+
 def _tokens(text: str) -> list[str]:
     out, buf = [], []
     for ch in text.lower():
@@ -166,8 +246,18 @@ def serialize(
     events: dict[str, Event],
     matched: list[Entity],
     hops: int = 2,
+    text: str = "",
+    vocab: dict[str, int] | None = None,
 ) -> str:
-    """Human/LLM-readable context block with citations."""
+    """Human/LLM-readable context block with citations.
+
+    `text` is the query itself; when given, events whose titles carry its
+    wording are appended even when entities matched, because entity walking
+    cannot reach a repo-attached event (a revert, typically) that answers the
+    question. Deduped against the source events already shown. `vocab` is the
+    `vocabulary()` map when the caller already computed it; title ranking
+    needs its frequencies.
+    """
     lines: list[str] = []
     centers = {e.id for e in matched}
     sub = subgraph(relations, centers, hops)
@@ -211,7 +301,20 @@ def serialize(
                 lines.append(f"  {ev.summary}")
             for ref in ev.refs:
                 lines.append(f"  ref {ref.kind}: {ref.id}")
-    if not sub and not cited_events and not matched:
+    titled = title_events(events, text, vocab if vocab is not None else vocabulary(entities, events),
+                          exclude={ev.id for ev in cited_events}) if text else []
+    if titled:
+        lines.append("")
+        lines.append("## Events matched by title (entity walking cannot reach "
+                     "these; `--timeline` shows the sequence)")
+        for ev in titled:
+            if _reverts(ev) is not None:
+                # verdict first, as the timeline states it: the reverted thing
+                # is absent, and a reader who stops at the title must know that
+                lines.append(f"- NOT PRESENT (reverted {ev.ts[:10]}): {ev.title}  [{_cite(ev)}]")
+            else:
+                lines.append(f"- {ev.id} ({ev.type}, {ev.ts[:10]}): {ev.title}")
+    if not sub and not cited_events and not matched and not titled:
         lines.append("(no knowledge found)")
     return "\n".join(lines)
 
