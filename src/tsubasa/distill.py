@@ -679,10 +679,12 @@ Return ONLY a JSON array (no prose), empty if nothing:
 
 
 def link_llm(store, cfg: CaptainConfig, root: Path, claude_cmd: str = "claude",
-             model: str = "", log=print) -> int:
+             model: str = "", log=print, only: str = "") -> int:
     """Semantic anchor pass: LLM ties entities to code nodes that lexical
     seeding can't match. Scales with #entities, not #files — node NAMES only,
-    never source code. Results land in anchors.toon (by=link), reviewable."""
+    never source code. Results land in anchors.toon (by=link), reviewable.
+    `only` scopes the pass to a single repo's code index, so one failed repo
+    can be retried without re-paying the model for the ones that landed."""
     from .graph import graphify_bridge
     entities = store.load_entities()
     anchors = store.load_anchors()
@@ -696,8 +698,16 @@ def link_llm(store, cfg: CaptainConfig, root: Path, claude_cmd: str = "claude",
         f"- {e.id} ({e.type}): {e.description[:150]}"
         + (f" | facts: {'; '.join(e.key_facts[:2])[:150]}" if e.key_facts else "")
         for e in sorted(candidates, key=lambda e: e.id))
+    graphs = graphify_bridge.load_graphs(root, cfg)
+    if only:
+        want = Path(only).name
+        available = ", ".join(n for n, _ in graphs) or "none"
+        graphs = [(n, g) for n, g in graphs if n == want]
+        if not graphs:
+            log(f"[link-llm] no code index named {only!r}; available: {available}")
+            return 0
     added = 0
-    for repo_name, g in graphify_bridge.load_graphs(root, cfg):
+    for repo_name, g in graphs:
         nodes = [n for n in g.get("nodes", []) if isinstance(n, dict)]
         # shortlist: highest-degree node names, not all thousands
         degree: dict[str, int] = {}
