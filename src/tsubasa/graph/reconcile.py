@@ -19,12 +19,16 @@ from .. import toon
 TRUST_RANK = {"low": 0, "normal": 1, "high": 2}
 
 
-def reconcile_event(entities: dict[str, Entity], relations: list[Relation], event: Event) -> list[str]:
+def reconcile_event(entities: dict[str, Entity], relations: list[Relation], event: Event,
+                    event_trust: dict[str, str] | None = None) -> list[str]:
     """Reconcile one event against the graph, mutating in place.
 
+    `event_trust` maps event id -> trust for every event applied so far;
+    entity trust aggregates from it (see `_entity_trust`).
     Returns human-readable notes: "superseded:", "disputed:", "question:".
     """
     notes: list[str] = []
+    event_trust = event_trust or {}
     primary = event.derived_entities[0]["id"] if event.derived_entities else event.id
 
     for target_id in event.supersedes:
@@ -32,7 +36,7 @@ def reconcile_event(entities: dict[str, Entity], relations: list[Relation], even
         if old is None:
             notes.append(f"question: {event.id} supersedes unknown entity '{target_id}' — typo or missing knowledge?")
             continue
-        old_trust = _entity_trust(old, entities)
+        old_trust = _entity_trust(old, event_trust)
         if TRUST_RANK.get(event.trust, 1) < TRUST_RANK.get(old_trust, 1):
             event.disputed = True
             notes.append(
@@ -53,10 +57,17 @@ def reconcile_event(entities: dict[str, Entity], relations: list[Relation], even
     return notes
 
 
-def _entity_trust(entity: Entity, entities: dict[str, Entity]) -> str:
-    # v0.1: entities inherit "normal" trust; a future pass will aggregate
-    # trust from their source events.
-    return "normal"
+def _entity_trust(entity: Entity, event_trust: dict[str, str]) -> str:
+    """Max trust over the events that touched the entity: knowledge with one
+    high-trust source is high-trust knowledge, and an entity built only from
+    low-trust events yields as easily as its sources deserve. Events the map
+    does not know count as unknown, and an entity with no known sources stays
+    at the old constant, "normal"."""
+    ranks = [TRUST_RANK.get(event_trust[i], 1) for i in entity.source_events if i in event_trust]
+    if not ranks:
+        return "normal"
+    by_rank = {v: k for k, v in TRUST_RANK.items()}
+    return by_rank[max(ranks)]
 
 
 def _alias_collisions(entities: dict[str, Entity], event: Event) -> list[str]:

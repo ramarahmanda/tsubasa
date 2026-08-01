@@ -417,8 +417,10 @@ def _apply_and_regen(root: Path, cfg: CaptainConfig, store: Store, new_events: l
     relations = store.load_relations()
     aliases = store.load_aliases()
     notes: list[str] = []
+    event_trust = {e.id: e.trust for e in store.load_events()}
     for ev in sorted(new_events, key=lambda e: e.ts):
-        notes.extend(assemble.apply_event(entities, relations, ev, aliases))
+        event_trust[ev.id] = ev.trust
+        notes.extend(assemble.apply_event(entities, relations, ev, aliases, event_trust))
         # reconciliation may mark the event disputed — persist that verdict
         store.append_event(ev)
     assemble.apply_profiles(entities, store.load_profiles())
