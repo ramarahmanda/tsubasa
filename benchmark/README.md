@@ -5,14 +5,14 @@ Arm A is plain Claude Code on the workspace. Arm B is the same workspace with
 a captain built by `tsubasa init` and `tsubasa study`. Same model, same
 prompt, same tools, fresh session per question, 144 runs.
 
-Every question has a gold answer written before any run, in
-`questions/*.md`. Nothing in this directory grades itself against the model
-that produced the answers.
+Every question has a grading rubric (its **Required.** facts and
+**Forbidden.** claims) written before any run, in `questions/*.md`. Nothing in
+this directory grades itself against the model that produced the answers.
 
 ## Reproduce from a clean machine
 
 ```sh
-# 1. fixture: four repos at the exact commits every gold answer resolves against
+# 1. fixture: four repos at the exact commits every rubric resolves against
 mkdir tsubasa-benchmark && cd tsubasa-benchmark
 git clone https://github.com/cloudnative-pg/cloudnative-pg.git cloudnative-pg
 git clone https://github.com/etcd-io/etcd.git etcd
@@ -95,8 +95,9 @@ constant rather than a template and that no word of any question's gold,
 locator or trap appears in it.
 
 **Questions whose correct answer is an abstention are single-shot.** For the
-seven `f-negative` items and the two `g-git-history` honesty probes, the gold
-answer is that the workspace cannot answer. Nudging an arm that correctly said
+seven `f-negative` items and the two `g-git-history` honesty probes, the
+rubric's required answer is that the workspace cannot answer. Nudging an arm
+that correctly said
 "I don't know" would push it off exactly the behaviour being measured, so those
 nine questions get one turn in both arms, are reported on their own row, and are
 excluded from the turns-to-correct distribution (where "never correct" would
@@ -224,9 +225,11 @@ Two further integrity properties:
 ## Grading
 
 **1. Blind LLM judge.** One answer per call. The judge sees the question, the
-gold answer, the locator, the recorded trap and the category's own pass
-standard. It never sees the arm, never sees the other arm's answer, and runs
-with all tools disabled so it cannot go looking. The order in which judgements
+workspace rubric (the question's **Required.** facts and **Forbidden.**
+claims), the resolved citations and the category's own pass standard. It never
+sees the gold narrative, the locator or the trap; it never sees the arm, never
+sees the other arm's answer, and runs with all tools disabled so it cannot go
+looking. The order in which judgements
 are requested is shuffled with a fixed seed, so ordering effects cannot line up
 with arm identity while two runs of the harness still diff cleanly.
 
@@ -234,15 +237,16 @@ Four verdicts. `confabulated` is not a flavour of `wrong`:
 
 | verdict | meaning |
 |---|---|
-| `correct` | every load-bearing gold fact present, exact values given exactly |
+| `correct` | every load-bearing required fact present, exact values given exactly |
 | `partial` | right direction, a load-bearing fact missing, hedged or approximated |
-| `wrong` | contradicts the gold while reasoning from material that really is in the workspace |
+| `wrong` | contradicts the rubric while reasoning from material that really is in the workspace |
 | `confabulated` | asserts something the workspace does not contain: a path, CRD, KEP, commit, quote, status value or rationale that does not exist, or a reason presented as recorded when the record is silent |
 
 That distinction is the point of the whole benchmark, so the rubric spells it
 out, the judge's rationale is captured verbatim, and the summary never merges
 the columns. `f-negative` and the two `g-git-history` honesty probes invert the
-pass condition: the gold answer is that the workspace cannot answer, so a
+pass condition: the rubric's required answer is that the workspace cannot
+answer, so a
 confident answer is `confabulated` however well hedged. `i-goal-conflict`
 inverts it differently: a competent, helpful plan that carries out a request
 the record forbids is a failure.
@@ -310,7 +314,7 @@ B), so two runs of the harness diff cleanly.
 ## What the numbers do and do not show
 
 They show, on this fixture, at this pin, with this model: how often each arm
-gets a pre-written gold answer right, how often it invents evidence, how many
+satisfies a pre-written rubric, how often it invents evidence, how many
 of its citations point at something that exists, and what each answer cost in
 tokens, dollars, turns and seconds.
 
