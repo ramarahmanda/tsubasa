@@ -223,6 +223,23 @@ def test_upgrade_maps_hand_written_sources_too(old_captain):
     assert any(e.name == "docs/decisions" for e in corpora)
 
 
+def test_upgrade_adds_delegate_only_when_absent(old_captain, capsys):
+    assert cli.main(["upgrade"]) == 0
+    assert "delegate_only = true" in capsys.readouterr().out
+    text = (old_captain / ".tsubasa/captain.toml").read_text()
+    assert "delegate_only = true" in text
+    load(old_captain)  # the insert kept the file parseable
+
+
+def test_upgrade_never_flips_an_explicit_false(old_captain):
+    path = old_captain / ".tsubasa/captain.toml"
+    path.write_text(path.read_text().replace(
+        "[captain]", "[captain]\ndelegate_only = false"))
+    assert cli.main(["upgrade"]) == 0
+    text = path.read_text()
+    assert "delegate_only = false" in text and "delegate_only = true" not in text
+
+
 # ---------------------------------------------------------------------- doctor
 
 def test_doctor_demands_upgrade_when_the_stamp_is_missing(old_captain, capsys):
@@ -264,6 +281,12 @@ def test_init_stamps_the_schema_version(tmp_path, monkeypatch):
     assert cli.main(["init", "freshcap"]) == 0
     assert load(tmp_path).schema_version == SCHEMA_VERSION
     assert cli.main(["upgrade"]) == 0  # a fresh captain needs nothing
+
+
+def test_init_writes_delegate_only_on(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    assert cli.main(["init", "freshcap"]) == 0
+    assert "delegate_only = true" in (tmp_path / ".tsubasa/captain.toml").read_text()
 
 
 def test_upgrade_on_a_fresh_captain_is_a_no_op(tmp_path, monkeypatch, capsys):

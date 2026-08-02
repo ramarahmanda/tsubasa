@@ -218,6 +218,18 @@ def test_captain_write_to_source_is_blocked(armed):
     assert "src/app.py" in proc.stderr and "Agent tool" in proc.stderr
 
 
+def test_init_scaffolded_config_arms_the_hook(tmp_path):
+    # default-on at init: the exact line CONFIG_TEMPLATE writes must match the grep
+    from tsubasa import config as cfg_mod
+    (tmp_path / ".tsubasa").mkdir()
+    (tmp_path / ".tsubasa/captain.toml").write_text(cfg_mod.CONFIG_TEMPLATE.format(
+        schema_version=cfg_mod.SCHEMA_VERSION, name="fresh", role="Engineering Director",
+        domains="# payments = 1.0", sources=""))
+    assert run_hook(DELEGATE_ONLY, tmp_path, write_payload("/repo/src/app.py")).returncode == 2
+    assert run_hook(DELEGATE_ONLY, tmp_path,
+                    write_payload("/repo/src/app.py", agent=True)).returncode == 0
+
+
 def test_flag_off_never_blocks(captain):
     # default is off: absent flag must not block anything
     assert run_hook(DELEGATE_ONLY, captain, write_payload("/repo/src/app.py")).returncode == 0

@@ -214,6 +214,12 @@ def cmd_upgrade(args) -> int:
     scaffold.ensure_layout(store.base)
     changes += scaffold.ensure_claude_md(root, cfg.name)
 
+    # Schema 3: fresh captains are born with delegate_only = true; a config
+    # that predates the key gains it here. An explicit false is never touched.
+    if cfg_mod.ensure_delegate_only(root):
+        changes.append("captain.toml: added delegate_only = true under [captain] "
+                       "(set false to disarm)")
+
     new_events = _upgrade_map(root, cfg, store, args)
     if new_events:
         changes.append(f"source graph: emitted {len(new_events)} map event(s) "
