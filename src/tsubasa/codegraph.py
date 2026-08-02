@@ -16,6 +16,7 @@ from pathlib import Path
 
 from . import toon
 from .config import TSUBASA_DIR
+from .atomicio import write_text_atomic
 
 CODE_INDEX_DIR = "code-index"
 _NULL = "null"
@@ -103,8 +104,8 @@ def save(root: Path, repo_name: str, graph: dict) -> Path:
     """Write graph.toon (committed) and graph.json (runtime cache)."""
     d = index_dir(root, repo_name)
     d.mkdir(parents=True, exist_ok=True)
-    (d / "graph.toon").write_text(toon.encode(graph_to_toon_doc(graph)))
-    (d / "graph.json").write_text(json.dumps(graph, ensure_ascii=False))
+    write_text_atomic(d / "graph.toon", toon.encode(graph_to_toon_doc(graph)))
+    write_text_atomic(d / "graph.json", json.dumps(graph, ensure_ascii=False))
     _ensure_gitignore(root)
     return d / "graph.toon"
 
@@ -130,7 +131,7 @@ def ensure_json(root: Path, repo_name: str) -> Path | None:
         return json_path if json_path.is_file() else None
     if not json_path.is_file() or json_path.stat().st_mtime < toon_path.stat().st_mtime:
         graph = toon_doc_to_graph(toon.decode(toon_path.read_text()))
-        json_path.write_text(json.dumps(graph, ensure_ascii=False))
+        write_text_atomic(json_path, json.dumps(graph, ensure_ascii=False))
     return json_path
 
 
@@ -151,5 +152,5 @@ def _ensure_gitignore(root: Path) -> None:
     existing = gi.read_text() if gi.exists() else ""
     if line not in existing.splitlines():
         # NB: gitignore has no inline comments — the comment gets its own line
-        gi.write_text(existing.rstrip("\n") + ("\n" if existing else "")
-                      + f"# tsubasa: runtime cache, regenerated from graph.toon\n{line}\n")
+        write_text_atomic(gi, existing.rstrip("\n") + ("\n" if existing else "")
+                          + f"# tsubasa: runtime cache, regenerated from graph.toon\n{line}\n")
