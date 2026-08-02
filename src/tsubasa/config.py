@@ -10,6 +10,7 @@ import re
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
+from .atomicio import write_text_atomic
 
 TSUBASA_DIR = ".tsubasa"
 CONFIG_FILE = "captain.toml"
@@ -180,7 +181,7 @@ def stamp_version(root: Path, version: int = SCHEMA_VERSION) -> None:
         at = m.start() if m else len(text)
         new = text[:at] + VERSION_BLOCK.format(version=version) + "\n" + text[at:]
     if new != text:
-        path.write_text(new)
+        write_text_atomic(path, new)
         load(root)  # a stamp that breaks the config is worse than no stamp
 
 

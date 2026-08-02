@@ -25,6 +25,7 @@ from ..models import Entity, Event, Relation, slugify
 
 from ..storage import Store
 from . import temperature as temp
+from ..atomicio import write_text_atomic
 
 MAP_TYPES = {"service", "external", "incident"}  # plus corpus-* (type doc)
 MAP_ENDPOINTS = ("svc-", "ext-")                 # what the Topology section wires
@@ -50,10 +51,10 @@ def generate(store: Store, cfg: CaptainConfig, now: datetime | None = None) -> d
 
     hot_lines, demoted = _build_hot(cfg, scored_entities, events, relations)
     store.memory_dir.mkdir(parents=True, exist_ok=True)
-    (store.memory_dir / "hot.md").write_text("\n".join(hot_lines) + "\n")
+    write_text_atomic(store.memory_dir / "hot.md", "\n".join(hot_lines) + "\n")
 
     index_lines = _build_index(cfg, scored_entities, demoted)
-    (store.memory_dir / "index.md").write_text("\n".join(index_lines) + "\n")
+    write_text_atomic(store.memory_dir / "index.md", "\n".join(index_lines) + "\n")
 
     domain_counts = _build_domains(store, cfg, scored_entities, events)
 
@@ -261,6 +262,6 @@ def _build_domains(store: Store, cfg, scored_entities, events) -> dict[str, int]
         lines = [f"# domain: {domain}", ""]
         for s, e in pairs:
             lines.append(_entity_block(e, events))
-        (domains_dir / f"{domain}.md").write_text("\n".join(lines) + "\n")
+        write_text_atomic(domains_dir / f"{domain}.md", "\n".join(lines) + "\n")
         counts[domain] = len(pairs)
     return counts

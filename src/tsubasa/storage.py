@@ -17,6 +17,7 @@ from . import toon
 from .config import TSUBASA_DIR
 from .models import Entity, Event, Relation, parse_ts
 from .redact import redact_event
+from .atomicio import write_text_atomic
 
 
 class Store:
@@ -42,7 +43,7 @@ class Store:
         self.graph_dir.mkdir(parents=True, exist_ok=True)
         ordered = sorted(entities.values(), key=lambda e: (e.type, e.id))
         doc = {"entities": [e.to_dict() for e in ordered]}
-        (self.graph_dir / "entities.toon").write_text(toon.encode(doc))
+        write_text_atomic(self.graph_dir / "entities.toon", toon.encode(doc))
 
     # ------------------------------------------------------------ relations
 
@@ -60,7 +61,7 @@ class Store:
             seen.setdefault(r.key(), r)
         ordered = sorted(seen.values(), key=lambda r: r.key())
         doc = {"relations": [r.to_dict() for r in ordered]}
-        (self.graph_dir / "relations.toon").write_text(toon.encode(doc))
+        write_text_atomic(self.graph_dir / "relations.toon", toon.encode(doc))
 
     # ------------------------------------------------------------ events
     #
@@ -93,7 +94,7 @@ class Store:
         records = self._load_pack(path)
         records = [r for r in records if r.get("id") != event.id] + [event.to_dict()]
         records.sort(key=lambda r: (str(r.get("ts", "")), str(r.get("id", ""))))
-        path.write_text(toon.encode({"events": records}))
+        write_text_atomic(path, toon.encode({"events": records}))
         self._events_cache = None
         return path
 
@@ -141,7 +142,7 @@ class Store:
         appended — it is only ever as true as the commit it was read from."""
         self.graph_dir.mkdir(parents=True, exist_ok=True)
         doc = {"snapshot": {"provenance": provenance, "entities": entities, "relations": relations}}
-        (self.graph_dir / "code.toon").write_text(toon.encode(doc))
+        write_text_atomic(self.graph_dir / "code.toon", toon.encode(doc))
 
     def load_code_graph(self) -> tuple[dict[str, Entity], list[Relation]]:
         path = self.graph_dir / "code.toon"
@@ -169,7 +170,7 @@ class Store:
             return x if nxt is None or nxt in seen else root(nxt, (*seen, x))
         flat = {a: root(c) for a, c in aliases.items() if a != root(c)}
         doc = {"aliases": [{"alias": a, "canonical": c} for a, c in sorted(flat.items())]}
-        (self.graph_dir / "aliases.toon").write_text(toon.encode(doc))
+        write_text_atomic(self.graph_dir / "aliases.toon", toon.encode(doc))
 
     def load_profiles(self) -> dict[str, dict]:
         """entity id -> {summary, key_facts} (from `tsubasa profile`)."""
@@ -181,7 +182,7 @@ class Store:
     def save_profiles(self, profiles: dict[str, dict]) -> None:
         self.graph_dir.mkdir(parents=True, exist_ok=True)
         doc = {"profiles": [profiles[k] for k in sorted(profiles)]}
-        (self.graph_dir / "profiles.toon").write_text(toon.encode(doc))
+        write_text_atomic(self.graph_dir / "profiles.toon", toon.encode(doc))
 
     # ------------------------------------------------------------ anchors
 
@@ -203,7 +204,7 @@ class Store:
                 out.append({"entity": a["entity"], "repo": a["repo"],
                             "node": a["node"], "by": a.get("by", "seed")})
         out.sort(key=lambda a: (a["entity"], a["repo"], a["node"]))
-        (self.graph_dir / "anchors.toon").write_text(toon.encode({"anchors": out}))
+        write_text_atomic(self.graph_dir / "anchors.toon", toon.encode({"anchors": out}))
 
     # ------------------------------------------------------------ state
 
@@ -213,4 +214,4 @@ class Store:
 
     def save_state(self, state: dict) -> None:
         self.base.mkdir(parents=True, exist_ok=True)
-        (self.base / "state.toon").write_text(toon.encode(state))
+        write_text_atomic(self.base / "state.toon", toon.encode(state))
