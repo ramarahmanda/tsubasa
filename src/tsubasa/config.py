@@ -18,7 +18,8 @@ CONFIG_FILE = "captain.toml"
 # fresh `init` would have written.
 #   1  pre-versioning: no stamp on disk, task files, no source graph
 #   2  task management removed; svc-/corpus- source graph + topology at init
-SCHEMA_VERSION = 2
+#   3  delegate_only = true under [captain] (init writes it, upgrade adds it)
+SCHEMA_VERSION = 3
 
 DEFAULT_WEIGHTS = {"recency": 0.4, "impact": 0.3, "domain": 0.2, "access": 0.1}
 DEFAULT_HOT_MAX_CONTEXT = 0.25       # ceiling as fraction of the context window
@@ -183,6 +184,38 @@ def stamp_version(root: Path, version: int = SCHEMA_VERSION) -> None:
         load(root)  # a stamp that breaks the config is worse than no stamp
 
 
+# One block, written verbatim by both `init` and `upgrade`, so the line the
+# delegate_only.sh hook greps for is byte-identical wherever it comes from.
+DELEGATE_ONLY_BLOCK = """\
+# The captain delegates code writes to subagents (delegate_only hook); false disarms.
+delegate_only = true
+"""
+
+
+def ensure_delegate_only(root: Path) -> bool:
+    """Insert `delegate_only = true` under [captain] if the key is absent.
+
+    Textual for the same reason as stamp_version. Only an absent key is
+    filled in: an explicit `false` is a human's decision and is never touched.
+    """
+    path = root / TSUBASA_DIR / CONFIG_FILE
+    text = path.read_text()
+    if _DELEGATE_ONLY_RE.search(text):
+        return False
+    m = _CAPTAIN_TABLE_RE.search(text)
+    if not m:  # no [captain] table to put it under; leave the file alone
+        return False
+    nl = text.find("\n", m.end())
+    at = len(text) if nl < 0 else nl + 1
+    path.write_text(text[:at] + DELEGATE_ONLY_BLOCK + text[at:])
+    load(root)  # a key that breaks the config is worse than no key
+    return True
+
+
+_DELEGATE_ONLY_RE = re.compile(r"(?m)^\s*delegate_only\s*=")
+_CAPTAIN_TABLE_RE = re.compile(r"(?m)^\[captain\]")
+
+
 CONFIG_TEMPLATE = """\
 # Captain configuration — see https://github.com/ramarahmanda/tsubasa
 [tsubasa]
@@ -191,7 +224,7 @@ schema_version = {schema_version}
 [captain]
 name = "{name}"
 role = "{role}"
-
+""" + DELEGATE_ONLY_BLOCK + """
 # Domains this captain cares about, with weights (0..1) feeding temperature.
 [captain.domains]
 {domains}

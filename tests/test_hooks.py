@@ -218,6 +218,18 @@ def test_captain_write_to_source_is_blocked(armed):
     assert "src/app.py" in proc.stderr and "Agent tool" in proc.stderr
 
 
+def test_init_scaffolded_config_arms_the_hook(tmp_path):
+    # default-on at init: the exact line CONFIG_TEMPLATE writes must match the grep
+    from tsubasa import config as cfg_mod
+    (tmp_path / ".tsubasa").mkdir()
+    (tmp_path / ".tsubasa/captain.toml").write_text(cfg_mod.CONFIG_TEMPLATE.format(
+        schema_version=cfg_mod.SCHEMA_VERSION, name="fresh", role="Engineering Director",
+        domains="# payments = 1.0", sources=""))
+    assert run_hook(DELEGATE_ONLY, tmp_path, write_payload("/repo/src/app.py")).returncode == 2
+    assert run_hook(DELEGATE_ONLY, tmp_path,
+                    write_payload("/repo/src/app.py", agent=True)).returncode == 0
+
+
 def test_flag_off_never_blocks(captain):
     # default is off: absent flag must not block anything
     assert run_hook(DELEGATE_ONLY, captain, write_payload("/repo/src/app.py")).returncode == 0
@@ -263,6 +275,60 @@ def test_grep_fallback_without_jq(armed, nojq):
                     env=nojq).returncode == 0
     assert run_hook(DELEGATE_ONLY, armed, write_payload("/repo/docs/x.txt"),
                     env=nojq).returncode == 0
+
+
+# --- PreToolUse: fleet-watch reminder at Agent spawn time ---
+#
+# Non-blocking delivery verified against Claude Code 2.1.220: PreToolUse
+# hookSpecificOutput.additionalContext is injected into the model context
+# independent of the permission flow; plain stdout on exit 0 never reaches
+# the model, exit 2 blocks. Hence the hook speaks JSON and only JSON.
+
+AGENT_SPAWN = PLUGIN / "agent_spawn.sh"
+
+
+def spawn_payload(agent=False):
+    p = {"hook_event_name": "PreToolUse", "tool_name": "Agent",
+         "session_id": "s", "cwd": ".",
+         "tool_input": {"description": "impl", "prompt": "do the thing"}}
+    if agent:
+        p["agent_id"] = "a575f0364ab27c99e"
+    return p
+
+
+def test_agent_spawn_hook_registered():
+    cfg = json.loads((PLUGIN / "hooks.json").read_text())
+    entry = cfg["hooks"]["PreToolUse"][1]
+    # anchored: a bare "Task" would also match TaskOutput/TaskStop
+    assert entry["matcher"] == "^(Agent|Task)$"
+    assert entry["hooks"][0]["command"].endswith("/hooks/agent_spawn.sh")
+
+
+def test_spawn_reminder_reaches_the_captain_without_blocking(captain):
+    proc = run_hook(AGENT_SPAWN, captain, spawn_payload())
+    assert proc.returncode == 0  # a reminder, never a block
+    out = json.loads(proc.stdout)["hookSpecificOutput"]
+    assert out["hookEventName"] == "PreToolUse"
+    assert "fleet watch" in out["additionalContext"]
+    assert "/loop 3m" in out["additionalContext"]
+    assert "permissionDecision" not in out  # permission flow stays untouched
+
+
+def test_spawn_reminder_is_silent_for_workers(captain):
+    proc = run_hook(AGENT_SPAWN, captain, spawn_payload(agent=True))
+    assert proc.returncode == 0 and proc.stdout.strip() == ""
+
+
+def test_spawn_reminder_is_silent_outside_a_captain(tmp_path):
+    proc = run_hook(AGENT_SPAWN, tmp_path, spawn_payload())
+    assert proc.returncode == 0 and proc.stdout.strip() == ""
+
+
+def test_spawn_reminder_sed_fallback_without_jq(captain, nojq):
+    proc = run_hook(AGENT_SPAWN, captain, spawn_payload(), env=nojq)
+    assert "fleet watch" in proc.stdout
+    proc = run_hook(AGENT_SPAWN, captain, spawn_payload(agent=True), env=nojq)
+    assert proc.returncode == 0 and proc.stdout.strip() == ""
 
 
 def test_session_start_reports_enforcement_is_live(armed):

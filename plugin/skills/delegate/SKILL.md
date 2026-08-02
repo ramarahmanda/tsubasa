@@ -40,28 +40,46 @@ late — "overdue for the size of the brief" is a judgement with nothing behind
 it, and it is wrong in both directions: it kills healthy slow work and lets a
 wedged agent sit.
 
-**Arm one monitor for the whole fleet, 45s tick.** It emits two kinds of line:
-`idle:` for any worker whose output has not grown since the last tick, and a
-`progress:` heartbeat every third tick (~2min) whether or not anything moved.
-
-The heartbeat matters as much as the idle line. Silence is ambiguous — a fleet
-running cleanly and a monitor that died look identical from the outside — so
-the fleet reports in on a fixed cadence and you can say what every worker is
-doing without opening any of them.
+**Arm one monitor for the whole fleet, 45s tick.** Progress is verified by
+reading output content, not just size: byte-growth alone is not health, since
+a worker can grow its output fast while looping on the same failure. Each tick
+emits three kinds of line:
+- `idle: <worker>` when the output has not grown since the last tick
+- `progress: <worker> <line>` on growth, carrying the newest meaningful line
+  of the delta, so you see what moved, not merely that bytes did
+- `error: <worker> <line>` for any error signature
+  (`Traceback|Error|FAILED|denied|exit [1-9]`) found in the delta; a worker
+  emitting these while its bytes grow is looping, not healthy
 
     Monitor(description: "subagent progress", command: <<'SH'
-    prev=""; n=0
     while :; do
-      cur=$(wc -c <task-output-files> | sed 's/^ *//')
-      diff <(printf '%s\n' "$prev") <(printf '%s\n' "$cur") \
-        | sed -n 's/^< \(.*\)/idle: \1/p'
-      n=$((n + 1))
-      [ $((n % 3)) -eq 0 ] &&
-        printf 'progress: %s\n' "$(printf '%s' "$cur" | tr '\n' ' ')"
-      prev=$cur
+      for f in <task-output-files>; do
+        new=$(wc -c <"$f" | tr -d ' '); old=$(cat "$f.seen" 2>/dev/null || echo 0)
+        if [ "$new" -le "$old" ]; then
+          echo "idle: ${f##*/}"
+        else
+          delta=$(tail -c +$((old + 1)) "$f")
+          printf '%s\n' "$delta" |
+            grep -E 'Traceback|Error|FAILED|denied|exit [1-9]' | tail -2 |
+            sed "s|^|error: ${f##*/} |"
+          printf 'progress: %s %s\n' "${f##*/}" \
+            "$(printf '%s\n' "$delta" | sed 's/^[[:space:]]*//; /^$/d' | tail -1)"
+        fi
+        printf '%s\n' "$new" >"$f.seen"
+      done
       sleep 45
     done
     SH)
+
+**Fleet heartbeat: after spawning, arm ONE `/loop 3m`.** Its prompt checks
+three things: any worker with no new output since the loop last fired, any
+monitor that died, any completion notification not yet acted on. It reports
+one status line per worker. The layering is deliberate: completion
+notifications are automatic and arrive on their own; the Monitor gives 45s
+stall detection while it lives; the loop is the armed-once fallback that
+survives a forgotten or dead monitor. Silence is ambiguous, a fleet running
+cleanly and a monitor that died look identical from the outside, so the loop
+reports on a fixed cadence regardless.
 
 - **Two consecutive idle ticks = stalled.** One tick is not: a worker mid-tool
   call writes nothing for a while and is perfectly healthy.

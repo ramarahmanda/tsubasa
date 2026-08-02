@@ -5,8 +5,11 @@
 # only in a subagent's payload and is the sole usable discriminator (verified
 # against Claude Code 2.1.220).
 #
-# Opt-in per workspace: `delegate_only = true` under [captain] in
-# .tsubasa/captain.toml. Absent or false exits before reading stdin.
+# Default-on at init: `tsubasa init` scaffolds `delegate_only = true` under
+# [captain] in .tsubasa/captain.toml, and `tsubasa upgrade` adds the key to a
+# config that lacks it. The grep below is unchanged: absent or false still
+# exits before reading stdin, so a captain whose config predates the key stays
+# unarmed until upgraded, and an explicit `false` disarms.
 #
 # Armed, the block is path-scoped, not blanket: captain-capture has the captain
 # write ADRs itself, so knowledge paths stay writable and source code does not.

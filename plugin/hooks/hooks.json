@@ -31,6 +31,15 @@
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/delegate_only.sh"
           }
         ]
+      },
+      {
+        "matcher": "^(Agent|Task)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/agent_spawn.sh"
+          }
+        ]
       }
     ]
   }
