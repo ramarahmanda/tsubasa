@@ -8,6 +8,7 @@ replays it — so a truncated write there is data loss.
 from __future__ import annotations
 
 import os
+import stat
 from pathlib import Path
 
 import pytest
@@ -80,6 +81,28 @@ def test_no_partial_file_is_ever_observable(tmp_path: Path):
 
     assert observed == [5000], "target was truncated before the rename"
     assert target.read_text() == "y" * 9000
+
+
+@pytest.mark.parametrize("mode", [0o644, 0o640])
+def test_existing_permissions_are_preserved(tmp_path: Path, mode: int):
+    """A rewrite must not export mkstemp's 0600 onto an existing target."""
+    target = tmp_path / "out.toon"
+    target.write_text("old")
+    os.chmod(target, mode)
+    write_text_atomic(target, "new")
+    assert stat.S_IMODE(target.stat().st_mode) == mode
+    assert target.read_text() == "new"
+
+
+def test_fresh_file_honors_umask_not_mkstemp(tmp_path: Path):
+    """A freshly created file gets the process default, not mkstemp's 0600."""
+    target = tmp_path / "fresh.toon"
+    old_umask = os.umask(0o022)
+    try:
+        write_text_atomic(target, "hello")
+    finally:
+        os.umask(old_umask)
+    assert stat.S_IMODE(target.stat().st_mode) == 0o644
 
 
 def test_store_writes_survive_a_failed_append(tmp_path: Path, monkeypatch):

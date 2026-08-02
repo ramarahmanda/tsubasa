@@ -12,11 +12,15 @@ previous version intact.
 
 The temp file is created in the destination's own directory because rename is
 only atomic within a single filesystem; /tmp is frequently a different one.
+
+This provides crash-safety and reader-safety, not write serialization:
+concurrent writers still last-rename-wins.
 """
 
 from __future__ import annotations
 
 import os
+import stat
 import tempfile
 from pathlib import Path
 
@@ -29,6 +33,17 @@ def write_text_atomic(path: Path, text: str, encoding: str = "utf-8") -> None:
     try:
         with os.fdopen(fd, "w", encoding=encoding) as f:
             f.write(text)
+        # mkstemp is deliberately 0600 for temp secrecy; the rename must not
+        # export that onto a shared file. Preserve the target's existing
+        # permission bits, or apply the process default (0666 & ~umask) when
+        # creating a fresh file.
+        try:
+            mode = stat.S_IMODE(os.stat(path).st_mode)
+        except FileNotFoundError:
+            umask = os.umask(0)
+            os.umask(umask)
+            mode = 0o666 & ~umask
+        os.chmod(tmp, mode)
         os.replace(tmp, path)
     except BaseException:
         # leave no debris behind on failure; the original file is untouched
