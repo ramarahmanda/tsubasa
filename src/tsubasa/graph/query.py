@@ -342,12 +342,9 @@ def serialize(
         for ev in titled:
             if _reverts(ev) is not None:
                 # verdict first, as the timeline states it: the reverted thing
-                # is absent, and a reader who stops at the title must know that.
-                # When the record carries no rationale, that absence is data the
-                # reader needs in-band: stated here, an unrecorded reason cannot
-                # be silently replaced by an invented one downstream
-                note = "" if _reason_recorded(ev) else " — reason: not recorded"
-                lines.append(f"- NOT PRESENT (reverted {ev.ts[:10]}): {ev.title}{note}  [{_cite(ev)}]")
+                # is absent, and a reader who stops at the title must know that
+                lines.append(f"- NOT PRESENT (reverted {ev.ts[:10]}): "
+                             f"{ev.title}{_reason_note(ev)}  [{_cite(ev)}]")
             else:
                 lines.append(f"- {ev.id} ({ev.type}, {ev.ts[:10]}): {ev.title}")
 
@@ -547,8 +544,17 @@ def _transitions(seq: list[Event], aliases: dict[str, str],
 
 
 def _row(ev: Event, ctx: dict) -> tuple[str, str, str, str]:
-    """(date, action, detail, citation) for one event."""
-    return (ev.ts[:10], *_classify(ev, ctx), _cite(ev))
+    """(date, action, detail, citation) for one event.
+
+    A REVERTED or SUPERSEDED row whose event records no rationale carries the
+    marker after the citation, outside the clipped detail column, so the
+    render width cannot truncate it away.
+    """
+    action, detail = _classify(ev, ctx)
+    cite = _cite(ev)
+    if action in ("REVERTED", "SUPERSEDED"):
+        cite += _reason_note(ev)
+    return (ev.ts[:10], action, detail, cite)
 
 
 def _classify(ev: Event, ctx: dict) -> tuple[str, str]:
@@ -605,8 +611,10 @@ REVERT_BOILERPLATE = re.compile(r"^(?:Reverts|This reverts commit)\s+[0-9a-f]{7,
 # Mechanical rule for "the record states why": body+summary, minus revert
 # boilerplate, minus words built purely from the title's own tokens, must
 # carry at least this many characters. Restating the title is not a reason,
-# and a sha is not a reason; anything shorter than a short clause is neither.
-NO_REASON_LEN = 40
+# and a sha is not a reason; but a minimal clause ("breaks pg_upgrade control
+# file") is one, so the floor sits below real one-line reasons.
+NO_REASON_LEN = 20
+NO_REASON_NOTE = " — reason: not recorded"
 
 
 def _reason_recorded(ev: Event) -> bool:
@@ -617,6 +625,13 @@ def _reason_recorded(ev: Event) -> bool:
     title_words = set(_tokens(ev.title))
     kept = [w for w in text.split() if set(_tokens(w)) - title_words]
     return len(" ".join(kept)) >= NO_REASON_LEN
+
+
+def _reason_note(ev: Event) -> str:
+    """The marker every verdict surface carries when the record has no why:
+    stated as data, an unrecorded reason cannot be silently replaced by an
+    invented one downstream."""
+    return "" if _reason_recorded(ev) else NO_REASON_NOTE
 
 
 def _reason(ev: Event, undone: str) -> str:
@@ -688,10 +703,11 @@ def _verdict(entities: dict[str, Entity], matched: list[Entity], seq: list[Event
         if cur.status == "superseded":
             at = _superseder_event(seq, cur.id, cur.superseded_by) or moved or own[-1]
             lines.append(f"{cur.id}: SUPERSEDED by {cur.superseded_by or 'a later decision'} "
-                         f"({at.ts[:10]})  [{_cite(at)}]")
+                         f"({at.ts[:10]}){_reason_note(at)}  [{_cite(at)}]")
         elif rev is not None:
             attributed.add(rev.id)
-            lines.append(f"{cur.id}: NOT PRESENT (reverted {rev.ts[:10]})  [{_cite(rev)}]")
+            lines.append(f"{cur.id}: NOT PRESENT (reverted {rev.ts[:10]})"
+                         f"{_reason_note(rev)}  [{_cite(rev)}]")
         else:
             at = moved or own[-1]
             lines.append(f"{cur.id}: {cur.status.upper()} (last recorded {at.ts[:10]})  [{_cite(at)}]")
@@ -702,7 +718,8 @@ def _verdict(entities: dict[str, Entity], matched: list[Entity], seq: list[Event
                 if ev.id in titled and _reverts(ev) is not None and ev.id not in attributed), None)
     if rev is not None:
         what = _clip(_reverted_what(rev) or rev.title)
-        lines.insert(0, f"NOT PRESENT (reverted {rev.ts[:10]}): {what}  [{_cite(rev)}]")
+        lines.insert(0, f"NOT PRESENT (reverted {rev.ts[:10]}): {what}"
+                        f"{_reason_note(rev)}  [{_cite(rev)}]")
     if not lines:
         lines.append(f"state not recorded as an entity; last event {seq[-1].ts[:10]}  [{_cite(seq[-1])}]")
     return lines
