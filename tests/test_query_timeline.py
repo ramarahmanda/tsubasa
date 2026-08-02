@@ -303,6 +303,25 @@ def test_extra_query_words_do_not_unmatch_the_title(tmp_path):
     assert out.splitlines()[1].startswith("NOT PRESENT (reverted 2024-07-30)")
 
 
+def test_unrecorded_revert_reason_marked_on_the_verdict(tmp_path):
+    # G11: retrieval delivered the revert, the record held no why, and a why
+    # was invented anyway. The absence must arrive as data on the verdict line.
+    rev = revert_event()
+    rev.summary = f"Reverts {ADD_SHA}."  # sha boilerplate only: no rationale
+    out = query_mod.timeline(store_with(tmp_path, added_event(), rev),
+                             "redo LSN in pgstats")
+    assert "reason: not recorded" in out.splitlines()[1]  # the headline verdict
+    assert any("REVERTED" in r and "reason: not recorded" in r for r in rows(out))
+
+
+def test_recorded_revert_reason_is_not_marked(tmp_path):
+    # the canonical fixture reason ("breaks pg_upgrade control file") is short
+    # but real; it must count as recorded
+    out = query_mod.timeline(store_with(tmp_path, added_event(), revert_event()),
+                             "redo LSN in pgstats")
+    assert "reason: not recorded" not in out
+
+
 def test_common_stem_overlap_alone_does_not_seed_the_timeline(tmp_path):
     # the strict-AND rule's legitimate worry, kept as the discriminating
     # requirement instead of the AND: common stems fire on nearly any
