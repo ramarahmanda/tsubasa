@@ -14,17 +14,20 @@
     tsubasa rebuild              replay the event log into a fresh graph
     tsubasa tiers                regenerate hot/warm/cold memory files
     tsubasa doctor               validate graph files, lint for secret-looking values
+    tsubasa context-check        UserPromptSubmit hook: is this prompt ambiguous?
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
 
 from . import config as cfg_mod
+from . import contextcheck
 from . import discover
 from . import scaffold
 from . import toon
@@ -1050,8 +1053,76 @@ def cmd_doctor(args) -> int:
             if end not in known and not re.match(r"^(PR-|evt-|adr-|task-|inc-)", end) and "/" not in end:
                 print(f"ORPHAN relation endpoint '{end}' has no entity ({r.source} -[{r.predicate}]-> {r.target})")
                 problems += 1
+    _doctor_plugin(root)
     print(f"doctor: {problems} problem(s)" if problems else "doctor: all clear")
     return 1 if problems else 0
+
+
+def _plugin_hooks_json() -> Path | None:
+    """The hooks.json Claude Code actually loads, or None if it cannot be found."""
+    env = os.environ.get("CLAUDE_PLUGIN_ROOT")
+    if env:
+        return Path(env) / "hooks" / "hooks.json"
+    reg = Path.home() / ".claude" / "plugins" / "installed_plugins.json"
+    try:
+        entries = json.loads(reg.read_text())["plugins"]["tsubasa@tsubasa"]
+        return Path(entries[0]["installPath"]) / "hooks" / "hooks.json"
+    except Exception:
+        return None
+
+
+def _doctor_plugin(root: Path) -> None:
+    """Report on the half of tsubasa that `tsubasa upgrade` cannot deliver.
+
+    hooks.json ships with the plugin, so a CLI upgrade without `/plugin update`
+    runs with the mechanisms silently absent: that is exactly how the delegate
+    guard first shipped disarmed (evt-20260802-delegate-only-defaults-on-
+    discipline-guards-ship). Reporting only: a stale plugin is not a corrupt
+    graph, and an unlocatable install must not fail the run.
+    """
+    path = _plugin_hooks_json()
+    if path is None or not path.is_file():
+        print(f"PLUGIN installed plugin not found ({path or 'no install record'}): "
+              "cannot check which hooks are armed")
+    else:
+        try:
+            events = set(json.loads(path.read_text()).get("hooks", {}))
+        except Exception as e:
+            print(f"PLUGIN {path}: unreadable ({e})")
+            return
+        missing = {"UserPromptSubmit"} - events
+        if missing:
+            print(f"PLUGIN installed plugin has no {', '.join(sorted(missing))} hook: "
+                  "run `/plugin update tsubasa` and restart")
+    manifests = [root / "plugin/.claude-plugin/plugin.json",
+                 root / ".claude-plugin/marketplace.json"]
+    if all(m.is_file() for m in manifests):
+        try:
+            plug = json.loads(manifests[0].read_text()).get("version")
+            market = json.loads(manifests[1].read_text()).get("metadata", {}).get("version")
+        except Exception:
+            return
+        if plug != market:
+            print(f"PLUGIN version disagreement: plugin.json {plug!r}, "
+                  f"marketplace.json {market!r}")
+
+
+def cmd_context_check(args) -> int:
+    """UserPromptSubmit hook body: print the regrouping ask, or nothing.
+
+    adr-session-context-regrouping. Silence is the correct output for almost
+    every prompt, and a hook that raises breaks the prompt it was asked about,
+    so every failure here is a silent exit 0.
+    """
+    try:
+        payload = json.loads(sys.stdin.read())
+        text = contextcheck.injection(payload.get("prompt") or "",
+                                      payload.get("transcript_path") or "")
+    except Exception:
+        return 0
+    if text:
+        print(text)
+    return 0
 
 
 # ------------------------------------------------------------------ parser
@@ -1268,6 +1339,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("doctor", help="validate graph files")
     sp.set_defaults(func=cmd_doctor)
+
+    sp = sub.add_parser("context-check",
+                        help="UserPromptSubmit hook: reads the hook payload on stdin, "
+                             "prints the context-regrouping ask or nothing")
+    sp.set_defaults(func=cmd_context_check)
     return p
 
 

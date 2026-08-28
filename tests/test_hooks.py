@@ -1,11 +1,13 @@
 """Plugin hooks: SessionStart persona (#6), SubagentStart house rules (#7),
-and PreToolUse delegation enforcement (#5). Each hook is driven as a
-subprocess with a synthetic stdin payload."""
+PreToolUse delegation enforcement (#5) and UserPromptSubmit context regrouping
+(adr-session-context-regrouping). Each hook is driven as a subprocess with a
+synthetic stdin payload."""
 
 import json
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -346,3 +348,248 @@ def test_session_start_warns_when_the_hook_is_not_installed(armed, tmp_path_fact
                           input=json.dumps({"source": "startup"}))
     assert "WARNING: delegate_only = true" in proc.stdout
     assert "restart" in proc.stdout
+
+
+# --- UserPromptSubmit: regroup before acting on an ambiguous prompt ---
+#
+# adr-session-context-regrouping. The hook decides only *when* to speak; the
+# captain groups the session from context it already holds. Nothing on this
+# path calls a model, and every failure is a silent exit 0: breaking a prompt
+# costs more than missing an ambiguous one.
+#
+# The fixtures below are recorded Claude Code transcript records (schema as
+# observed on 2.1.226). That schema is not a public contract, so these pin the
+# shape the extraction was written against.
+
+CONTEXT_CHECK = PLUGIN / "context_check.sh"
+CWD = "/Users/dev/work/ops"
+
+
+def _user(text):
+    return {"type": "user", "cwd": CWD, "sessionId": "s", "version": "2.1.226",
+            "uuid": "u", "timestamp": "2026-08-29T10:00:00.000Z",
+            "message": {"role": "user", "content": text}}
+
+
+def _tool(name, inp):
+    return {"type": "assistant", "cwd": CWD, "sessionId": "s", "version": "2.1.226",
+            "uuid": "a", "timestamp": "2026-08-29T10:00:00.000Z",
+            "message": {"role": "assistant", "content": [
+                {"type": "tool_use", "id": "t", "name": name, "input": inp}]}}
+
+
+# turns 1..5: akasha AB, vault creds read and a chart edited
+AB = [
+    _user("rotate the akasha AB database password"),
+    _tool("Bash", {"command": "vault kv get akasha/ab/db", "description": "AB creds"}),
+    _tool("Read", {"file_path": f"{CWD}/deploy/ab/values.yaml"}),
+    _tool("Edit", {"file_path": f"{CWD}/deploy/ab/values.yaml",
+                   "old_string": "old", "new_string": "new"}),
+    _tool("Bash", {"command": "vault kv put akasha/ab/db password=x"}),
+]
+# turns 6..9: akasha ZY, a different namespace and a different chart
+ZY = [
+    _user("now check akasha ZY"),
+    _tool("Bash", {"command": "kubectl -n akasha-zy get pods"}),
+    _tool("Read", {"file_path": f"{CWD}/deploy/zy/values.yaml"}),
+    _tool("Bash", {"command": "kubectl -n akasha-zy describe deploy/zy/api"}),
+    _tool("Read", {"file_path": f"{CWD}/deploy/zy/values.yaml"}),
+]
+
+
+def transcript(cwd, records, name="transcript.jsonl"):
+    path = Path(cwd) / name
+    path.write_text("".join(json.dumps(r) + "\n" for r in records))
+    return str(path)
+
+
+def prompt_hook(cwd, transcript_path, prompt):
+    # the hook shells out to `tsubasa`, so put this interpreter's bin dir first
+    path = os.pathsep.join([str(Path(sys.executable).parent), os.environ.get("PATH", "")])
+    return run_hook(CONTEXT_CHECK, cwd, {
+        "hook_event_name": "UserPromptSubmit", "session_id": "s", "cwd": str(cwd),
+        "transcript_path": transcript_path, "prompt": prompt}, env={"PATH": path})
+
+
+def test_context_check_hook_registered():
+    cfg = json.loads((PLUGIN / "hooks.json").read_text())
+    entry = cfg["hooks"]["UserPromptSubmit"][0]
+    assert entry["hooks"][0]["command"].endswith("/hooks/context_check.sh")
+
+
+def test_two_contexts_and_a_deictic_prompt_asks_which_one(captain):
+    # the ADR's own scenario: AB's chart was edited, ZY was read last, and
+    # "push the fix" would otherwise resolve to whatever came most recently
+    proc = prompt_hook(captain, transcript(captain, AB + ZY), "push the fix")
+    assert proc.returncode == 0
+    out = json.loads(proc.stdout)["hookSpecificOutput"]
+    assert out["hookEventName"] == "UserPromptSubmit"
+    ctx = out["additionalContext"]
+    assert ctx.startswith("CONTEXT CHECK: this session touches 2 contexts")
+    assert "deploy/ab" in ctx and "deploy/zy" in ctx   # the mechanical evidence
+    assert "doing / access / dev / test / next" in ctx  # the card format travels here
+    assert "Do not act until the user answers" in " ".join(ctx.split())
+
+
+def test_a_prompt_that_names_a_context_is_left_alone(captain):
+    # the scope is already unambiguous: asking again is the expensive error
+    proc = prompt_hook(captain, transcript(captain, AB + ZY), "push the ab fix")
+    assert proc.returncode == 0 and proc.stdout.strip() == ""
+
+
+def test_a_single_context_session_is_never_asked(captain):
+    # one repo, one namespace, one chart: nothing to disambiguate
+    proc = prompt_hook(captain, transcript(captain, AB), "push the fix")
+    assert proc.returncode == 0 and proc.stdout.strip() == ""
+
+
+def test_a_prompt_with_a_referent_is_not_deictic(captain):
+    proc = prompt_hook(captain, transcript(captain, AB + ZY),
+                       "compare the two values files and tell me what differs")
+    assert proc.returncode == 0 and proc.stdout.strip() == ""
+
+
+@pytest.mark.parametrize("body", [
+    "not a transcript at all\n",
+    '{"type": "assistant", "message": {"content": ',   # truncated mid-record
+    "",
+])
+def test_a_malformed_transcript_never_breaks_the_prompt(captain, body):
+    # the transcript schema is not a public contract; a format change must
+    # disarm the hook, never block the user (ADR, Risks)
+    path = captain / "broken.jsonl"
+    path.write_text(body)
+    proc = prompt_hook(captain, str(path), "push the fix")
+    assert proc.returncode == 0 and proc.stdout.strip() == ""
+
+
+@pytest.mark.parametrize("payload", [
+    {"prompt": "push the fix", "transcript_path": "/nonexistent/session.jsonl"},
+    {"prompt": "push the fix"},          # no transcript_path at all
+    {"transcript_path": "/nonexistent"},  # no prompt
+    {},
+])
+def test_an_unknown_payload_shape_exits_silently(captain, payload):
+    proc = run_hook(CONTEXT_CHECK, captain, payload)
+    assert proc.returncode == 0 and proc.stdout.strip() == ""
+
+
+def test_garbage_on_stdin_exits_silently(captain):
+    assert run_hook(CONTEXT_CHECK, captain, "not json").stdout.strip() == ""
+
+
+def test_silent_outside_a_captain(tmp_path):
+    proc = prompt_hook(tmp_path, transcript(tmp_path, AB + ZY), "push the fix")
+    assert proc.returncode == 0 and proc.stdout.strip() == ""
+
+
+def test_emitted_json_survives_the_sed_free_path(captain, nojq):
+    # jq is optional; the awk fallback must produce the same escaped string
+    tp = transcript(captain, AB + ZY)
+    with_jq = prompt_hook(captain, tp, "push the fix").stdout
+    d = Path(nojq["PATH"])
+    for tool in ("awk", "printf"):
+        src = shutil.which(tool)
+        if src and not (d / tool).exists():
+            (d / tool).symlink_to(src)
+    (d / "tsubasa").symlink_to(shutil.which("tsubasa") or Path(sys.executable).parent / "tsubasa")
+    without_jq = run_hook(CONTEXT_CHECK, captain, {
+        "hook_event_name": "UserPromptSubmit", "transcript_path": tp,
+        "prompt": "push the fix"}, env=nojq).stdout
+    assert json.loads(without_jq) == json.loads(with_jq)
+    assert "additionalContext" in json.loads(without_jq)["hookSpecificOutput"]
+
+
+# The trigger contract itself, without a subprocess: both halves are required
+# and the lists are closed (ADR, Decision b).
+
+@pytest.mark.parametrize("prompt,deictic", [
+    ("push the fix", True),
+    ("deploy it", True),
+    ("run that again", True),
+    ("push", False),            # a verb with no dangling reference
+    ("what changed?", False),   # neither half
+    ("the runner committed", False),  # exact words only: no runner/committed
+])
+def test_deixis_needs_a_verb_and_a_reference(prompt, deictic):
+    from tsubasa import contextcheck
+    assert contextcheck.is_deictic(prompt) is deictic
+
+
+def test_a_dimension_that_does_not_vary_is_ambient():
+    from tsubasa import contextcheck
+    # one repo mentioned all session cannot tell two contexts apart; two can.
+    # A value seen once is noise either way (ADR: no invented contexts).
+    assert contextcheck.targets({"repo": {"ops": 40}}) == []
+    assert contextcheck.targets({"repo": {"ops": 40, "web": 1}}) == []
+    assert contextcheck.targets({"repo": {"ops": 40, "web": 6}}) == ["ops", "web"]
+
+
+# --- doctor: the half of tsubasa that `tsubasa upgrade` cannot deliver ---
+#
+# hooks.json ships with the plugin, not with the captain, so a CLI upgrade
+# without `/plugin update` leaves the mechanisms absent and silent. That is how
+# the delegate guard first shipped disarmed
+# (evt-20260802-delegate-only-defaults-on-discipline-guards-ship). Reporting
+# only: a stale plugin is not a corrupt graph and must not fail the run.
+
+REPO = PLUGIN.parent.parent
+
+
+@pytest.fixture()
+def scaffolded(tmp_path, monkeypatch):
+    from tsubasa import cli
+    monkeypatch.chdir(tmp_path)
+    assert cli.main(["init", "plugincap", "--no-detect"]) == 0
+    return tmp_path
+
+
+def doctor(root, capsys, plugin_root):
+    from tsubasa import cli
+    os.environ["CLAUDE_PLUGIN_ROOT"] = str(plugin_root)
+    try:
+        capsys.readouterr()
+        code = cli.main(["doctor"])
+    finally:
+        os.environ.pop("CLAUDE_PLUGIN_ROOT")
+    return code, capsys.readouterr().out
+
+
+def test_doctor_reports_a_plugin_missing_the_prompt_hook(scaffolded, capsys, tmp_path):
+    stale = tmp_path / "stale" / "hooks"
+    stale.mkdir(parents=True)
+    (stale / "hooks.json").write_text('{"hooks": {"SessionStart": []}}')
+    code, out = doctor(scaffolded, capsys, stale.parent)
+    assert "no UserPromptSubmit hook" in out and "/plugin update" in out
+    assert code == 0   # reported, not failed: the graph is fine
+
+
+def test_doctor_is_quiet_when_the_installed_plugin_is_current(scaffolded, capsys):
+    code, out = doctor(scaffolded, capsys, REPO / "plugin")
+    assert "UserPromptSubmit" not in out and code == 0
+
+
+def test_doctor_survives_an_unlocatable_plugin(scaffolded, capsys, tmp_path):
+    code, out = doctor(scaffolded, capsys, tmp_path / "gone")
+    assert "installed plugin not found" in out and code == 0
+
+
+def test_doctor_reports_manifest_version_disagreement(scaffolded, capsys):
+    for rel, body in (("plugin/.claude-plugin/plugin.json", '{"version": "0.1.19"}'),
+                      (".claude-plugin/marketplace.json", '{"metadata": {"version": "0.1.18"}}')):
+        (scaffolded / rel).parent.mkdir(parents=True, exist_ok=True)
+        (scaffolded / rel).write_text(body)
+    code, out = doctor(scaffolded, capsys, REPO / "plugin")
+    assert "version disagreement" in out and "0.1.18" in out
+    assert code == 0
+    (scaffolded / ".claude-plugin/marketplace.json").write_text(
+        '{"metadata": {"version": "0.1.19"}}')
+    assert "version disagreement" not in doctor(scaffolded, capsys, REPO / "plugin")[1]
+
+
+def test_the_shipped_manifests_agree():
+    # the release pair: plugin.json is what Claude Code installs, marketplace.json
+    # is what it resolves the version from
+    plug = json.loads((REPO / "plugin/.claude-plugin/plugin.json").read_text())["version"]
+    market = json.loads((REPO / ".claude-plugin/marketplace.json").read_text())
+    assert plug == market["metadata"]["version"]
