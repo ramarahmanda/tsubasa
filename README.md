@@ -306,6 +306,7 @@ Full mechanics: [DESIGN.md](DESIGN.md) §3.2 contract · §3.3 graphify joins ·
 | `init` | scaffold · detect sources · first ingest, in one command (`--no-detect`, `--no-ingest` opt out) |
 | `source add` / `ingest` | register a source detection missed · pull knowledge again |
 | `query "…" [--as-of DATE]` | subgraph + citations, optionally as of a past date; bridges wording onto graph tokens automatically (one LLM hop auto-fires for zero-overlap phrasing; falls back to lexical without the claude CLI) |
+| `query "…" --unanchored` | inverts the question: does the record constrain this claim? Lexical pass only, strong hits only; prints `NO RECORDED CONSTRAINT` when the graph is silent, so a general question is not dressed in citations |
 | `vocab [stems]` | the graph's searchable tokens, stem-filtered; what `query` can actually hit |
 | `event add` / `goal …` | the captain's write path |
 | `study` / `resolve` / `profile` | history distillation (headless Claude) |
