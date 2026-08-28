@@ -1,6 +1,6 @@
 [project]
 name = "tsubasa"
-version = "0.2.1"
+version = "0.2.2"
 description = "Framework for creating Captains: persistent, domain-expert AI personas for a codebase or organization."
 readme = "README.md"
 license = { text = "MIT" }
