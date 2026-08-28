@@ -9,6 +9,7 @@
     tsubasa event add ...        append a validated event (used by capture/inject skills)
     tsubasa query "<text>"       entity match + subgraph + citations
     tsubasa query --timeline     what happened when: state, then the sequence
+    tsubasa query --unanchored   does the record constrain this? strong hits or nothing
     tsubasa questions            open reconciliation questions
     tsubasa rebuild              replay the event log into a fresh graph
     tsubasa tiers                regenerate hot/warm/cold memory files
@@ -653,6 +654,11 @@ def cmd_goal_set(args) -> int:
 
 def cmd_query(args) -> int:
     root, cfg, store = _ctx()
+    if args.unanchored and args.timeline:
+        print("error: --unanchored and --timeline answer different questions "
+              "(does the record constrain this claim, versus what happened when). "
+              "Run one or the other.", file=sys.stderr)
+        return 1
     if args.timeline:
         # sequence, not snapshot: replayed from the event log, so the code
         # snapshot (current-state only) plays no part either way
@@ -665,6 +671,8 @@ def cmd_query(args) -> int:
         entities, relations, _ = assemble.replay(store, as_of=args.as_of)
         events = {e.id: e for e in store.load_events() if e.ts[:10] <= args.as_of}
         vocab = query_mod.vocabulary(entities, events)
+        if args.unanchored:
+            return _print_constraints(args, entities, events, vocab)
         text, matched = _semantic_match(root, args, entities, events, vocab)
         print(f"# knowledge as of {args.as_of} (code snapshot excluded — it is current-state only)")
         print(query_mod.serialize(entities, relations, events, matched, hops=args.hops,
@@ -683,6 +691,8 @@ def cmd_query(args) -> int:
             merged[cid].key_facts = list(dict.fromkeys(entities[cid].key_facts + [f"[code] {ce.description}"]))
     events = {e.id: e for e in store.load_events()}
     vocab = query_mod.vocabulary(merged, events)
+    if args.unanchored:
+        return _print_constraints(args, merged, events, vocab)
     text, matched = _semantic_match(root, args, merged, events, vocab)
     print(query_mod.serialize(merged, relations + code_relations, events, matched, hops=args.hops,
                               text=text, vocab=vocab))
@@ -704,6 +714,37 @@ def cmd_query(args) -> int:
     if code_graph:
         print("\n## Code anatomy (graphify)")
         print(code_graph)
+    return 0
+
+
+def _print_constraints(args, entities, events, vocab) -> int:
+    """`--unanchored`: does the record contradict or constrain this claim?
+
+    The inverse of the default path. That path escalates on a weak match, so
+    a general question comes back dressed in citations the answer then
+    anchors to. Here the lexical pass runs alone (no expansion, no cost) and
+    only STRONG hits print, the `titles_discriminate` sense of strong. A weak
+    result is the answer, not a prompt to look harder: no vocab hint, no code
+    anatomy, no anchors, no relation walk. Constraints only.
+    """
+    strong = query_mod.strong_title_events(events, args.text, vocab)
+    if not strong:
+        print("NO RECORDED CONSTRAINT")
+        print("Nothing in the graph bears on this. Build the answer from outside "
+              "knowledge and mark every claim uncited.")
+        return 0
+    matched = query_mod.match_entities(entities, args.text, limit=args.limit)
+    print(f"RECORDED CONSTRAINTS ({len(strong) + len(matched)})")
+    for e in matched:
+        status = f" [SUPERSEDED by {e.superseded_by}]" if e.status == "superseded" else ""
+        print(f"- {e.id} ({e.type}){status}: {e.description or e.name}")
+        for fact in e.key_facts[:3]:
+            print(f"  fact: {fact}")
+    for ev in strong:
+        flag = " [DISPUTED]" if ev.disputed else ""
+        print(f"- {ev.id} ({ev.type}, {ev.ts[:10]}, impact={ev.impact}){flag}: {ev.title}")
+        if ev.summary:
+            print(f"  {ev.summary}")
     return 0
 
 
@@ -1156,6 +1197,13 @@ def build_parser() -> argparse.ArgumentParser:
                     help="what happened when: resulting state first, then the events in "
                          "ascending time order with transitions marked and reverts/"
                          "supersessions walked in. Composes with --as-of")
+    sp.add_argument("--unanchored", action="store_true",
+                    help="invert the question: does the record contradict or "
+                         "constrain this claim? Lexical pass only (never a "
+                         "semantic expansion) and only discriminating hits "
+                         "print, so a weak match says NO RECORDED CONSTRAINT "
+                         "instead of near-misses. Composes with --as-of, not "
+                         "with --timeline")
     sp.set_defaults(func=cmd_query)
 
     sp = sub.add_parser("vocab", help="searchable graph tokens, filtered by stems; "

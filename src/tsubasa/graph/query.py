@@ -213,6 +213,19 @@ def titles_discriminate(events: dict[str, Event], text: str, freq: dict[str, int
     return any(rare for _, rare, _ev in _scored_titles(events, text, freq))
 
 
+def strong_title_events(events: dict[str, Event], text: str, freq: dict[str, int],
+                        cap: int = 12) -> list[Event]:
+    """The events behind a True `titles_discriminate`, rarest overlap first.
+
+    Same gate, evidence instead of a boolean: only hits riding a
+    discriminating token survive, so near-misses on common stems are dropped
+    rather than printed. `--unanchored` shows these and nothing else.
+    """
+    scored = [(s, ev) for s, rare, ev in _scored_titles(events, text, freq) if rare]
+    scored.sort(key=lambda p: (p[0], p[1].ts, p[1].id), reverse=True)
+    return [ev for _, ev in scored[:cap]]
+
+
 def _tokens(text: str) -> list[str]:
     out, buf = [], []
     for ch in text.lower():
