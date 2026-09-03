@@ -140,7 +140,8 @@ class GitAdapter(Adapter):
         try:
             raw = _git(repo, "for-each-ref", "refs/tags",
                        f"--format=%(refname:short){FIELD_SEP}%(creatordate:short){FIELD_SEP}%(subject)")
-        except RuntimeError:
+        except RuntimeError as e:
+            self.warnings.append(str(e)[:200])
             return []
         events = []
         for line in raw.strip().splitlines():
@@ -178,7 +179,8 @@ class GitAdapter(Adapter):
         try:
             raw = _git(repo, "log", rev_range, "--date=short", "--grep=^Revert",
                        f"--format=%H{FIELD_SEP}%ad{FIELD_SEP}%s{FIELD_SEP}%b{RECORD_SEP}")
-        except RuntimeError:
+        except RuntimeError as e:
+            self.warnings.append(str(e)[:200])
             return []
         events, head = [], ""
         for rec in raw.split(RECORD_SEP):
@@ -220,7 +222,8 @@ class GitAdapter(Adapter):
         try:
             raw = _git(repo, "log", rev_range, "--date=short",
                        f"--format=%H{FIELD_SEP}%ad{FIELD_SEP}%s{RECORD_SEP}")
-        except RuntimeError:
+        except RuntimeError as e:
+            self.warnings.append(str(e)[:200])
             return []
         events = []
         head = ""

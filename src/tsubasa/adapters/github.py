@@ -20,9 +20,11 @@ class GithubAdapter(Adapter):
 
     def collect(self) -> list[Event]:
         if shutil.which("gh") is None:
+            self.warnings.append("gh not on PATH; merged PRs not ingested")
             return []
         repo = (self.root / self.source.path).resolve()
         if not (repo / ".git").exists():
+            self.warnings.append(f"{self.source.path} is not a git repository")
             return []
         limit = int(self.source.options.get("limit", 100))
         try:
@@ -32,9 +34,12 @@ class GithubAdapter(Adapter):
                 cwd=repo, capture_output=True, text=True, timeout=120,
             )
             if out.returncode != 0:
+                detail = (out.stderr or "").strip()[:200] or f"exit {out.returncode}"
+                self.warnings.append(f"gh pr list failed: {detail}")
                 return []
             prs = json.loads(out.stdout or "[]")
-        except (subprocess.SubprocessError, json.JSONDecodeError):
+        except (subprocess.SubprocessError, json.JSONDecodeError) as e:
+            self.warnings.append(f"gh pr list failed: {e}")
             return []
 
         repo_name = self.source.options.get("service") or repo.name
