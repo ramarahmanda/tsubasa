@@ -66,7 +66,8 @@ def touch(entity: Entity, event: Event) -> None:
 
 
 def apply_event(entities: dict[str, Entity], relations: list[Relation], event: Event,
-                aliases: dict[str, str] | None = None) -> list[str]:
+                aliases: dict[str, str] | None = None,
+                event_trust: dict[str, str] | None = None) -> list[str]:
     """Apply one event to the graph; returns reconciliation notes.
 
     `aliases` (from `tsubasa resolve`) folds duplicate entity ids into their
@@ -114,7 +115,7 @@ def apply_event(entities: dict[str, Entity], relations: list[Relation], event: E
     for ref in event.refs:
         if ref.kind == "entity" and canon(ref.id) in entities:
             touch(entities[canon(ref.id)], event)
-    return reconcile_event(entities, relations, event)
+    return reconcile_event(entities, relations, event, event_trust)
 
 
 def apply_profiles(entities: dict[str, Entity], profiles: dict[str, dict]) -> None:
@@ -139,9 +140,11 @@ def replay(store: Store, as_of: str = "") -> tuple[dict[str, Entity], list[Relat
     entities: dict[str, Entity] = {}
     relations: list[Relation] = []
     notes: list[str] = []
+    event_trust: dict[str, str] = {}
     for event in store.load_events():
         if as_of and event.ts[:10] > as_of:
             continue
-        notes.extend(apply_event(entities, relations, event, aliases))
+        event_trust[event.id] = event.trust
+        notes.extend(apply_event(entities, relations, event, aliases, event_trust))
     apply_profiles(entities, store.load_profiles())
     return entities, relations, notes
